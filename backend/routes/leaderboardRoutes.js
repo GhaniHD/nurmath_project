@@ -1,35 +1,61 @@
+// server/routes/leaderboardRoutes.js
 const express = require('express');
-  const router = express.Router();
-  const { body, validationResult } = require('express-validator');
-  const { Leaderboard } = require('../models/Leaderboard');
-  const { cacheMiddleware } = require('../server');
+const router = express.Router();
+const Leaderboard = require('../models/Leaderboard');
 
-  router.post('/', [
-    body('userName').trim().notEmpty(),
-    body('score').isInt({ min: 0 }),
-    body('missionId').trim().notEmpty()
-  ], async (req, res) => {
+// Perhatikan bahwa module.exports sekarang adalah sebuah fungsi
+// yang menerima cacheMiddleware sebagai argumen.
+module.exports = (cacheMiddleware) => { // <-- Pastikan ini menerima cacheMiddleware
+  // Get leaderboard data
+  router.get('/', cacheMiddleware('leaderboard'), async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-
-      const { userName, score, missionId } = req.body;
-      const entry = new Leaderboard({ userName, score, missionId });
-      await entry.save();
-      req.app.get('cache').del('leaderboard'); // Invalidate cache
-      res.status(200).send('Leaderboard updated');
+      // Aggregate to sum scores for each user and sort by total score descending
+      const leaderboard = await Leaderboard.aggregate([
+        {
+          $group: {
+            _id: "$userName",
+            totalScore: { $sum: "$totalScore" }
+          }
+        },
+        { $sort: { totalScore: -1 } }, // Sort by totalScore descending
+        { $limit: 10 } // Get top 10 players
+      ]);
+      res.json(leaderboard);
     } catch (err) {
-      res.status(500).json({ error: 'Internal server error', details: err.message });
+      console.error('Error fetching leaderboard:', err);
+      res.status(500).json({ error: 'Internal server error' });
     }
   });
 
-  router.get('/', cacheMiddleware('leaderboard'), async (req, res) => { // Removed :type?
+  // Submit score to leaderboard
+  router.post('/', async (req, res) => {
+    const { userName, score, missionId } = req.body;
+    if (!userName || score === undefined || missionId === undefined) {
+      return res.status(400).json({ error: 'User name, score, and mission ID are required.' });
+    }
+
     try {
-      const leaders = await Leaderboard.find().sort({ score: -1 }).limit(10).lean(); // Default to top 10
-      res.json(leaders);
+      // Find existing entry for the user or create a new one
+      let leaderboardEntry = await Leaderboard.findOne({ userName });
+
+      if (leaderboardEntry) {
+        leaderboardEntry.totalScore += score; // Add new score to total
+        leaderboardEntry.lastUpdated = new Date();
+      } else {
+        leaderboardEntry = new Leaderboard({
+          userName,
+          totalScore: score
+        });
+      }
+      await leaderboardEntry.save();
+      // Clear leaderboard cache when new score is submitted
+      req.app.get('cache').del('leaderboard-all');
+      res.status(201).json(leaderboardEntry);
     } catch (err) {
-      res.status(500).json({ error: 'Internal server error', details: err.message });
+      console.error('Error submitting score to leaderboard:', err);
+      res.status(500).json({ error: 'Internal server error' });
     }
   });
 
-  module.exports = router;
+  return router;
+};

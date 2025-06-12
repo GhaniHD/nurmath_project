@@ -1,45 +1,73 @@
+// src/components/Mission3.js
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Mission3 = ({ missionId, onComplete, userName }) => {
+const Mission3 = ({ missionId, onComplete, userName }) => { // onComplete and userName from props
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [result, setResult] = useState(null);
-  const [answer, setAnswer] = useState([]);
-  const [dragItem, setDragItem] = useState(null);
+  const [userAnswer, setUserAnswer] = useState(''); // For Uraian
+  const [checkedAnswers, setCheckedAnswers] = useState([]); // For Ceklis
+  const [dragItem, setDragItem] = useState(null); // For Drag and Drop
+  const [dropTargetAnswers, setDropTargetAnswers] = useState({}); // For Drag and Drop, store matched items
+  const [result, setResult] = useState(null); // true/false for correctness
+  const [showFeedback, setShowFeedback] = useState(false); // To control feedback display
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/questions/misi-3`);
+        const response = await fetch(`http://localhost:3001/api/questions/${missionId}`);
         const data = await response.json();
-        setQuestions(data);
+        if (response.ok) {
+          const mission3Types = ['drag-and-drop', 'ya-tidak', 'ceklis', 'pg', 'uraian', 'benar-salah'];
+          const filteredQuestions = data.filter(q => mission3Types.includes(q.type));
+          setQuestions(filteredQuestions);
+        } else {
+          console.error('Fetch error:', data.error);
+        }
       } catch (err) {
         console.error('Error fetching questions:', err);
       }
     };
     fetchQuestions();
-  }, []);
+  }, [missionId]);
 
   if (questions.length === 0) return <div className="text-center text-white text-2xl font-comic-sans">Loading...</div>;
 
   const currentQuestion = questions[currentQuestionIndex];
 
-  const handleSubmit = async (userAnswer) => {
+  const handleSubmitAnswer = async (answer) => {
     let isCorrect = false;
-    if (currentQuestion.type === 'pg' || currentQuestion.type === 'benar-salah' || currentQuestion.type === 'ya-tidak') {
-      isCorrect = userAnswer === currentQuestion.correctAnswer;
-    } else if (currentQuestion.type === 'ceklis') {
-      isCorrect = JSON.stringify(userAnswer.sort()) === JSON.stringify(currentQuestion.correctAnswer.sort());
-    } else if (currentQuestion.type === 'uraian') {
-      isCorrect = userAnswer.toLowerCase().includes(currentQuestion.correctAnswer.toLowerCase());
-    } else if (currentQuestion.type === 'drag-and-drop') {
-      isCorrect = userAnswer === currentQuestion.correctAnswer;
+    switch (currentQuestion.type) {
+      case 'pg':
+      case 'benar-salah':
+      case 'ya-tidak':
+        isCorrect = answer === currentQuestion.correctAnswer;
+        break;
+      case 'ceklis':
+        isCorrect = JSON.stringify(answer.sort()) === JSON.stringify(currentQuestion.correctAnswer.sort());
+        break;
+      case 'uraian':
+        isCorrect = answer.toLowerCase().includes(currentQuestion.correctAnswer.toLowerCase());
+        break;
+      case 'drag-and-drop':
+        const correctMatches = currentQuestion.correctAnswer.split(',').sort().join(',');
+        const userMatchesArray = Object.keys(dropTargetAnswers).map(target => `${dropTargetAnswers[target]} -> ${target}`);
+        const userMatches = userMatchesArray.sort().join(',');
+        isCorrect = userMatches === correctMatches;
+        break;
+      default:
+        isCorrect = false;
     }
+
     setResult(isCorrect);
+    setShowFeedback(true);
     const score = isCorrect ? currentQuestion.score : 0;
-    onComplete(score, missionId);
+    
+    // Call onComplete from props to update totalScore in App.js
+    if (onComplete) {
+      onComplete(score, missionId);
+    }
 
     if (isCorrect && userName) {
       try {
@@ -53,141 +81,186 @@ const Mission3 = ({ missionId, onComplete, userName }) => {
       }
     }
 
-    if (isCorrect && currentQuestionIndex < questions.length - 1) {
-      setTimeout(() => {
+    setTimeout(() => {
+      if (isCorrect && currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex((prev) => prev + 1);
-        setResult(null);
-        setAnswer([]);
-        setDragItem(null);
-      }, 1000);
-    }
+        resetQuestionState();
+      } else if (isCorrect && currentQuestionIndex === questions.length - 1) {
+        alert('Misi selesai! Selamat!');
+        navigate('/leaderboard');
+      }
+    }, 1500);
   };
 
-  const handleDragStart = (item) => setDragItem(item);
-  const handleDrop = (target) => {
-    if (dragItem) {
-      handleSubmit(`${dragItem} -> ${target}`);
+  const resetQuestionState = () => {
+    setUserAnswer('');
+    setCheckedAnswers([]);
+    setDragItem(null);
+    setDropTargetAnswers({});
+    setResult(null);
+    setShowFeedback(false);
+  };
+
+  const handleDragStart = (e, item) => {
+    setDragItem(item);
+    e.dataTransfer.setData('text/plain', item);
+  };
+
+  const handleDrop = (e, target) => {
+    e.preventDefault();
+    const item = e.dataTransfer.getData('text/plain');
+    setDropTargetAnswers(prev => ({ ...prev, [target]: item }));
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault(); // Allow drop
+  };
+
+  const handleCheckboxChange = (option) => {
+    setCheckedAnswers((prev) =>
+      prev.includes(option) ? prev.filter((item) => item !== option) : [...prev, option]
+    );
+  };
+
+  const renderQuestionInput = () => {
+    switch (currentQuestion.type) {
+      case 'drag-and-drop':
+        return (
+          <div className="text-center">
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="flex flex-col items-center p-4 bg-gray-700 rounded-lg shadow-inner border border-gray-600">
+                <p className="text-white mb-2 font-semibold">Item untuk ditarik:</p>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {currentQuestion.options.map((option, idx) => (
+                    <div
+                      key={idx}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, option)}
+                      className="p-3 bg-purple-500 text-white rounded-lg cursor-grab hover:bg-purple-600 transition-colors shadow-md"
+                    >
+                      {option}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-col items-center p-4 bg-gray-700 rounded-lg shadow-inner border border-gray-600">
+                <p className="text-white mb-2 font-semibold">Target:</p>
+                <div className="flex flex-col gap-2 w-full">
+                  {currentQuestion.targets.map((target, idx) => (
+                    <div
+                      key={idx}
+                      onDrop={(e) => handleDrop(e, target)}
+                      onDragOver={handleDragOver}
+                      className="p-3 bg-gray-600 text-white rounded-lg flex items-center justify-center min-h-[50px] border-dashed border-2 border-gray-500"
+                    >
+                      {dropTargetAnswers[target] ? (
+                        <span className="bg-purple-400 px-2 py-1 rounded">{dropTargetAnswers[target]}</span>
+                      ) : (
+                        `Seret ke sini: ${target}`
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => handleSubmitAnswer(dropTargetAnswers)}
+              disabled={Object.keys(dropTargetAnswers).length !== currentQuestion.targets.length || showFeedback}
+              className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+            >
+              Submit
+            </button>
+          </div>
+        );
+      case 'ya-tidak':
+      case 'benar-salah':
+      case 'pg': // PG can also be a direct button click
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {currentQuestion.options.map((option, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleSubmitAnswer(option)}
+                className={`p-4 bg-purple-500 text-white rounded-lg shadow-md hover:bg-purple-600
+                  ${showFeedback ? (option === currentQuestion.correctAnswer ? 'bg-green-500' : 'bg-red-500') : ''}
+                  disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300
+                `}
+                disabled={showFeedback}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        );
+      case 'ceklis':
+        return (
+          <div className="text-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+              {currentQuestion.options.map((option, idx) => (
+                <label key={idx} className="flex items-center p-3 bg-gray-700 rounded-lg text-white cursor-pointer hover:bg-gray-600 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={checkedAnswers.includes(option)}
+                    onChange={() => handleCheckboxChange(option)}
+                    className="mr-3 w-5 h-5 accent-purple-500"
+                    disabled={showFeedback}
+                  />
+                  {option}
+                </label>
+              ))}
+            </div>
+            <button
+              onClick={() => handleSubmitAnswer(checkedAnswers)}
+              disabled={checkedAnswers.length === 0 || showFeedback}
+              className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+            >
+              Submit
+            </button>
+          </div>
+        );
+      case 'uraian':
+        return (
+          <div className="text-center">
+            <textarea
+              value={userAnswer}
+              onChange={(e) => setUserAnswer(e.target.value)}
+              placeholder="Tulis jawabanmu di sini..."
+              rows="4"
+              className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              disabled={showFeedback}
+            />
+            <button
+              onClick={() => handleSubmitAnswer(userAnswer)}
+              disabled={!userAnswer.trim() || showFeedback}
+              className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+            >
+              Submit
+            </button>
+          </div>
+        );
+      default:
+        return <p className="text-red-400">Tipe pertanyaan tidak dikenal.</p>;
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 to-indigo-900 p-6 flex items-center justify-center font-comic-sans">
-      <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-white/10 max-w-2xl w-full">
-        <h2 className="text-3xl font-bold text-white mb-6 text-center">Misi 3: Atmosfer</h2>
-        <h3 className="text-xl font-semibold text-white mb-4">{currentQuestion.questionText}</h3>
+      <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-white/10 max-w-2xl w-full shadow-xl">
+        <h2 className="text-3xl font-bold text-white mb-6 text-center animate-fade-in">Misi 3: Atmosfer</h2>
+        <div className="text-xl font-semibold text-white mb-4 text-center">
+          {currentQuestion.questionText}
+        </div>
 
-        {currentQuestion.type === 'drag-and-drop' && (
-          <div className="text-center">
-            <div className="grid grid-cols-2 gap-4">
-              {currentQuestion.options.map((option, idx) => (
-                <div
-                  key={idx}
-                  draggable
-                  onDragStart={() => handleDragStart(option)}
-                  className="p-4 bg-purple-500 text-white rounded cursor-move"
-                >
-                  {option}
-                </div>
-              ))}
-              {currentQuestion.targets.map((target, idx) => (
-                <div
-                  key={idx}
-                  onDrop={() => handleDrop(target)}
-                  onDragOver={(e) => e.preventDefault()}
-                  className="p-4 bg-gray-700 text-white rounded"
-                >
-                  {target}
-                </div>
-              ))}
-            </div>
+        {renderQuestionInput()}
+
+        {showFeedback && (
+          <div className={`mt-6 text-lg text-center font-bold ${result ? 'text-green-400' : 'text-red-400'} animate-fade-in`}>
+            {result ? `Benar! Kamu mendapatkan ${currentQuestion.score} XP!` : 'Salah, coba lagi!'}
           </div>
         )}
 
-        {(currentQuestion.type === 'ya-tidak' || currentQuestion.type === 'benar-salah') && (
-          <div className="grid grid-cols-2 gap-4">
-            {currentQuestion.options.map((option, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleSubmit(option)}
-                className="p-4 bg-purple-500 text-white rounded hover:bg-purple-600"
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {currentQuestion.type === 'ceklis' && (
-          <div className="text-center">
-            {currentQuestion.options.map((option, idx) => (
-              <label key={idx} className="block text-white">
-                <input
-                  type="checkbox"
-                  onChange={(e) => {
-                    const newAnswer = answer.includes(option)
-                      ? answer.filter((a) => a !== option)
-                      : [...answer, option];
-                    setAnswer(newAnswer);
-                  }}
-                  className="mr-2"
-                />
-                {option}
-              </label>
-            ))}
-            <button
-              onClick={() => handleSubmit(answer)}
-              disabled={answer.length === 0}
-              className="mt-4 px-6 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 disabled:bg-gray-400"
-            >
-              Submit
-            </button>
-          </div>
-        )}
-
-        {currentQuestion.type === 'pg' && (
-          <div className="grid grid-cols-2 gap-4">
-            {currentQuestion.options.map((option, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleSubmit(option)}
-                className="p-4 bg-purple-500 text-white rounded hover:bg-purple-600"
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {currentQuestion.type === 'uraian' && (
-          <div className="text-center">
-            <textarea
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              placeholder="Tulis jawabanmu..."
-              className="w-full p-2 rounded bg-gray-700 text-white"
-            />
-            <button
-              onClick={() => handleSubmit(answer)}
-              disabled={!answer}
-              className="mt-4 px-6 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 disabled:bg-gray-400"
-            >
-              Submit
-            </button>
-          </div>
-        )}
-
-        {result !== null && (
-          <>
-            <p className="mt-4 text-lg text-center text-white">{result ? `Benar! Skor: ${currentQuestion.score}` : 'Salah, coba lagi!'}</p>
-            {currentQuestionIndex === questions.length - 1 && (
-              <button
-                onClick={() => navigate(`/leaderboard`)}
-                className="mt-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-              >
-                Lihat Leaderboard
-              </button>
-            )}
-          </>
+        {!showFeedback && currentQuestionIndex === questions.length - 1 && (
+          <p className="mt-4 text-center text-gray-300">Selesaikan pertanyaan ini untuk menyelesaikan misi!</p>
         )}
       </div>
     </div>

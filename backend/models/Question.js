@@ -1,11 +1,15 @@
 const mongoose = require('mongoose');
 
-const questionSchema = new mongoose.Schema({
-  missionId: { type: String, required: true }, // e.g., "misi-1"
-  questionText: { type: String, required: true },
-  options: [{ type: String, required: true }],
-  correctAnswer: { type: String, required: true },
-  score: { type: Number, required: true },
-});
+    const questionSchema = new mongoose.Schema({
+      type: { type: String, required: true },
+      questionText: { type: String, required: true },
+      options: [String],
+      correctAnswer: { type: String, required: true },
+      score: { type: Number, required: true },
+      missionId: { type: String, required: true },
+      audioUrl: String,
+      imageUrl: String,
+      targets: [String]
+    });
 
-module.exports = mongoose.model('Question', questionSchema);
+    module.exports = mongoose.model('Question', questionSchema);

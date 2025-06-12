@@ -10,7 +10,7 @@ const SplashScreen = ({ onFinish }) => {
     const [currentTextIndex, setCurrentTextIndex] = useState(0);
 
     // Duration for each text segment in milliseconds
-    const textDuration = 5000;
+    const textDuration = 3001;
 
     // CSS for animations and global styles (injected dynamically)
     const globalStyles = `

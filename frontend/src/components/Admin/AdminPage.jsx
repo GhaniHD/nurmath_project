@@ -22,7 +22,7 @@ const AdminPage = () => {
       const fetchQuestions = async () => {
         setLoading(true);
         try {
-          const response = await fetch(`http://localhost:5000/api/questions/${missionIdFilter}`);
+          const response = await fetch(`http://localhost:3001/api/questions/${missionIdFilter}`);
           if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
           const data = await response.json();
           setQuestions(data);
@@ -40,7 +40,7 @@ const AdminPage = () => {
   // Tambah soal
   const handleAddQuestion = async (formData) => {
     try {
-      const response = await fetch('http://localhost:5000/api/questions', {
+      const response = await fetch('http://localhost:3001/api/questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -57,7 +57,7 @@ const AdminPage = () => {
   // Edit soal
   const handleEditQuestion = async (formData) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/questions/${editQuestion._id}`, {
+      const response = await fetch(`http://localhost:3001/api/questions/${editQuestion._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -74,7 +74,7 @@ const AdminPage = () => {
   // Hapus soal
   const handleDeleteQuestion = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/questions/${id}`, {
+      const response = await fetch(`http://localhost:3001/api/questions/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Gagal menghapus soal');

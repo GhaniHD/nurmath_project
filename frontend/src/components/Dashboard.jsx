@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import AngketModal from './AngketModal'; // StoryTelling import has been removed
+import AngketModal from './Angket/AngketModal';
 
 const Dashboard = ({ totalScore, userName }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,8 +56,7 @@ const Dashboard = ({ totalScore, userName }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
-      {/* Animated Background Elements */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6 font-comic-sans">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-blue-400/10 rounded-full blur-xl animate-pulse"></div>
         <div className="absolute top-40 right-20 w-24 h-24 bg-purple-400/10 rounded-full blur-xl animate-pulse delay-1000"></div>
@@ -66,14 +65,6 @@ const Dashboard = ({ totalScore, userName }) => {
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto">
-        {/* Story Section - REMOVED */}
-        {/* <div className="mb-8 transform hover:scale-105 transition-transform duration-300">
-          <div className="bg-gradient-to-r from-indigo-600/20 to-purple-600/20 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-2xl">
-            <StoryTelling />
-          </div>
-        </div> */}
-
-        {/* Welcome Header */}
         <div className="text-center mb-8">
           <div className="inline-block">
             <h1 className="text-5xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4 animate-pulse">
@@ -95,7 +86,6 @@ const Dashboard = ({ totalScore, userName }) => {
           </div>
         </div>
 
-        {/* Game Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           {gameCards.map((card) => {
             const CardComponent = card.path ? Link : 'button';
@@ -117,10 +107,7 @@ const Dashboard = ({ totalScore, userName }) => {
                   overflow-hidden cursor-pointer
                   ${hoveredCard === card.id ? 'animate-pulse' : ''}
                 `}>
-                  {/* Shimmer Effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
-                  
-                  {/* Card Content */}
                   <div className="relative z-10 text-center">
                     <div className="text-6xl mb-4 transform group-hover:scale-125 transition-transform duration-300">
                       {card.icon}
@@ -131,16 +118,12 @@ const Dashboard = ({ totalScore, userName }) => {
                     <p className="text-white/80 text-sm group-hover:text-white transition-colors">
                       {card.description}
                     </p>
-                    
-                    {/* Action Indicator */}
                     <div className="mt-4 flex justify-center">
                       <div className="px-6 py-2 bg-white/20 rounded-full text-white font-semibold group-hover:bg-white/30 transition-all duration-300">
                         {card.path ? 'MULAI' : 'BUKA'} →
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Glow Effect */}
                   <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
               </CardComponent>
@@ -148,7 +131,6 @@ const Dashboard = ({ totalScore, userName }) => {
           })}
         </div>
 
-        {/* Progress Bar */}
         <div className="mt-12 max-w-2xl mx-auto">
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
             <h3 className="text-xl font-semibold text-white mb-4 text-center">Progress ke Level Selanjutnya</h3>

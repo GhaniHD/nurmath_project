@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import StoryTelling from './StoryTelling';
-import AngketModal from './AngketModal';
+import AngketModal from './AngketModal'; // StoryTelling import has been removed
 
 const Dashboard = ({ totalScore, userName }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -67,12 +66,12 @@ const Dashboard = ({ totalScore, userName }) => {
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto">
-        {/* Story Section */}
-        <div className="mb-8 transform hover:scale-105 transition-transform duration-300">
+        {/* Story Section - REMOVED */}
+        {/* <div className="mb-8 transform hover:scale-105 transition-transform duration-300">
           <div className="bg-gradient-to-r from-indigo-600/20 to-purple-600/20 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-2xl">
             <StoryTelling />
           </div>
-        </div>
+        </div> */}
 
         {/* Welcome Header */}
         <div className="text-center mb-8">

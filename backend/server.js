@@ -4,6 +4,8 @@ const { Client } = require('pg');
 const compression = require('compression');
 const NodeCache = require('node-cache');
 const dotenv = require('dotenv');
+const fs = require('fs');
+const path = require('path');
 
 dotenv.config();
 
@@ -20,39 +22,14 @@ app.use('/public', express.static('public')); // Serve static files from public 
 
 // PostgreSQL configuration
 const dbConfig = {
-  user: process.env.DB_USER || 'avnadmin',
-  password: process.env.DB_PASSWORD || 'AVNS_HfW83M_14k8GmOK-wL6',
-  host: process.env.DB_HOST || 'nurmath-winahsan100-db6f.b.aivencloud.com',
-  port: process.env.DB_PORT || 28661,
-  database: process.env.DB_NAME || 'defaultdb',
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
   ssl: {
     rejectUnauthorized: true,
-    ca: process.env.DB_CA || `-----BEGIN CERTIFICATE-----
-MIIEUDCCArigAwIBAgIUGj6cpU37kLWfFObXtX+hM2oGZ0EwDQYJKoZIhvcNAQEM
-BQAwQDE+MDwGA1UEAww1MDk3Y2FhODktMTY3Mi00ZjI2LTljZWQtMDUwY2I0NTQ5
-MmEwIEdFTiAxIFByb2plY3QgQ0EwHhcNMjUwNjE0MTIwMzIxWhcNMzUwNjEyMTIw
-MzIxWjBAMT4wPAYDVQQDDDUwOTdjYWE4OS0xNjcyLTRmMjYtOWNlZC0wNTBjYjQ1
-NDkyYTAgR0VOIDEgUHJvamVjdCBDQTCCAaIwDQYJKoZIhvcNAQEBBQADggGPADCC
-AYoCggGBAMyvDxlc7M/2JwGDn9bzggZf2mG1+hSbYTNP4KVbUfDM2qHnC3pXXIQm
-FaQU3vkB2gwdO3LHtMc2d5fVABzdHiEQIzcOEf4SZPowL6wDORmgCiCJv6SKVyUp
-dWjpQribQmilWaSIf3REin/XKkivXMt3f2om7nTd6kQQSzYHNPYM0gd1j8cjpC0K
-ab5j65liP9aNZu/lhSQ2VWjMcJTURruqgULaSiAgmxn6s2JOrFA0biv3Wce1hGos
-7ps4s/02WxmJMPmQzPlJAayNaIoxCiQkqcrwFqDGCcNU6hdlZ9sfJclFr4zK+irA
-qa3fMWs2LYiPGI2enJ2rvUN22TX8uxzIrXsn0GZIvXlKL/07rffIOLpR+300WBmR
-ePprY1IYe2ywapMBMMIM0zVQAzA8h3dOIYp1Texzc04/uJoiNlD2LqenZT+vkATH
-dihRugDU3scZFrcvdjBdezC1XhagdH2b2/KdfZ921S8n9UD90skKG/vvkpHTTA2I
-TTPJjs3FzwIDAQABo0IwQDAdBgNVHQ4EFgQUSisbYwpu8ZITVfvtRbA57DidepMw
-EgYDVR0TAQH/BAgwBgEB/wIBADALBgNVHQ8EBAMCAQYwDQYJKoZIhvcNAQEMBQAD
-ggGBABNXCtZBbVc0oyIBgpcF6T2xWSxA3gHUucoOGlwY5ZcLbIMG0y0ucAoEWcro
-OMYOamQdx/lKukyqktrs8A+1JUkfrugBa9h9jy0fPXMZ62bOMsGWWa6Dpfv6bAT3
-U5hQ+bdcPlf+hIIA7C0NAszjcjj0oWzpN9w7jK7CHimBK9aK+8F30Wr9Tk8ICH0k
-u2IVyHoAPvNsig9n9WxqKZdCbQzwteYMqpNpJVnCD+WM0x7h2GEIv2OzUF52HMcV
-+8eov9xqxdRJNNZ4kEbZ4pZZNH3Udv6UTLEBh6GdXX29exqzVYc3R63AXUI9HMr1
-4znQcwzvy6ZVN/oMztx4leBrr/ibVYVG/0EFd7qU1Dx0zkuLiNwSW4ETgwQ+Cp5a
-6lIYFwazFhDwuOcuUsojDYtC4zyijw99a9tyQ9f+HeMjuS1cKZnaB5piALTKB6HS
-7bc4w2gOqq7UkKC6K3AvuMWh3Q9JV/ECs1hncBWQwGzvQroTjgS4mFhwxy7GJjIc
-R0/WKA==
------END CERTIFICATE-----`,
+    ca: fs.readFileSync(path.join(__dirname, 'certs', 'ca.crt')).toString(),
   },
 };
 

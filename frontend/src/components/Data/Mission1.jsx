@@ -1,44 +1,41 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Mission1 = ({ missionId, onComplete, userName }) => {
   const [allQuestions, setAllQuestions] = useState([]);
   const [questionsByTopic, setQuestionsByTopic] = useState({});
-  const [currentQuestionType, setCurrentQuestionType] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [answeredQuestions, setAnsweredQuestions] = useState({});
 
   const [spinning, setSpinning] = useState(false);
   const [spinResultTopic, setSpinResultTopic] = useState(null);
+
   const [result, setResult] = useState(null);
   const [userAnswer, setUserAnswer] = useState('');
   const [userMatchingAnswers, setUserMatchingAnswers] = useState({});
   const [showFeedback, setShowFeedback] = useState(false);
+
   const audioRef = useRef(null);
   const navigate = useNavigate();
 
-  // State untuk rotasi roda agar terlihat berputar dan berhenti di posisi yang diinginkan
   const [wheelVisualRotation, setWheelVisualRotation] = useState(0);
+  const [spinDurationCss, setSpinDurationCss] = useState('0s');
+  const [spinTimingFunction, setSpinTimingFunction] = useState('ease-out');
 
-  // State baru untuk kontrol transisi CSS
-  const [spinDurationCss, setSpinDurationCss] = useState('0s'); // Durasi transisi awal
-  const [spinTimingFunction, setSpinTimingFunction] = useState('ease-out'); // Fungsi easing awal
-
-  // Define the types that can appear on the spinwheel
-  const spinwheelOptionsMap = {
+  const spinwheelOptionsMap = useMemo(() => ({
     'pg': 'Pilihan Ganda',
     'benar-salah': 'Benar/Salah',
-    'audio-menjodohkan': 'Audio Menjodohkan',
+    'audio-isian': 'Soal Audio',
     'menjodohkan': 'Menjodohkan Teks',
     'uraian': 'Uraian Singkat',
     'gambar-isian': 'Gambar + Isian'
-  };
+  }), []);
 
   const getAvailableSpinOptions = useCallback(() => {
     return Object.keys(questionsByTopic).filter(type => {
       const remainingQuestionsOfType = questionsByTopic[type].filter(q => !answeredQuestions[q._id]);
       return remainingQuestionsOfType.length > 0;
-    }).map(type => spinwheelOptionsMap[type]); // Return display names for the wheel
+    }).map(type => spinwheelOptionsMap[type]);
   }, [questionsByTopic, answeredQuestions, spinwheelOptionsMap]);
 
   useEffect(() => {
@@ -84,9 +81,7 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
     setUserMatchingAnswers({});
     setShowFeedback(false);
     setCurrentQuestion(null);
-    setCurrentQuestionType(null);
     setSpinResultTopic(null);
-    // Reset transisi kembali ke default atau nol
     setSpinDurationCss('0s');
     setSpinTimingFunction('ease-out');
   }, []);
@@ -99,57 +94,49 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
     }
 
     setSpinning(true);
-    setSpinResultTopic(null); // Clear previous result text immediately
+    setSpinResultTopic(null);
 
-    // Atur durasi total perputaran untuk mencapai efek cepat ke sedang
-    const fastSpinDuration = 1000; // Durasi fase cepat (misal 1 detik)
-    const slowDownDuration = 2000; // Durasi fase melambat (misal 2 detik)
-    const totalSpinDuration = fastSpinDuration + slowDownDuration;
+    const fastSpinDuration = 1000;
+    const slowDownDuration = 2000;
 
-    // Tentukan segmen target
     const randomIndex = Math.floor(Math.random() * availableOptions.length);
     const selectedTopicText = availableOptions[randomIndex];
     const numSegments = availableOptions.length;
     const segmentAngle = 360 / numSegments;
 
-    // Hitung rotasi target untuk roda
     const selectedSegmentCenterAngle = (randomIndex * segmentAngle) + (segmentAngle / 2);
-    // Pastikan roda berhenti dengan segmen target di atas (di bawah pointer)
     let finalAngle = 360 - selectedSegmentCenterAngle;
-    finalAngle += (360 * 5); // Tambahkan 5 putaran penuh untuk efek visual
+    finalAngle += (360 * 5);
 
-    // Fase 1: Perputaran cepat
-    setSpinTimingFunction('linear'); // Kecepatan konstan
+    setSpinTimingFunction('linear');
     setSpinDurationCss(`${fastSpinDuration}ms`);
-    // Tambahkan putaran lebih banyak untuk fase cepat
-    setWheelVisualRotation(prev => prev + (360 * 3)); // Tambahkan 3 putaran penuh lagi secara instan untuk mempercepat kesan
+    setWheelVisualRotation(prev => prev + (360 * 3));
 
     setTimeout(() => {
-      // Fase 2: Melambat ke hasil akhir
-      setSpinTimingFunction('cubic-bezier(0.25, 0.1, 0.25, 1.0)'); // Easing yang melambat
+      setSpinTimingFunction('cubic-bezier(0.25, 0.1, 0.25, 1.0)');
       setSpinDurationCss(`${slowDownDuration}ms`);
-      setWheelVisualRotation(finalAngle); // Atur ke sudut akhir
+      setWheelVisualRotation(finalAngle);
 
       setTimeout(() => {
-        setSpinResultTopic(selectedTopicText); // Tampilkan hasil setelah durasi spin selesai
-        // Temukan tipe pertanyaan dari teks
+        setSpinResultTopic(selectedTopicText);
         const selectedTypeKey = Object.keys(spinwheelOptionsMap).find(key => spinwheelOptionsMap[key] === selectedTopicText);
-        setCurrentQuestionType(selectedTypeKey);
-
-        // Dapatkan pertanyaan yang belum dijawab dari tipe ini
-        const questionsOfType = questionsByTopic[selectedTypeKey] || [];
-        const unansweredQuestionsOfType = questionsOfType.filter(q => !answeredQuestions[q._id]);
-
-        if (unansweredQuestionsOfType.length > 0) {
-          const randomQuestionIndex = Math.floor(Math.random() * unansweredQuestionsOfType.length);
-          setCurrentQuestion(unansweredQuestionsOfType[randomQuestionIndex]);
+        if (selectedTypeKey) {
+          const questionsOfType = questionsByTopic[selectedTypeKey] || [];
+          const unansweredQuestionsOfType = questionsOfType.filter(q => !answeredQuestions[q._id]);
+          if (unansweredQuestionsOfType.length > 0) {
+            const randomQuestionIndex = Math.floor(Math.random() * unansweredQuestionsOfType.length);
+            setCurrentQuestion(unansweredQuestionsOfType[randomQuestionIndex]);
+          } else {
+            console.warn(`No unanswered questions for type: ${selectedTypeKey}. Resetting spinwheel.`);
+            resetQuestionState();
+          }
         } else {
-          console.warn(`No unanswered questions for type: ${selectedTypeKey}. Resetting spinwheel.`);
+          console.warn(`No matching type found for topic: ${selectedTopicText}. Resetting spinwheel.`);
           resetQuestionState();
         }
         setSpinning(false);
-      }, slowDownDuration); // Tunggu fase melambat selesai
-    }, fastSpinDuration); // Tunggu fase cepat selesai sebelum memulai fase melambat
+      }, slowDownDuration);
+    }, fastSpinDuration);
   };
 
   const handleSubmitAnswer = async (answer) => {
@@ -159,20 +146,32 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
     switch (currentQuestion.type) {
       case 'pg':
       case 'benar-salah':
-      case 'audio-menjodohkan':
         isCorrect = answer === currentQuestion.correctAnswer;
         break;
-      case 'uraian':
+      case 'audio-isian':
+        isCorrect = answer.trim().toLowerCase() === currentQuestion.correctAnswer.trim().toLowerCase();
+        break;
+      case 'uraian': {
         const correctKeywordsUraian = currentQuestion.correctAnswer.toLowerCase().split(',').map(k => k.trim());
         const userKeywordsUraian = answer.toLowerCase().split(/[\s,.;]+/).map(k => k.trim()).filter(k => k);
         isCorrect = correctKeywordsUraian.every(keyword => userKeywordsUraian.includes(keyword));
         break;
+      }
       case 'gambar-isian':
         isCorrect = answer.toLowerCase() === currentQuestion.correctAnswer.toLowerCase();
         break;
-      case 'menjodohkan':
-        isCorrect = JSON.stringify(answer) === JSON.stringify(currentQuestion.correctAnswer);
+      case 'menjodohkan': {
+        const sortedUserAnswers = Object.keys(answer).sort().reduce((obj, key) => {
+          obj[key] = answer[key];
+          return obj;
+        }, {});
+        const sortedCorrectAnswers = Object.keys(currentQuestion.correctAnswer).sort().reduce((obj, key) => {
+          obj[key] = currentQuestion.correctAnswer[key];
+          return obj;
+        }, {});
+        isCorrect = JSON.stringify(sortedUserAnswers) === JSON.stringify(sortedCorrectAnswers);
         break;
+      }
       default:
         isCorrect = false;
     }
@@ -208,13 +207,10 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
     setUserMatchingAnswers(prev => ({ ...prev, [item]: target }));
   };
 
-  // --- Render Functions ---
-
   const renderSpinwheel = () => {
     const availableOptions = getAvailableSpinOptions();
     const numSegments = availableOptions.length;
 
-    // If no segments available, means all questions answered or none loaded
     if (numSegments === 0 && allQuestions.length > 0) {
       return (
         <div className="text-center text-white text-2xl font-bold">
@@ -233,39 +229,29 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
     }
 
     const colors = [
-      'fill-blue-500',
-      'fill-pink-500',
-      'fill-green-500',
-      'fill-yellow-500',
-      'fill-purple-500',
-      'fill-cyan-500',
-      'fill-red-500',
-      'fill-orange-500',
-      'fill-teal-500',
-      'fill-indigo-500',
+      'fill-blue-500', 'fill-pink-500', 'fill-green-500', 'fill-yellow-500', 'fill-purple-500',
+      'fill-cyan-500', 'fill-red-500', 'fill-orange-500', 'fill-teal-500', 'fill-indigo-500',
     ];
 
-    const radius = 140; // SVG radius
-    const center = 150; // Center of the SVG (half of 300x300 viewBox)
+    const radius = 200;
+    const center = 250;
+    const viewBoxSize = 500;
 
     return (
-      <div className="relative flex flex-col items-center justify-center min-h-[500px] font-comic-sans">
-        <h3 className="text-3xl font-bold text-white mb-8 drop-shadow-lg">Putar Roda Keberuntungan!</h3>
+      <div className="relative flex flex-col items-center justify-center min-h-[600px] font-comic-sans">
+        <h3 className="text-4xl font-bold text-white mb-10 drop-shadow-lg">Putar Roda Keberuntungan!</h3>
 
-        {/* Pointer */}
-        <div className="absolute top-[calc(50%-170px)] left-1/2 transform -translate-x-1/2 z-30">
-          <svg className="w-12 h-12 text-red-600 drop-shadow-md" fill="currentColor" viewBox="0 0 24 24">
+        <div className="absolute top-[calc(50%-250px)] left-1/2 transform -translate-x-1/2 z-30">
+          <svg className="w-16 h-16 text-red-600 drop-shadow-md" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2L2 12h5v10h10v-10h5L12 2z"/>
           </svg>
         </div>
 
-        {/* Wheel SVG */}
-        <div className="relative w-[300px] h-[300px]">
+        <div className="relative w-[500px] h-[500px]">
           <svg
-            width="300"
-            height="300"
-            viewBox="0 0 300 300"
-            // Menggunakan gaya inline untuk transisi agar bisa dikontrol secara dinamis
+            width="500"
+            height="500"
+            viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
             style={{ 
               transform: `rotate(${wheelVisualRotation}deg)`,
               transition: `transform ${spinDurationCss} ${spinTimingFunction}`
@@ -282,7 +268,6 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
               const y2 = center + radius * Math.sin(endRad);
               const largeArcFlag = (360 / numSegments) > 180 ? 1 : 0;
 
-              // Text position (midpoint of arc, slightly inward)
               const textAngle = (startAngle + (360 / numSegments) / 2) * (Math.PI / 180);
               const textRadius = radius * 0.65;
               const textX = center + textRadius * Math.cos(textAngle);
@@ -294,35 +279,33 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
                     d={`M ${center},${center} L ${x1},${y1} A ${radius},${radius} 0 ${largeArcFlag} 1 ${x2},${y2} Z`}
                     className={`${colors[index % colors.length]} hover:brightness-110 transition-all duration-200`}
                     stroke="white"
-                    strokeWidth="1.5"
+                    strokeWidth="2"
                   />
                   <text
                     x={textX}
                     y={textY}
                     textAnchor="middle"
                     fill="white"
-                    fontSize={numSegments > 6 ? "10" : "12"}
+                    fontSize={numSegments > 6 ? "16" : "20"}
                     fontWeight="bold"
                     transform={`rotate(${startAngle + (360 / numSegments) / 2}, ${textX}, ${textY})`}
-                    className="drop-shadow-sm"
+                    className="drop-shadow-lg"
                   >
                     {option}
                   </text>
                 </g>
               );
             })}
-            {/* Decorative center circle */}
-            <circle cx="150" cy="150" r="20" fill="white" stroke="gray" strokeWidth="2" />
+            <circle cx="250" cy="250" r="30" fill="white" stroke="gray" strokeWidth="2" />
           </svg>
 
-          {/* Center Button */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform duration-200 z-20">
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform duration-200 z-20">
             <button
               onClick={handleSpin}
               disabled={spinning}
               className="w-full h-full flex items-center justify-center text-gray-800 disabled:opacity-50"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-10 h-10">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-12 h-12">
                 <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643L18.75 12l-11.47 7.99C6.029 20.65 4.5 19.74 4.5 18.347V5.653Z" clipRule="evenodd" />
               </svg>
             </button>
@@ -330,9 +313,9 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
         </div>
 
         {spinResultTopic && !spinning && (
-          <p className="mt-8 text-xl font-bold text-yellow-300 animate-pulse">
-            Terpilih: {spinResultTopic}!
-          </p>
+          <div className="mt-10 text-2xl font-bold text-yellow-300 animate-pulse">
+            Terpilih: {spinResultTopic}! <button onClick={() => setSpinResultTopic(null)} className="ml-2 text-white underline">Lanjutkan</button>
+          </div>
         )}
       </div>
     );
@@ -386,24 +369,26 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
                   ))}
                 </div>
               );
-            case 'audio-menjodohkan':
+            case 'audio-isian':
               return (
                 <div className="text-center">
-                  {currentQuestion.audioUrl && <audio ref={audioRef} src={currentQuestion.audioUrl} controls className="mb-4 mx-auto" />}
-                  <select
+                  <p className="text-white mb-4">Dengarkan audio berikut!</p>
+                  {currentQuestion.audioUrl && <audio ref={audioRef} src={currentQuestion.audioUrl} controls className="mb-4 mx-auto w-full max-w-sm" />}
+                  <p className="text-white mb-4 whitespace-pre-line">
+                    Jenis data yang tidak berbentuk angka tetapi berupa kategori seperti warna favorit atau hobi disebut data...<br/>
+                    Rekam suaramu untuk menjawab jawabannya berupa menuliskan angka.
+                  </p>
+                  <input
+                    type="text"
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
-                    className="p-2 rounded-lg bg-gray-700 text-white border border-gray-600 w-full max-w-xs"
+                    placeholder="Tuliskan jawaban angkamu di sini..."
+                    className="p-2 rounded-lg bg-gray-700 text-white border border-gray-600 w-full max-w-xs focus:outline-none focus:ring-2 focus:ring-green-500"
                     disabled={showFeedback}
-                  >
-                    <option value="">Pilih pasangan</option>
-                    {currentQuestion.options.map((option, idx) => (
-                      <option key={idx} value={option}>{option}</option>
-                    ))}
-                  </select>
+                  />
                   <button
                     onClick={() => handleSubmitAnswer(userAnswer)}
-                    disabled={!userAnswer || showFeedback}
+                    disabled={!userAnswer.trim() || showFeedback}
                     className="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
                   >
                     Submit
@@ -413,11 +398,11 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
             case 'menjodohkan':
               return (
                 <div className="text-center">
-                  <p className="text-white mb-4">Cocokkan pernyataan dengan klasifikasi data yang tepat:</p>
+                  <p className="text-white mb-4">Klasifikasikan data-data yang kita peroleh dari pernyataan dibawah ini apakah masuk ke dalam data kategorik atau numerik?</p>
                   <div className="flex flex-col gap-4 max-w-lg mx-auto">
                     {currentQuestion.options.map((item, idx) => (
                       <div key={idx} className="flex flex-col sm:flex-row items-center justify-between p-3 bg-gray-700 rounded-lg text-white">
-                        <span className="mb-2 sm:mb-0 text-left flex-1">{item}</span>
+                        <span className="mb-2 sm:mb-0 text-left flex-1 whitespace-pre-line">{item}</span>
                         <select
                           value={userMatchingAnswers[item] || ''}
                           onChange={(e) => handleMatchingChange(item, e.target.value)}

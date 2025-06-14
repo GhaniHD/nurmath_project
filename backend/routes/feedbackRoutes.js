@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
+const FeedbackModel = require('../models/Feedback'); // Import model Feedback
 
 // Module exports a function that accepts dbClient
 module.exports = (dbClient) => {
+  // Buat instance dari FeedbackModel dengan dbClient
+  const feedbackModel = new FeedbackModel(dbClient);
+
   router.post('/', [
     body('userName').trim().notEmpty().withMessage('User name is required'),
     body('feedback').trim().notEmpty().withMessage('Feedback is required')
@@ -15,18 +19,11 @@ module.exports = (dbClient) => {
       }
 
       const { userName, feedback } = req.body;
-      const { rows } = await dbClient.query(
-        `
-        INSERT INTO feedback (user_id, feedback_text, created_at)
-        VALUES ($1, $2, CURRENT_TIMESTAMP)
-        RETURNING *
-        `,
-        [userName, feedback]
-      );
+      const newFeedback = await feedbackModel.createFeedback(userName, feedback); // Panggil method dari model
 
-      res.status(200).json({ message: 'Feedback submitted', feedback: rows[0] });
+      res.status(200).json({ message: 'Feedback submitted successfully', feedback: newFeedback });
     } catch (err) {
-      console.error('Error submitting feedback:', err.stack);
+      console.error('Error submitting feedback in route:', err.message); // Log error dari model
       res.status(500).json({ error: 'Internal server error' });
     }
   });

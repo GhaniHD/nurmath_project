@@ -6,14 +6,14 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
   const [questionsByTopic, setQuestionsByTopic] = useState({});
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [answeredQuestions, setAnsweredQuestions] = useState({});
-
   const [spinning, setSpinning] = useState(false);
   const [spinResultTopic, setSpinResultTopic] = useState(null);
-
   const [result, setResult] = useState(null);
   const [userAnswer, setUserAnswer] = useState('');
   const [userMatchingAnswers, setUserMatchingAnswers] = useState({});
   const [showFeedback, setShowFeedback] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const audioRef = useRef(null);
   const navigate = useNavigate();
@@ -21,6 +21,8 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
   const [wheelVisualRotation, setWheelVisualRotation] = useState(0);
   const [spinDurationCss, setSpinDurationCss] = useState('0s');
   const [spinTimingFunction, setSpinTimingFunction] = useState('ease-out');
+
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   const spinwheelOptionsMap = useMemo(() => ({
     'pg': 'Pilihan Ganda',
@@ -38,10 +40,13 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
     }).map(type => spinwheelOptionsMap[type]);
   }, [questionsByTopic, answeredQuestions, spinwheelOptionsMap]);
 
+  const shuffleArray = (array) => array.sort(() => Math.random() - 0.5);
+
   useEffect(() => {
     const fetchQuestions = async () => {
+      setIsLoading(true);
       try {
-        const response = await fetch(`http://localhost:3001/api/questions/${missionId}`);
+        const response = await fetch(`${API_URL}/api/questions/${missionId}`);
         const data = await response.json();
         if (response.ok) {
           setAllQuestions(data);
@@ -52,16 +57,21 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
             }
             organized[q.type].push(q);
           });
+          Object.keys(organized).forEach(type => {
+            organized[type] = shuffleArray(organized[type]);
+          });
           setQuestionsByTopic(organized);
         } else {
-          console.error('Fetch error:', data.error);
+          setError(data.error || 'Gagal memuat soal');
         }
       } catch (err) {
-        console.error('Error fetching questions:', err);
+        setError('Koneksi gagal. Silakan coba lagi.');
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchQuestions();
-  }, [missionId]);
+  }, [missionId, API_URL]);
 
   useEffect(() => {
     if (allQuestions.length > 0) {
@@ -75,6 +85,12 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
     }
   }, [answeredQuestions, allQuestions.length, navigate]);
 
+  useEffect(() => {
+    if (currentQuestion?.type === 'audio-isian' && audioRef.current) {
+      audioRef.current.play().catch(err => console.warn('Pemutaran audio gagal:', err));
+    }
+  }, [currentQuestion]);
+
   const resetQuestionState = useCallback(() => {
     setResult(null);
     setUserAnswer('');
@@ -84,6 +100,7 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
     setSpinResultTopic(null);
     setSpinDurationCss('0s');
     setSpinTimingFunction('ease-out');
+    setWheelVisualRotation(0);
   }, []);
 
   const handleSpin = () => {
@@ -110,7 +127,7 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
 
     setSpinTimingFunction('linear');
     setSpinDurationCss(`${fastSpinDuration}ms`);
-    setWheelVisualRotation(prev => prev + (360 * 3));
+    setWheelVisualRotation(360 * 3);
 
     setTimeout(() => {
       setSpinTimingFunction('cubic-bezier(0.25, 0.1, 0.25, 1.0)');
@@ -127,11 +144,11 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
             const randomQuestionIndex = Math.floor(Math.random() * unansweredQuestionsOfType.length);
             setCurrentQuestion(unansweredQuestionsOfType[randomQuestionIndex]);
           } else {
-            console.warn(`No unanswered questions for type: ${selectedTypeKey}. Resetting spinwheel.`);
+            alert(`Tidak ada soal yang belum dijawab untuk tipe ${selectedTopicText}. Silakan putar lagi.`);
             resetQuestionState();
           }
         } else {
-          console.warn(`No matching type found for topic: ${selectedTopicText}. Resetting spinwheel.`);
+          alert(`Tipe soal ${selectedTopicText} tidak ditemukan. Silakan putar lagi.`);
           resetQuestionState();
         }
         setSpinning(false);
@@ -152,9 +169,26 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
         isCorrect = answer.trim().toLowerCase() === currentQuestion.correctAnswer.trim().toLowerCase();
         break;
       case 'uraian': {
-        const correctKeywordsUraian = currentQuestion.correctAnswer.toLowerCase().split(',').map(k => k.trim());
-        const userKeywordsUraian = answer.toLowerCase().split(/[\s,.;]+/).map(k => k.trim()).filter(k => k);
-        isCorrect = correctKeywordsUraian.every(keyword => userKeywordsUraian.includes(keyword));
+        const correctKeywords = currentQuestion.correctAnswer.toLowerCase().split(',').map(k => k.trim());
+        const userKeywords = answer.toLowerCase().split(/[\s,.;]+/).map(k => k.trim()).filter(k => k);
+        const synonymMap = {
+          wawancara: ['interview'],
+          observasi: ['pengamatan', 'observation'],
+          kuesioner: ['angket', 'questionnaire'],
+          eksperimen: ['percobaan', 'experiment'],
+          'studi pustaka': ['literatur', 'kajian pustaka', 'library research']
+        };
+        let matchedCount = 0;
+        correctKeywords.forEach(correct => {
+          const synonyms = synonymMap[correct] || [];
+          if (
+            userKeywords.includes(correct) ||
+            synonyms.some(synonym => userKeywords.includes(synonym))
+          ) {
+            matchedCount++;
+          }
+        });
+        isCorrect = matchedCount >= Math.ceil(correctKeywords.length * 0.8);
         break;
       }
       case 'gambar-isian':
@@ -186,13 +220,13 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
 
     if (isCorrect && userName) {
       try {
-        await fetch('http://localhost:3001/api/leaderboard', {
+        await fetch(`${API_URL}/api/leaderboard`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userName, score, missionId }),
         });
       } catch (err) {
-        console.error('Error submitting to leaderboard:', err);
+        console.error('Gagal mengirim ke leaderboard:', err);
       }
     }
 
@@ -213,11 +247,12 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
 
     if (numSegments === 0 && allQuestions.length > 0) {
       return (
-        <div className="text-center text-white text-2xl font-bold">
+        <div className="text-center text-white text-2xl font-bold font-comic-sans">
           Semua misi telah diselesaikan!
           <button
             onClick={() => navigate('/leaderboard')}
             className="mt-4 px-6 py-3 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-all duration-300"
+            aria-label="Lihat leaderboard"
           >
             Lihat Leaderboard
           </button>
@@ -256,6 +291,7 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
               transform: `rotate(${wheelVisualRotation}deg)`,
               transition: `transform ${spinDurationCss} ${spinTimingFunction}`
             }}
+            aria-label="Roda keberuntungan"
           >
             {availableOptions.map((option, index) => {
               const startAngle = index * (360 / numSegments);
@@ -304,6 +340,8 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
               onClick={handleSpin}
               disabled={spinning}
               className="w-full h-full flex items-center justify-center text-gray-800 disabled:opacity-50"
+              aria-label="Putar roda"
+              aria-disabled={spinning}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-12 h-12">
                 <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643L18.75 12l-11.47 7.99C6.029 20.65 4.5 19.74 4.5 18.347V5.653Z" clipRule="evenodd" />
@@ -328,7 +366,7 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
       <div className="bg-gray-800/70 backdrop-blur-sm rounded-2xl p-8 border border-white/10 w-full max-w-2xl mx-auto shadow-xl">
         <h3 className="text-2xl font-bold text-white mb-6 text-center">{spinwheelOptionsMap[currentQuestion.type]}</h3>
         <p className="text-xl font-semibold text-white mb-4 text-center whitespace-pre-line">
-          {currentQuestion.questionText}
+          {currentQuestion.question_text}
         </p>
 
         {(() => {
@@ -345,6 +383,7 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
                         disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300
                       `}
                       disabled={showFeedback}
+                      aria-label={`Pilih jawaban ${option}`}
                     >
                       {option}
                     </button>
@@ -363,6 +402,7 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
                         disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300
                       `}
                       disabled={showFeedback}
+                      aria-label={`Pilih jawaban ${option}`}
                     >
                       {option}
                     </button>
@@ -376,20 +416,22 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
                   {currentQuestion.audioUrl && <audio ref={audioRef} src={currentQuestion.audioUrl} controls className="mb-4 mx-auto w-full max-w-sm" />}
                   <p className="text-white mb-4 whitespace-pre-line">
                     Jenis data yang tidak berbentuk angka tetapi berupa kategori seperti warna favorit atau hobi disebut data...<br/>
-                    Rekam suaramu untuk menjawab jawabannya berupa menuliskan angka.
+                    Tulis jawabanmu di sini.
                   </p>
                   <input
                     type="text"
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
-                    placeholder="Tuliskan jawaban angkamu di sini..."
+                    placeholder="Tuliskan jawabanmu..."
                     className="p-2 rounded-lg bg-gray-700 text-white border border-gray-600 w-full max-w-xs focus:outline-none focus:ring-2 focus:ring-green-500"
                     disabled={showFeedback}
+                    aria-label="Masukkan jawaban audio"
                   />
                   <button
                     onClick={() => handleSubmitAnswer(userAnswer)}
                     disabled={!userAnswer.trim() || showFeedback}
                     className="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                    aria-label="Kirim jawaban"
                   >
                     Submit
                   </button>
@@ -408,6 +450,7 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
                           onChange={(e) => handleMatchingChange(item, e.target.value)}
                           className="p-2 rounded-lg bg-gray-600 text-white border border-gray-500 w-full sm:w-auto"
                           disabled={showFeedback}
+                          aria-label={`Pilih kategori untuk ${item}`}
                         >
                           <option value="">Pilih Kategori</option>
                           {currentQuestion.targets.map((target, targetIdx) => (
@@ -421,6 +464,7 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
                     onClick={() => handleSubmitAnswer(userMatchingAnswers)}
                     disabled={Object.keys(userMatchingAnswers).length !== currentQuestion.options.length || showFeedback}
                     className="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                    aria-label="Kirim jawaban menjodohkan"
                   >
                     Submit
                   </button>
@@ -436,11 +480,13 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
                     rows="4"
                     className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500"
                     disabled={showFeedback}
+                    aria-label="Masukkan jawaban uraian"
                   />
                   <button
                     onClick={() => handleSubmitAnswer(userAnswer)}
                     disabled={!userAnswer.trim() || showFeedback}
                     className="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                    aria-label="Kirim jawaban"
                   >
                     Submit
                   </button>
@@ -459,11 +505,13 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
                     placeholder="Masukkan jawaban singkat..."
                     className="p-2 rounded-lg bg-gray-700 text-white border border-gray-600 w-full max-w-xs focus:outline-none focus:ring-2 focus:ring-green-500"
                     disabled={showFeedback}
+                    aria-label="Masukkan jawaban gambar"
                   />
                   <button
                     onClick={() => handleSubmitAnswer(userAnswer)}
                     disabled={!userAnswer.trim() || showFeedback}
                     className="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                    aria-label="Kirim jawaban"
                   >
                     Submit
                   </button>
@@ -486,7 +534,9 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-900 to-emerald-900 p-6 flex items-center justify-center font-comic-sans">
       <div className="relative z-10 w-full">
-        {currentQuestion ? renderQuestionUI() : renderSpinwheel()}
+        {isLoading && <div className="text-white text-center text-2xl">Memuat soal...</div>}
+        {error && <div className="text-red-400 text-center text-2xl">{error}</div>}
+        {!isLoading && !error && (currentQuestion ? renderQuestionUI() : renderSpinwheel())}
       </div>
     </div>
   );

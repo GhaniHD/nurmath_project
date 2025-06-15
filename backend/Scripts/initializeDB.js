@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
 
-// Pastikan .env dimuat dari root proyek
+// Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const dbConfig = {
@@ -14,8 +14,8 @@ const dbConfig = {
   database: process.env.DB_NAME,
   ssl: {
     rejectUnauthorized: true,
-    ca: fs.readFileSync(path.join(__dirname, '../../backend/certs', 'ca.crt')).toString(), // Perhatikan path ke certs
-  },
+    ca: fs.readFileSync(path.join(__dirname, '../certs/ca.crt')).toString()
+  }
 };
 
 const client = new Client(dbConfig);
@@ -23,7 +23,7 @@ const client = new Client(dbConfig);
 const initializeTables = async () => {
   try {
     await client.connect();
-    console.log('Connected to PostgreSQL for table initialization.');
+    console.log('✅ Connected to Aiven PostgreSQL');
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS questions (
@@ -55,13 +55,14 @@ const initializeTables = async () => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
-    console.log('Tables created or already exist.');
+
+    console.log('✅ Tables initialized successfully');
   } catch (err) {
-    console.error('Error creating tables:', err.stack);
+    console.error('❌ Initialization error:', err.stack);
     process.exit(1);
   } finally {
     await client.end();
-    console.log('PostgreSQL connection closed after initialization.');
+    console.log('🔌 Connection closed');
   }
 };
 

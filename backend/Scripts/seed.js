@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
 
-// Pastikan .env dimuat dari root proyek
+// Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 // Import data misi
@@ -31,8 +31,8 @@ const dbConfig = {
   database: process.env.DB_NAME,
   ssl: {
     rejectUnauthorized: true,
-    ca: fs.readFileSync(path.join(__dirname, '../backend/certs', 'ca.crt')).toString(), // Perhatikan path ke certs
-  },
+    ca: fs.readFileSync(path.join(__dirname, '../certs/ca.crt')).toString()
+  }
 };
 
 const client = new Client(dbConfig);
@@ -40,47 +40,44 @@ const client = new Client(dbConfig);
 const seedData = async () => {
   try {
     await client.connect();
-    console.log('Connected to PostgreSQL for seeding.');
+    console.log('🚀 Connected to Aiven PostgreSQL for seeding');
 
-    const missions = ['misi-1', 'misi-2', 'misi-3'];
-    for (const missionId of missions) {
-      const { rows } = await client.query('SELECT COUNT(*) as count FROM questions WHERE mission_id = $1', [missionId]);
-      const count = parseInt(rows[0].count);
+    // Clear existing data
+    await client.query('TRUNCATE TABLE questions RESTART IDENTITY CASCADE');
+    console.log('🧹 Cleared existing questions');
 
-      if (count === 0) {
-        const questions = allMissionsData[missionId].map(q => ({ ...q, mission_id: missionId }));
-
-        for (const q of questions) {
-          await client.query(
-            `
-              INSERT INTO questions (type, question_text, options, correct_answer, score, mission_id, audio_url, image_url, targets)
-              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-            `,
-            [
-              q.type,
-              q.question_text,
-              JSON.stringify(q.options || q.statements || null),
-              JSON.stringify(q.correct_answer),
-              q.score,
-              q.mission_id,
-              q.audio_url || null,
-              q.image_url || null,
-              JSON.stringify(q.targets || null),
-            ]
-          );
-        }
-        console.log(`Seeded ${questions.length} questions for ${missionId}`);
-      } else {
-        console.log(`Found ${count} questions for ${missionId}, skipping seeding.`);
+    // Insert new data
+    for (const [missionId, questions] of Object.entries(allMissionsData)) {
+      for (const q of questions) {
+        await client.query(
+          `INSERT INTO questions (
+            type, question_text, options, 
+            correct_answer, score, mission_id,
+            audio_url, image_url, targets
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+          [
+            q.type,
+            q.question_text,
+            JSON.stringify(q.options || null),
+            JSON.stringify(q.correct_answer),
+            q.score,
+            missionId,
+            q.audio_url || null,
+            q.image_url || null,
+            JSON.stringify(q.targets || null)
+          ]
+        );
       }
+      console.log(`✅ Inserted ${questions.length} questions for ${missionId}`);
     }
-    console.log('All seeding processes completed.');
+
+    console.log('🎉 Database seeding completed!');
   } catch (err) {
-    console.error('Error during seeding:', err.stack);
+    console.error('❌ Seeding error:', err.stack);
     process.exit(1);
   } finally {
     await client.end();
-    console.log('PostgreSQL connection closed.');
+    console.log('🔌 Connection closed');
   }
 };
 

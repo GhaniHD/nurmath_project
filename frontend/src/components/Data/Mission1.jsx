@@ -555,10 +555,6 @@ const Mission1 = ({ missionId, onComplete }) => {
             case 'audio-isian':
               return (
                 <div className="text-center">
-                  <p className="text-white mb-4 whitespace-pre-line">
-                    Jenis data yang tidak berbentuk angka tetapi berupa kategori seperti warna favorit atau hobi disebut data...<br/>
-                    Tulis jawabanmu di sini.
-                  </p>
                   <input
                     type="text"
                     value={userAnswer}
@@ -581,7 +577,7 @@ const Mission1 = ({ missionId, onComplete }) => {
             case 'menjodohkan':
               return (
                 <div className="text-center">
-                  <p className="text-white mb-4">Klasifikasikan data-data yang kita peroleh dari pernyataan dibawah ini apakah masuk ke dalam data kategorik atau numerik?</p>
+                
                   <div className="flex flex-col gap-4 max-w-lg mx-auto">
                     {currentQuestion.options.map((item, idx) => (
                       <div key={idx} className="flex flex-col sm:flex-row items-center justify-between p-3 bg-gray-700 rounded-lg text-white">

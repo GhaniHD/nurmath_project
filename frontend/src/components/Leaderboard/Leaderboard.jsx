@@ -7,13 +7,7 @@ const Leaderboard = ({ userName = 'Player123' }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Load leaderboard dari localStorage saat komponen dimuat pertama kali
   useEffect(() => {
-    const savedLeaderboard = localStorage.getItem('leaderboard');
-    if (savedLeaderboard) {
-      setLeaderboard(JSON.parse(savedLeaderboard));
-    }
-
     const fetchLeaderboard = async () => {
       try {
         setLoading(true);
@@ -24,20 +18,16 @@ const Leaderboard = ({ userName = 'Player123' }) => {
         }
         const data = await response.json();
         setLeaderboard(data);
-        localStorage.setItem('leaderboard', JSON.stringify(data)); // Simpan ke localStorage
-      } catch (error) {
-        console.error('Error fetching leaderboard:', error);
+      } catch (err) {
+        console.error('Error fetching leaderboard:', err);
         setError('Gagal memuat leaderboard. Coba lagi nanti.');
-        // Gunakan data dari localStorage jika server gagal
-        const savedData = localStorage.getItem('leaderboard');
-        if (savedData) setLeaderboard(JSON.parse(savedData));
       } finally {
         setLoading(false);
       }
     };
 
     fetchLeaderboard();
-  }, []); // Kosongkan dependency array agar hanya dipanggil sekali saat mount
+  }, []);
 
   const getRankIcon = (rank) => {
     switch (rank) {
@@ -61,7 +51,6 @@ const Leaderboard = ({ userName = 'Player123' }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-yellow-900 to-slate-900 p-6">
-      {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-400/10 rounded-full blur-xl animate-pulse"></div>
         <div className="absolute top-40 right-20 w-24 h-24 bg-orange-400/10 rounded-full blur-xl animate-pulse delay-1000"></div>
@@ -69,7 +58,6 @@ const Leaderboard = ({ userName = 'Player123' }) => {
       </div>
 
       <div className="relative z-10 max-w-4xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-5xl font-bold bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent mb-4 animate-pulse">
             🏆 HALL OF CHAMPIONS 🏆
@@ -85,7 +73,6 @@ const Leaderboard = ({ userName = 'Player123' }) => {
           </div>
         </div>
 
-        {/* Error State */}
         {error && (
           <div className="text-center py-12 text-red-400">
             <p className="text-xl font-bold">{error}</p>
@@ -98,7 +85,6 @@ const Leaderboard = ({ userName = 'Player123' }) => {
           </div>
         )}
 
-        {/* Loading State */}
         {loading && !error && (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-yellow-400 border-t-transparent"></div>
@@ -106,17 +92,16 @@ const Leaderboard = ({ userName = 'Player123' }) => {
           </div>
         )}
 
-        {/* Leaderboard List */}
         {!loading && !error && (
           <div className="max-w-3xl mx-auto">
             {leaderboard.length > 0 ? (
               <div className="space-y-4">
                 {leaderboard.map((entry, index) => {
                   const rank = index + 1;
-                  const isPlayer = isCurrentPlayer(entry.username); // Sesuaikan dengan 'username' dari server
+                  const isPlayer = isCurrentPlayer(entry.username);
                   return (
                     <div
-                      key={entry.id || entry.user_id} // Sesuaikan dengan field ID dari server
+                      key={entry.id || entry.user_id}
                       className={`group relative transform transition-all duration-500 hover:scale-105 ${isPlayer ? 'ring-4 ring-cyan-400 ring-opacity-50 animate-pulse' : ''}`}
                     >
                       <div className={`relative bg-gradient-to-r ${getRankClass(rank)} rounded-2xl p-6 shadow-2xl hover:shadow-3xl border-2 overflow-hidden ${isPlayer ? 'border-cyan-400' : ''}`}>
@@ -173,7 +158,6 @@ const Leaderboard = ({ userName = 'Player123' }) => {
           </div>
         )}
 
-        {/* Stats Section */}
         {!loading && !error && leaderboard.length > 0 && (
           <div className="mt-12 max-w-3xl mx-auto">
             <div className="bg-gradient-to-r from-gray-800/30 to-gray-900/30 backdrop-blur-sm rounded-2xl p-6 border border-white/10">

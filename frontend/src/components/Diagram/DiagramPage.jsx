@@ -12,16 +12,16 @@ const DiagramPage = () => {
 
   const missions = [
     {
-      id: 'misi-1',
+      id: 'misi-4',
       title: 'Misi 1: Grafik Dasar',
       description: 'Coming Soon',
       icon: '📊',
-      available: false,
+      available: true,
       color: 'from-gray-500 to-gray-600',
       shadowColor: 'shadow-gray-500/30'
     },
     {
-      id: 'misi-2',
+      id: 'misi-5',
       title: 'Misi 2: Chart Master',
       description: 'Coming Soon',
       icon: '📈',
@@ -30,7 +30,7 @@ const DiagramPage = () => {
       shadowColor: 'shadow-gray-500/30'
     },
     {
-      id: 'misi-3',
+      id: 'misi-6',
       title: 'Misi 3: Data Visualizer',
       description: 'Coming Soon',
       icon: '📉',

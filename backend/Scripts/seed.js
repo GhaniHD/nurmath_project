@@ -10,11 +10,17 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const mission1Questions = require('./data/mission1_questions');
 const mission2Questions = require('./data/mission2_questions');
 const mission3Questions = require('./data/mission3_questions');
+const mission4Questions = require('./data/mission4_questions'); 
+const mission5Questions = require('./data/mission5_questions'); 
+const mission6Questions = require('./data/mission6_questions'); 
 
 const allMissionsData = {
   'misi-1': mission1Questions,
   'misi-2': mission2Questions,
   'misi-3': mission3Questions,
+  'misi-4': mission4Questions,
+  'misi-5': mission5Questions, 
+  'misi-6': mission6Questions, 
 };
 
 const dbConfig = {

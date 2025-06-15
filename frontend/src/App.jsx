@@ -8,6 +8,7 @@ import Mission1 from './components/Data/Mission1';
 import Mission2 from './components/Data/Mission2';
 import Mission3 from './components/Data/Mission3';
 import DiagramPage from './components/Diagram/DiagramPage';
+import DiagramCrosswordGame from './components/Diagram/Mission1';
 import AdminPage from './components/Admin/AdminPage';
 import NameModal from './components/NameModal';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -150,6 +151,7 @@ const App = () => {
             <Route path="/data/misi-1" element={<Mission1 missionId="misi-1" onComplete={handleComplete} />} />
             <Route path="/data/misi-2" element={<Mission2 missionId="misi-2" onComplete={handleComplete} />} />
             <Route path="/data/misi-3" element={<Mission3 missionId="misi-3" onComplete={handleComplete} />} />
+            <Route path="/diagram/misi-1" element={<DiagramCrosswordGame missionId="misi-4" onComplete={handleComplete} />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/admin/questions" element={<AdminPage />} />
             <Route path="/admin/leaderboard" element={<AdminPage />} />

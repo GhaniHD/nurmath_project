@@ -1,18 +1,51 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const DataPage = ({ totalScore, userName }) => {
+const DataPage = ({ totalScore: initialTotalScore = 0, userName }) => {
   const [hoveredMission, setHoveredMission] = useState(null);
+  const [currentTotalScore, setCurrentTotalScore] = useState(0);
+
+  // Fetch atau sinkronisasi totalScore dari server
+  useEffect(() => {
+    const fetchTotalScore = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/leaderboard');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        const userScore = data
+          .filter(entry => entry.username === userName)
+          .reduce((sum, entry) => sum + (Number(entry.total_score) || 0), 0) || 0;
+        setCurrentTotalScore(userScore);
+        console.log('Fetched totalScore for', userName, ':', userScore);
+      } catch (error) {
+        console.error('Error fetching total score:', error);
+        const numericScore = Number(initialTotalScore) || 0;
+        if (isNaN(numericScore)) {
+          console.warn('initialTotalScore tidak valid, diatur ke 0:', initialTotalScore);
+        }
+        setCurrentTotalScore(numericScore);
+      }
+    };
+
+    fetchTotalScore();
+  }, [userName]);
 
   const getScoreLevel = (score) => {
-    if (score >= 100) return { level: "Master", color: "text-purple-400", bg: "from-purple-600 to-pink-600" };
-    if (score >= 75) return { level: "Expert", color: "text-blue-400", bg: "from-blue-600 to-cyan-600" };
-    if (score >= 50) return { level: "Advanced", color: "text-green-400", bg: "from-green-600 to-emerald-600" };
-    if (score >= 25) return { level: "Intermediate", color: "text-yellow-400", bg: "from-yellow-600 to-orange-600" };
-    return { level: "Beginner", color: "text-gray-400", bg: "from-gray-600 to-slate-600" };
+    const numericScore = Number(score) || 0;
+    if (numericScore >= 100) return { level: "Master", color: "text-purple-400", bg: "from-purple-600 to-pink-600", icon: "👑" };
+    if (numericScore >= 75) return { level: "Expert", color: "text-blue-400", bg: "from-blue-600 to-cyan-600", icon: "🎖️" };
+    if (numericScore >= 50) return { level: "Advanced", color: "text-green-400", bg: "from-green-600 to-emerald-600", icon: "🌟" };
+    if (numericScore >= 25) return { level: "Intermediate", color: "text-yellow-400", bg: "from-yellow-600 to-orange-600", icon: "🏅" };
+    return { level: "Beginner", color: "text-gray-400", bg: "from-gray-600 to-slate-600", icon: "🎯" };
   };
 
-  const scoreInfo = getScoreLevel(totalScore);
+  const scoreInfo = getScoreLevel(currentTotalScore);
+
+  const formatScore = (score) => {
+    return String(score).replace(/^0+/, ''); // Menghapus nol di depan
+  };
 
   const missions = [
     {
@@ -21,6 +54,7 @@ const DataPage = ({ totalScore, userName }) => {
       description: 'Jelajahi data kerak bumi dengan spinwheel',
       icon: '🌍',
       available: true,
+      completed: false,
       color: 'from-green-500 to-emerald-600',
       shadowColor: 'shadow-green-500/50',
       path: '/data/misi-1'
@@ -31,6 +65,7 @@ const DataPage = ({ totalScore, userName }) => {
       description: 'Pilih kotak misteri untuk data lautan',
       icon: '🌊',
       available: true,
+      completed: false,
       color: 'from-blue-500 to-cyan-600',
       shadowColor: 'shadow-blue-500/50',
       path: '/data/misi-2'
@@ -41,11 +76,17 @@ const DataPage = ({ totalScore, userName }) => {
       description: 'Uji pengetahuan data dengan kuis',
       icon: '☁️',
       available: true,
+      completed: false,
       color: 'from-purple-500 to-indigo-600',
       shadowColor: 'shadow-purple-500/50',
       path: '/data/misi-3'
     }
   ];
+
+  // Hitung statistik misi
+  const availableMissions = missions.filter(m => m.available).length;
+  const lockedMissions = missions.filter(m => !m.available).length;
+  const completedMissions = missions.filter(m => m.completed).length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-6 font-comic-sans">
@@ -76,7 +117,7 @@ const DataPage = ({ totalScore, userName }) => {
                 </div>
                 <div className="text-center">
                   <p className="text-gray-400 text-sm">Total XP</p>
-                  <p className="text-yellow-400 font-bold text-xl animate-bounce">⭐ {totalScore}</p>
+                  <p className="text-yellow-400 font-bold text-xl animate-bounce">⭐ {formatScore(currentTotalScore)}</p>
                 </div>
               </div>
             </div>
@@ -120,9 +161,15 @@ const DataPage = ({ totalScore, userName }) => {
                       </p>
                       <div className="flex items-center gap-2">
                         {mission.available ? (
-                          <div className="px-4 py-2 bg-white/20 rounded-full text-white font-semibold text-sm group-hover:bg-white/30 transition-all duration-300">
-                            MULAI MISI →
-                          </div>
+                          mission.completed ? (
+                            <div className="px-4 py-2 bg-green-600/50 rounded-full text-white font-semibold text-sm">
+                              SELESAI ✓
+                            </div>
+                          ) : (
+                            <div className="px-4 py-2 bg-white/20 rounded-full text-white font-semibold text-sm group-hover:bg-white/30 transition-all duration-300">
+                              MULAI MISI →
+                            </div>
+                          )
                         ) : (
                           <div className="px-4 py-2 bg-gray-600/50 rounded-full text-gray-300 font-semibold text-sm">
                             🔒 TERKUNCI
@@ -146,17 +193,17 @@ const DataPage = ({ totalScore, userName }) => {
             <div className="flex justify-center gap-8">
               <div className="text-center">
                 <div className="text-3xl mb-2">✅</div>
-                <div className="text-green-400 font-bold">3</div>
+                <div className="text-green-400 font-bold">{availableMissions}</div>
                 <div className="text-gray-400 text-sm">Tersedia</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl mb-2">🔒</div>
-                <div className="text-gray-400 font-bold">0</div>
+                <div className="text-gray-400 font-bold">{lockedMissions}</div>
                 <div className="text-gray-400 text-sm">Terkunci</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl mb-2">🏆</div>
-                <div className="text-yellow-400 font-bold">0</div>
+                <div className="text-yellow-400 font-bold">{completedMissions}</div>
                 <div className="text-gray-400 text-sm">Selesai</div>
               </div>
             </div>

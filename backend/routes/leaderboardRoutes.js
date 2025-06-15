@@ -1,39 +1,54 @@
 const express = require('express');
 const router = express.Router();
-const LeaderboardModel = require('../models/Leaderboard'); // Import model Leaderboard
 
-// Module exports a function that accepts cacheMiddleware and dbClient
 module.exports = (cacheMiddleware, dbClient) => {
-  // Buat instance dari LeaderboardModel dengan dbClient
-  const leaderboardModel = new LeaderboardModel(dbClient);
+  const LeaderboardModel = new (require('../models/Leaderboard'))(dbClient);
 
-  // Get leaderboard data
-  router.get('/', cacheMiddleware('leaderboard'), async (req, res) => {
+  router.post('/', async (req, res) => {
+    const { userId, userName, score, missionId } = req.body;
+    console.log('POST /api/leaderboard:', { userId, userName, score, missionId });
+
+    if (!userId || !userName || score === undefined || !missionId) {
+      console.warn('Validasi gagal:', { userId, userName, score, missionId });
+      return res.status(400).json({ error: 'User ID, name, score, and mission ID are required.' });
+    }
+
     try {
-      const leaderboardData = await leaderboardModel.getTopLeaderboardEntries();
-      res.json(leaderboardData);
+      const leaderboardEntry = await LeaderboardModel.submitScore(userId, userName, score, missionId);
+      const cache = req.app.get('cache');
+      if (cache) {
+        console.log('Cache object:', cache);
+        if (typeof cache.del === 'function') {
+          const success = cache.del('leaderboard-all');
+          if (success) {
+            console.log('Cache leaderboard-all berhasil dihapus');
+          } else {
+            console.warn('Gagal menghapus cache leaderboard-all');
+          }
+          // Perbarui cache dengan data terbaru
+          const updatedLeaderboard = await LeaderboardModel.getTopLeaderboardEntries();
+          if (typeof cache.set === 'function') {
+            cache.set('leaderboard-all', updatedLeaderboard);
+            console.log('Cache leaderboard-all diperbarui dengan data terbaru');
+          }
+        } else {
+          console.warn('Cache object does not support del method');
+        }
+      }
+      res.status(201).json(leaderboardEntry);
     } catch (err) {
-      console.error('Error fetching leaderboard in route:', err.message);
+      console.error('Error POST /api/leaderboard:', err.stack);
       res.status(500).json({ error: 'Internal server error' });
     }
   });
 
-  // Submit score to leaderboard
-  router.post('/', async (req, res) => {
-    const { userName, score, missionId } = req.body;
-    if (!userName || score === undefined || missionId === undefined) {
-      return res.status(400).json({ error: 'User name, score, and mission ID are required.' });
-    }
-
+  router.get('/', cacheMiddleware('leaderboard'), async (req, res) => {
     try {
-      const leaderboardEntry = await leaderboardModel.submitScore(userName, score, missionId);
-
-      // Clear leaderboard cache when new score is submitted
-      // req.app.get('cache') diakses dari app (server.js)
-      req.app.get('cache').del('leaderboard-all'); // Assuming 'leaderboard-all' is the key used for the main leaderboard list
-      res.status(201).json(leaderboardEntry);
+      console.log('GET /api/leaderboard');
+      const leaderboard = await LeaderboardModel.getTopLeaderboardEntries();
+      res.json(leaderboard);
     } catch (err) {
-      console.error('Error submitting score to leaderboard in route:', err.message);
+      console.error('Error GET /api/leaderboard:', err.stack);
       res.status(500).json({ error: 'Internal server error' });
     }
   });

@@ -8,6 +8,7 @@ const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
 
+
 dotenv.config();
 
 const app = express();
@@ -77,6 +78,7 @@ const startApp = async () => {
     app.use('/api/leaderboard', require('./routes/leaderboardRoutes')(cacheMiddleware, client));
     app.use('/api/feedback', require('./routes/feedbackRoutes')(client));
     app.use('/api/admin', require('./routes/adminRoutes')(client));
+    app.use('/api/users', require('./routes/userRoutes')(client));
 
     app.listen(port, () => {
       console.log(`NurMath server running at http://localhost:${port}`);
@@ -86,6 +88,20 @@ const startApp = async () => {
     process.exit(1);
   }
 };
+
+app.use('/api/progress/:userName', async (req, res) => {
+  try {
+    const { userName } = req.params;
+    const { rows } = await client.query(
+      'SELECT DISTINCT mission_id FROM leaderboard WHERE username = $1',
+      [userName]
+    );
+    res.json(rows.map(row => row.mission_id));
+  } catch (err) {
+    console.error('Error fetching progress:', err.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 // Pastikan koneksi ke DB berhasil sebelum memulai aplikasi
 client.on('connect', () => {

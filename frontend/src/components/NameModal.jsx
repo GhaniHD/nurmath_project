@@ -1,15 +1,27 @@
 import { useState } from 'react';
+import axios from 'axios';
 
 const NameModal = ({ isOpen, onSubmit }) => {
   const [userName, setUserName] = useState('');
 
   if (!isOpen) return null;
 
-  const handleSubmit = () => {
-    if (userName.trim()) {
-      onSubmit(userName);
-    } else {
+  const handleSubmit = async () => {
+    if (!userName.trim()) {
       alert('Please enter your name!');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3001/api/users', {
+        userName,
+      });
+
+      const { userId, userName: returnedName } = response.data;
+      onSubmit({ userId, userName: returnedName });
+    } catch (err) {
+      console.error('Error submitting name:', err);
+      alert('Failed to create user');
     }
   };
 

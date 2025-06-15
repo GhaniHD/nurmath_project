@@ -1,20 +1,59 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AngketModal from './Angket/AngketModal';
 
-const Dashboard = ({ totalScore, userName }) => {
+const Dashboard = ({ totalScore: initialTotalScore = 0, userName }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [currentTotalScore, setCurrentTotalScore] = useState(0); // Default 0
+
+  // Fetch atau sinkronisasi totalScore dari server
+  useEffect(() => {
+    const fetchTotalScore = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/leaderboard');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        const userScore = data
+          .filter(entry => entry.username === userName)
+          .reduce((sum, entry) => sum + (Number(entry.total_score) || 0), 0) || 0;
+        setCurrentTotalScore(userScore);
+        console.log('Fetched totalScore for', userName, ':', userScore); // Debug
+      } catch (error) {
+        console.error('Error fetching total score:', error);
+        const numericScore = Number(initialTotalScore) || 0;
+        if (isNaN(numericScore)) {
+          console.warn('initialTotalScore tidak valid, diatur ke 0:', initialTotalScore);
+        }
+        setCurrentTotalScore(numericScore);
+      }
+    };
+
+    fetchTotalScore();
+  }, [userName]);
 
   const getScoreLevel = (score) => {
-    if (score >= 100) return { level: "Master", color: "text-purple-400", bg: "from-purple-600 to-pink-600" };
-    if (score >= 75) return { level: "Expert", color: "text-blue-400", bg: "from-blue-600 to-cyan-600" };
-    if (score >= 50) return { level: "Advanced", color: "text-green-400", bg: "from-green-600 to-emerald-600" };
-    if (score >= 25) return { level: "Intermediate", color: "text-yellow-400", bg: "from-yellow-600 to-orange-600" };
-    return { level: "Beginner", color: "text-gray-400", bg: "from-gray-600 to-slate-600" };
+    const numericScore = Number(score) || 0;
+    if (numericScore >= 100) return { level: "Master", color: "text-purple-400", bg: "from-purple-600 to-pink-600", icon: "👑" };
+    if (numericScore >= 75) return { level: "Expert", color: "text-blue-400", bg: "from-blue-600 to-cyan-600", icon: "🎖️" };
+    if (numericScore >= 50) return { level: "Advanced", color: "text-green-400", bg: "from-green-600 to-emerald-600", icon: "🌟" };
+    if (numericScore >= 25) return { level: "Intermediate", color: "text-yellow-400", bg: "from-yellow-600 to-orange-600", icon: "🏅" };
+    return { level: "Beginner", color: "text-gray-400", bg: "from-gray-600 to-slate-600", icon: "🎯" };
   };
 
-  const scoreInfo = getScoreLevel(totalScore);
+  const scoreInfo = getScoreLevel(currentTotalScore);
+
+  // Hitung progress ke level berikutnya
+  const currentLevelThreshold = Math.floor(currentTotalScore / 25) * 25;
+  const nextLevelThreshold = currentLevelThreshold + 25;
+  const progress = currentTotalScore >= nextLevelThreshold ? 100 : Math.min(((currentTotalScore - currentLevelThreshold) / 25) * 100, 100);
+  const progressPercentage = `${progress.toFixed(1)}%`;
+
+  const formatScore = (score) => {
+    return String(score).replace(/^0+/, ''); // Menghapus nol di depan
+  };
 
   const gameCards = [
     {
@@ -72,14 +111,14 @@ const Dashboard = ({ totalScore, userName }) => {
             </h1>
             <div className="bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
               <h2 className="text-2xl font-semibold text-white mb-2">
-                Selamat Datang, <span className="text-cyan-400">{userName || 'Player'}</span>!
+                Selamat Datang, <span className="text-cyan-400">{(userName?.split(' ')[0]) || 'Player'}</span>!
               </h2>
               <div className="flex items-center justify-center gap-4">
                 <div className={`px-4 py-2 rounded-full bg-gradient-to-r ${scoreInfo.bg} text-white font-bold`}>
-                  Level: {scoreInfo.level}
+                  Level: {scoreInfo.icon} {scoreInfo.level}
                 </div>
                 <div className="text-3xl font-bold text-yellow-400 animate-bounce">
-                  ⭐ {totalScore} XP
+                  ⭐ {formatScore(currentTotalScore)} XP
                 </div>
               </div>
             </div>
@@ -131,21 +170,33 @@ const Dashboard = ({ totalScore, userName }) => {
           })}
         </div>
 
-        <div className="mt-12 max-w-2xl mx-auto">
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-            <h3 className="text-xl font-semibold text-white mb-4 text-center">Progress ke Level Selanjutnya</h3>
+        <div className="mt-12 max-w-3xl mx-auto">
+          <div className="bg-gradient-to-r from-gray-800/30 to-gray-900/30 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-lg">
+            <h3 className="text-xl font-bold text-white mb-4 text-center flex items-center justify-center gap-2">
+              <span>📈</span> Progress ke Level Selanjutnya
+            </h3>
             <div className="relative">
-              <div className="w-full bg-gray-700 rounded-full h-4 overflow-hidden">
+              <div className="w-full bg-gray-700/50 rounded-full h-6 overflow-hidden border border-white/10">
                 <div 
-                  className={`h-full bg-gradient-to-r ${scoreInfo.bg} rounded-full transition-all duration-1000 relative`}
-                  style={{ width: `${Math.min((totalScore % 25) * 4, 100)}%` }}
+                  className={`h-full bg-gradient-to-r ${scoreInfo.bg} rounded-full transition-all duration-1000 ease-out relative`}
+                  style={{ width: `${progress}%` }}
                 >
-                  <div className="absolute inset-0 bg-white/30 animate-pulse"></div>
+                  <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                  <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-white">
+                    {progressPercentage}
+                  </div>
                 </div>
               </div>
-              <div className="flex justify-between mt-2 text-sm text-gray-400">
-                <span>{Math.floor(totalScore / 25) * 25} XP</span>
-                <span>{(Math.floor(totalScore / 25) + 1) * 25} XP</span>
+              <div className="mt-4 text-center">
+                <p className="text-sm text-gray-300">
+                  Level Saat Ini: {scoreInfo.icon} {scoreInfo.level} ({currentLevelThreshold} XP)
+                </p>
+                <p className="text-sm text-gray-300">
+                  Level Berikutnya: {getScoreLevel(nextLevelThreshold).icon} {getScoreLevel(nextLevelThreshold).level} ({nextLevelThreshold} XP)
+                </p>
+                <p className="text-sm text-yellow-400 mt-2">
+                  Sisa XP: {nextLevelThreshold - currentTotalScore} untuk naik level
+                </p>
               </div>
             </div>
           </div>

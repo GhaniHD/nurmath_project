@@ -1,11 +1,15 @@
+// client/src/components/Data/Mission1.jsx
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Mission1 = ({ missionId, onComplete, userName }) => {
+const Mission1 = ({ missionId, onComplete }) => {
   const [allQuestions, setAllQuestions] = useState([]);
   const [questionsByTopic, setQuestionsByTopic] = useState({});
   const [currentQuestion, setCurrentQuestion] = useState(null);
-  const [answeredQuestions, setAnsweredQuestions] = useState({});
+  const [answeredQuestions, setAnsweredQuestions] = useState(() => {
+    const saved = localStorage.getItem(`answeredQuestions_${missionId}`);
+    return saved ? JSON.parse(saved) : {};
+  });
   const [spinning, setSpinning] = useState(false);
   const [spinResultTopic, setSpinResultTopic] = useState(null);
   const [result, setResult] = useState(null);
@@ -14,15 +18,18 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
   const [showFeedback, setShowFeedback] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [audioError, setAudioError] = useState(null);
+  const [userName, setUserName] = useState(() => localStorage.getItem('userName') || '');
+  const [showNameModal, setShowNameModal] = useState(!localStorage.getItem('userName'));
+  const [missionCompleted, setMissionCompleted] = useState(false);
 
   const audioRef = useRef(null);
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   const [wheelVisualRotation, setWheelVisualRotation] = useState(0);
   const [spinDurationCss, setSpinDurationCss] = useState('0s');
   const [spinTimingFunction, setSpinTimingFunction] = useState('ease-out');
-
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   const spinwheelOptionsMap = useMemo(() => ({
     'pg': 'Pilihan Ganda',
@@ -35,12 +42,27 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
 
   const getAvailableSpinOptions = useCallback(() => {
     return Object.keys(questionsByTopic).filter(type => {
-      const remainingQuestionsOfType = questionsByTopic[type].filter(q => !answeredQuestions[q._id]);
+      const remainingQuestionsOfType = questionsByTopic[type].filter(q => !answeredQuestions[q.id]);
       return remainingQuestionsOfType.length > 0;
     }).map(type => spinwheelOptionsMap[type]);
   }, [questionsByTopic, answeredQuestions, spinwheelOptionsMap]);
 
   const shuffleArray = (array) => array.sort(() => Math.random() - 0.5);
+
+  const levenshteinDistance = (a, b) => {
+    const matrix = Array(b.length + 1).fill().map((_, i) => Array(a.length + 1).fill(i));
+    for (let j = 1; j <= a.length; j++) matrix[0][j] = j;
+    for (let i = 1; i <= b.length; i++) {
+      for (let j = 1; j <= a.length; j++) {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j - 1] + (a[j - 1] !== b[i - 1] ? 1 : 0)
+        );
+      }
+    }
+    return matrix[b.length][a.length];
+  };
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -52,9 +74,7 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
           setAllQuestions(data);
           const organized = {};
           data.forEach(q => {
-            if (!organized[q.type]) {
-              organized[q.type] = [];
-            }
+            if (!organized[q.type]) organized[q.type] = [];
             organized[q.type].push(q);
           });
           Object.keys(organized).forEach(type => {
@@ -64,7 +84,7 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
         } else {
           setError(data.error || 'Gagal memuat soal');
         }
-      } catch (err) {
+      } catch (_) {
         setError('Koneksi gagal. Silakan coba lagi.');
       } finally {
         setIsLoading(false);
@@ -74,22 +94,58 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
   }, [missionId, API_URL]);
 
   useEffect(() => {
+    localStorage.setItem(`answeredQuestions_${missionId}`, JSON.stringify(answeredQuestions));
+  }, [answeredQuestions, missionId]);
+
+  useEffect(() => {
     if (allQuestions.length > 0) {
       const totalQuestionsCount = allQuestions.length;
       const answeredCount = Object.keys(answeredQuestions).length;
 
       if (answeredCount > 0 && answeredCount === totalQuestionsCount) {
-        alert('Misi selesai! Semua pertanyaan telah dijawab!');
-        navigate('/leaderboard');
+        setMissionCompleted(true);
       }
     }
-  }, [answeredQuestions, allQuestions.length, navigate]);
+  }, [answeredQuestions, allQuestions.length]);
 
   useEffect(() => {
-    if (currentQuestion?.type === 'audio-isian' && audioRef.current) {
-      audioRef.current.play().catch(err => console.warn('Pemutaran audio gagal:', err));
+    if (currentQuestion?.type === 'audio-isian' && audioRef.current && currentQuestion.audio_url) {
+      audioRef.current.load();
+      audioRef.current.play().catch(() => {
+        setAudioError('Gagal memutar audio. Gunakan kontrol audio untuk memutar.');
+      });
     }
   }, [currentQuestion]);
+
+  const retryFetch = () => {
+    setError(null);
+    setIsLoading(true);
+    const fetchQuestions = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/questions/${missionId}`);
+        const data = await response.json();
+        if (response.ok) {
+          setAllQuestions(data);
+          const organized = {};
+          data.forEach(q => {
+            if (!organized[q.type]) organized[q.type] = [];
+            organized[q.type].push(q);
+          });
+          Object.keys(organized).forEach(type => {
+            organized[type] = shuffleArray(organized[type]);
+          });
+          setQuestionsByTopic(organized);
+        } else {
+          setError(data.error || 'Gagal memuat soal');
+        }
+      } catch (_) {
+        setError('Koneksi gagal. Silakan coba lagi.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchQuestions();
+  };
 
   const resetQuestionState = useCallback(() => {
     setResult(null);
@@ -101,15 +157,45 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
     setSpinDurationCss('0s');
     setSpinTimingFunction('ease-out');
     setWheelVisualRotation(0);
+    setAudioError(null);
   }, []);
 
-  const handleSpin = () => {
+  const resetMission = useCallback(() => {
+    setAnsweredQuestions({});
+    setMissionCompleted(false);
+    resetQuestionState();
+    localStorage.removeItem(`answeredQuestions_${missionId}`);
+  }, [missionId, resetQuestionState]);
+
+  const handleSpin = useCallback(() => {
+    if (!userName) {
+      setShowNameModal(true);
+      return;
+    }
     const availableOptions = getAvailableSpinOptions();
     if (availableOptions.length === 0) {
-      alert('Tidak ada jenis soal yang tersedia lagi!');
+      setMissionCompleted(true);
       return;
     }
 
+    // Jika hanya satu jenis soal tersisa, langsung pilih soal tanpa animasi
+    if (availableOptions.length === 1) {
+      const selectedTopicText = availableOptions[0];
+      const selectedTypeKey = Object.keys(spinwheelOptionsMap).find(
+        key => spinwheelOptionsMap[key] === selectedTopicText
+      );
+      if (selectedTypeKey) {
+        const questionsOfType = questionsByTopic[selectedTypeKey] || [];
+        const unansweredQuestionsOfType = questionsOfType.filter(q => !answeredQuestions[q.id]);
+        if (unansweredQuestionsOfType.length > 0) {
+          const randomQuestionIndex = Math.floor(Math.random() * unansweredQuestionsOfType.length);
+          setCurrentQuestion(unansweredQuestionsOfType[randomQuestionIndex]);
+        }
+      }
+      return;
+    }
+
+    // Animasi rolet untuk lebih dari satu opsi
     setSpinning(true);
     setSpinResultTopic(null);
 
@@ -136,25 +222,30 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
 
       setTimeout(() => {
         setSpinResultTopic(selectedTopicText);
-        const selectedTypeKey = Object.keys(spinwheelOptionsMap).find(key => spinwheelOptionsMap[key] === selectedTopicText);
+        const selectedTypeKey = Object.keys(spinwheelOptionsMap).find(
+          key => spinwheelOptionsMap[key] === selectedTopicText
+        );
         if (selectedTypeKey) {
           const questionsOfType = questionsByTopic[selectedTypeKey] || [];
-          const unansweredQuestionsOfType = questionsOfType.filter(q => !answeredQuestions[q._id]);
+          const unansweredQuestionsOfType = questionsOfType.filter(q => !answeredQuestions[q.id]);
           if (unansweredQuestionsOfType.length > 0) {
             const randomQuestionIndex = Math.floor(Math.random() * unansweredQuestionsOfType.length);
             setCurrentQuestion(unansweredQuestionsOfType[randomQuestionIndex]);
           } else {
-            alert(`Tidak ada soal yang belum dijawab untuk tipe ${selectedTopicText}. Silakan putar lagi.`);
             resetQuestionState();
           }
-        } else {
-          alert(`Tipe soal ${selectedTopicText} tidak ditemukan. Silakan putar lagi.`);
-          resetQuestionState();
         }
         setSpinning(false);
       }, slowDownDuration);
     }, fastSpinDuration);
-  };
+  }, [
+    userName,
+    getAvailableSpinOptions,
+    spinwheelOptionsMap,
+    questionsByTopic,
+    answeredQuestions,
+    resetQuestionState
+  ]);
 
   const handleSubmitAnswer = async (answer) => {
     if (!currentQuestion) return;
@@ -163,13 +254,13 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
     switch (currentQuestion.type) {
       case 'pg':
       case 'benar-salah':
-        isCorrect = answer === currentQuestion.correctAnswer;
+        isCorrect = answer === currentQuestion.correct_answer;
         break;
       case 'audio-isian':
-        isCorrect = answer.trim().toLowerCase() === currentQuestion.correctAnswer.trim().toLowerCase();
+        isCorrect = answer.trim().toLowerCase() === currentQuestion.correct_answer.trim().toLowerCase();
         break;
       case 'uraian': {
-        const correctKeywords = currentQuestion.correctAnswer.toLowerCase().split(',').map(k => k.trim());
+        const correctKeywords = currentQuestion.correct_answer.toLowerCase().split(',').map(k => k.trim());
         const userKeywords = answer.toLowerCase().split(/[\s,.;]+/).map(k => k.trim()).filter(k => k);
         const synonymMap = {
           wawancara: ['interview'],
@@ -183,7 +274,8 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
           const synonyms = synonymMap[correct] || [];
           if (
             userKeywords.includes(correct) ||
-            synonyms.some(synonym => userKeywords.includes(synonym))
+            synonyms.some(synonym => userKeywords.includes(synonym)) ||
+            userKeywords.some(user => levenshteinDistance(user, correct) <= 2)
           ) {
             matchedCount++;
           }
@@ -192,15 +284,15 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
         break;
       }
       case 'gambar-isian':
-        isCorrect = answer.toLowerCase() === currentQuestion.correctAnswer.toLowerCase();
+        isCorrect = answer.toLowerCase() === currentQuestion.correct_answer.toLowerCase();
         break;
       case 'menjodohkan': {
         const sortedUserAnswers = Object.keys(answer).sort().reduce((obj, key) => {
           obj[key] = answer[key];
           return obj;
         }, {});
-        const sortedCorrectAnswers = Object.keys(currentQuestion.correctAnswer).sort().reduce((obj, key) => {
-          obj[key] = currentQuestion.correctAnswer[key];
+        const sortedCorrectAnswers = Object.keys(currentQuestion.correct_answer).sort().reduce((obj, key) => {
+          obj[key] = currentQuestion.correct_answer[key];
           return obj;
         }, {});
         isCorrect = JSON.stringify(sortedUserAnswers) === JSON.stringify(sortedCorrectAnswers);
@@ -218,20 +310,7 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
       onComplete(score, missionId);
     }
 
-    if (isCorrect && userName) {
-      try {
-        await fetch(`${API_URL}/api/leaderboard`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userName, score, missionId }),
-        });
-      } catch (err) {
-        console.error('Gagal mengirim ke leaderboard:', err);
-      }
-    }
-
-    setAnsweredQuestions(prev => ({ ...prev, [currentQuestion._id]: true }));
-
+    setAnsweredQuestions(prev => ({ ...prev, [currentQuestion.id]: true }));
     setTimeout(() => {
       resetQuestionState();
     }, 1500);
@@ -241,21 +320,50 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
     setUserMatchingAnswers(prev => ({ ...prev, [item]: target }));
   };
 
+  const handleNameSubmit = (e) => {
+    e.preventDefault();
+    const name = e.target.name.value.trim();
+    if (name) {
+      setUserName(name);
+      localStorage.setItem('userName', name);
+      setShowNameModal(false);
+    } else {
+      alert('Masukkan nama terlebih dahulu!');
+    }
+  };
+
   const renderSpinwheel = () => {
     const availableOptions = getAvailableSpinOptions();
     const numSegments = availableOptions.length;
 
+    if (missionCompleted) {
+      return (
+        <div className="text-center text-white text-2xl font-bold font-comic-sans">
+          Selamat! Semua misi telah diselesaikan!
+          <div className="mt-4 flex gap-4 justify-center">
+            <button
+              onClick={resetMission}
+              className="px-6 py-3 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition-all duration-300"
+              aria-label="Main lagi"
+            >
+              Main Lagi
+            </button>
+            <button
+              onClick={() => navigate('/leaderboard')}
+              className="px-6 py-3 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-all duration-300"
+              aria-label="Lihat leaderboard"
+            >
+              Lihat Leaderboard
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     if (numSegments === 0 && allQuestions.length > 0) {
       return (
         <div className="text-center text-white text-2xl font-bold font-comic-sans">
-          Semua misi telah diselesaikan!
-          <button
-            onClick={() => navigate('/leaderboard')}
-            className="mt-4 px-6 py-3 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-all duration-300"
-            aria-label="Lihat leaderboard"
-          >
-            Lihat Leaderboard
-          </button>
+          Tidak ada soal tersisa!
         </div>
       );
     }
@@ -268,12 +376,10 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
       'fill-cyan-500', 'fill-red-500', 'fill-orange-500', 'fill-teal-500', 'fill-indigo-500',
     ];
 
-    const radius = 200;
-    const center = 250;
     const viewBoxSize = 500;
 
     return (
-      <div className="relative flex flex-col items-center justify-center min-h-[600px] font-comic-sans">
+      <div className="relative flex flex-col items-center justify-center min-h-[600px] font-comic-sans w-full max-w-[90vw] mx-auto">
         <h3 className="text-4xl font-bold text-white mb-10 drop-shadow-lg">Putar Roda Keberuntungan!</h3>
 
         <div className="absolute top-[calc(50%-250px)] left-1/2 transform -translate-x-1/2 z-30">
@@ -282,11 +388,12 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
           </svg>
         </div>
 
-        <div className="relative w-[500px] h-[500px]">
+        <div className="relative w-full aspect-square max-w-[500px]">
           <svg
-            width="500"
-            height="500"
+            width="100%"
+            height="100%"
             viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
+            preserveAspectRatio="xMidYMid meet"
             style={{ 
               transform: `rotate(${wheelVisualRotation}deg)`,
               transition: `transform ${spinDurationCss} ${spinTimingFunction}`
@@ -298,6 +405,8 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
               const endAngle = startAngle + (360 / numSegments);
               const startRad = (startAngle * Math.PI) / 180;
               const endRad = (endAngle * Math.PI) / 180;
+              const radius = viewBoxSize / 2 - 10;
+              const center = viewBoxSize / 2;
               const x1 = center + radius * Math.cos(startRad);
               const y1 = center + radius * Math.sin(startRad);
               const x2 = center + radius * Math.cos(endRad);
@@ -332,7 +441,7 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
                 </g>
               );
             })}
-            <circle cx="250" cy="250" r="30" fill="white" stroke="gray" strokeWidth="2" />
+            <circle cx={viewBoxSize / 2} cy={viewBoxSize / 2} r="30" fill="white" stroke="gray" strokeWidth="2" />
           </svg>
 
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform duration-200 z-20">
@@ -369,6 +478,40 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
           {currentQuestion.question_text}
         </p>
 
+        {currentQuestion.type === 'audio-isian' && currentQuestion.audio_url ? (
+          <div className="text-center mb-4">
+            {audioError ? (
+              <div className="text-red-400 mb-4">{audioError}</div>
+            ) : (
+              <audio
+                ref={audioRef}
+                src={currentQuestion.audio_url}
+                controls
+                className="mb-4 mx-auto w-full max-w-sm"
+                onError={() => setAudioError('Audio tidak dapat dimuat. Silakan periksa file atau coba lagi.')}
+              />
+            )}
+            <button
+              onClick={() => {
+                if (audioRef.current) {
+                  audioRef.current.play().catch(() => {
+                    setAudioError('Gagal memutar audio. Gunakan kontrol audio untuk memutar.');
+                  });
+                }
+              }}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-300"
+              aria-label="Putar ulang audio"
+              disabled={audioError}
+            >
+              Putar Ulang Audio
+            </button>
+          </div>
+        ) : currentQuestion.type === 'audio-isian' ? (
+          <div className="text-center mb-4 text-red-400">
+            Audio tidak tersedia untuk soal ini.
+          </div>
+        ) : null}
+
         {(() => {
           switch (currentQuestion.type) {
             case 'pg':
@@ -379,7 +522,7 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
                       key={idx}
                       onClick={() => handleSubmitAnswer(option)}
                       className={`p-4 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600
-                        ${showFeedback ? (option === currentQuestion.correctAnswer ? 'bg-green-700' : 'bg-red-700') : ''}
+                        ${showFeedback ? (option === currentQuestion.correct_answer ? 'bg-green-700' : 'bg-red-700') : ''}
                         disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300
                       `}
                       disabled={showFeedback}
@@ -398,7 +541,7 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
                       key={idx}
                       onClick={() => handleSubmitAnswer(option)}
                       className={`p-4 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600
-                        ${showFeedback ? (option === currentQuestion.correctAnswer ? 'bg-green-700' : 'bg-red-700') : ''}
+                        ${showFeedback ? (option === currentQuestion.correct_answer ? 'bg-green-700' : 'bg-red-700') : ''}
                         disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300
                       `}
                       disabled={showFeedback}
@@ -412,8 +555,6 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
             case 'audio-isian':
               return (
                 <div className="text-center">
-                  <p className="text-white mb-4">Dengarkan audio berikut!</p>
-                  {currentQuestion.audioUrl && <audio ref={audioRef} src={currentQuestion.audioUrl} controls className="mb-4 mx-auto w-full max-w-sm" />}
                   <p className="text-white mb-4 whitespace-pre-line">
                     Jenis data yang tidak berbentuk angka tetapi berupa kategori seperti warna favorit atau hobi disebut data...<br/>
                     Tulis jawabanmu di sini.
@@ -495,8 +636,8 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
             case 'gambar-isian':
               return (
                 <div className="text-center">
-                  {currentQuestion.imageUrl && (
-                    <img src={currentQuestion.imageUrl} alt="Ilustrasi Pertanyaan" className="mb-4 max-w-xs mx-auto rounded-lg shadow-lg" />
+                  {currentQuestion.image_url && (
+                    <img src={currentQuestion.image_url} alt="Ilustrasi Pertanyaan" className="mb-4 max-w-xs mx-auto rounded-lg shadow-lg" />
                   )}
                   <input
                     type="text"
@@ -534,9 +675,43 @@ const Mission1 = ({ missionId, onComplete, userName }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-900 to-emerald-900 p-6 flex items-center justify-center font-comic-sans">
       <div className="relative z-10 w-full">
+        {showNameModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-gray-800 rounded-2xl p-8 max-w-sm w-full">
+              <h2 className="text-2xl font-bold text-white mb-4 text-center">Masukkan Nama Petualangmu!</h2>
+              <form onSubmit={handleNameSubmit}>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Nama kamu..."
+                  className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 mb-4"
+                  aria-label="Masukkan nama pengguna"
+                />
+                <button
+                  type="submit"
+                  className="w-full px-6 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition-all duration-300"
+                  aria-label="Kirim nama"
+                >
+                  Mulai Petualangan!
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
         {isLoading && <div className="text-white text-center text-2xl">Memuat soal...</div>}
-        {error && <div className="text-red-400 text-center text-2xl">{error}</div>}
-        {!isLoading && !error && (currentQuestion ? renderQuestionUI() : renderSpinwheel())}
+        {error && (
+          <div className="text-center text-red-400 text-2xl">
+            {error}
+            <button
+              onClick={retryFetch}
+              className="ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              aria-label="Coba lagi"
+            >
+              Coba Lagi
+            </button>
+          </div>
+        )}
+        {!isLoading && !error && !showNameModal && (currentQuestion ? renderQuestionUI() : renderSpinwheel())}
       </div>
     </div>
   );

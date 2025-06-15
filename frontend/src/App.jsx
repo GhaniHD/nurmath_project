@@ -1,4 +1,3 @@
-// client/src/App.jsx
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
@@ -15,8 +14,6 @@ import ErrorBoundary from './components/ErrorBoundary';
 import SplashScreen from './components/SplashScreen';
 import AngketModal from './components/Angket/AngketModal';
 import './App.css'; // Import your CSS file
-
-
 
 const App = () => {
   const [totalScore, setTotalScore] = useState(Number(localStorage.getItem('totalScore')) || 0);
@@ -70,8 +67,6 @@ const App = () => {
     // Tutup modal
     setIsNameModalOpen(false);
   };
-  
-  
 
   const handleComplete = async (score, missionId) => {
     const storedUserId = userId || localStorage.getItem('userId');
@@ -125,7 +120,7 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 font-comic-sans text-gray-800">
+    <div className="min-h-screen font-comic-sans text-gray-800">
       {error && (
         <div className="fixed top-4 right-4 bg-red-600 text-white p-4 rounded-lg shadow-lg z-50">
           {error}
@@ -137,9 +132,6 @@ const App = () => {
           </button>
         </div>
       )}
-      <div className="p-6">
-        <h1 className="text-4xl font-bold text-yellow-600 mb-2 text-center">NURMATH - Petualangan Ilmu</h1>
-        <p className="text-lg text-gray-300 mb-6 text-center">Game Edukatif untuk SMP</p>
         <NameModal isOpen={isNameModalOpen} onSubmit={handleNameSubmit} />
         <AngketModal isOpen={showAngketModal} onClose={toggleAngketModal} />
         <ErrorBoundary>
@@ -159,7 +151,6 @@ const App = () => {
           </Routes>
         </ErrorBoundary>
       </div>
-    </div>
   );
 };
 

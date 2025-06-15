@@ -6,6 +6,17 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        brown: {
+          700: '#5c4033',
+        },
+      },
+      width: {
+        'lg': '1300px',
+      },
+      height: {
+        'lg': '750px',
+      },
       fontFamily: {
         'comic-sans': ['"Comic Sans MS"', 'cursive', 'sans-serif'], // Menambahkan font Comic Sans
       },

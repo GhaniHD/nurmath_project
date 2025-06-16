@@ -8,7 +8,7 @@ const DiagramPage = () => {
     {
       id: 'misi-4',
       title: 'Misi 1: Grafik Dasar',
-      description: 'Eksplorasi dasar visualisasi data di padang pasir',
+      description: 'Eksplorasi dasar visualisasi data di daratan diagram.',
       icon: '🪨',
       available: true,
       color: 'from-amber-600 to-orange-400',

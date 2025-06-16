@@ -98,7 +98,7 @@ const DataPage = ({ totalScore: initialTotalScore = 0, userName }) => {
         <div className="absolute bottom-20 right-20 w-3 h-3 bg-blue-500/30 rounded-full shadow-[0_0_10px_rgba(0,102,204,0.5)] animate-spark-2"></div>
         {/* Pulsing rune glow */}
         <div className="absolute top-1/4 left-1/4 w-6 h-6 bg-gradient-to-r from-amber-500/20 to-blue-500/20 rounded-full shadow-[0_0_15px_rgba(255,107,0,0.3)] animate-rune-pulse"></div>
-        <div class="absolute bottom-1/3 left-3/4 w-5 h-5 bg-gradient-to-r from-amber-500/20 to-red-500/20 rounded-full shadow-[0_0_12px_rgba(255,0,0,0.3)] animate-rune-pulse delay-1s"></div>
+        <div className="absolute bottom-1/3 left-3/4 w-5 h-5 bg-gradient-to-r from-amber-500/20 to-red-500/20 rounded-full shadow-[0_0_12px_rgba(255,0,0,0.3)] animate-rune-pulse delay-1s"></div>
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto animate-fade-in">

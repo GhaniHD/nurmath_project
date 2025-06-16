@@ -14,7 +14,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000, // Port dapat disesuaikan sesuai kebutuhan
+    port: 3000,
     strictPort: true,
   },
 });

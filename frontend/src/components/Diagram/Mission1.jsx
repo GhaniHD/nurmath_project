@@ -1,7 +1,89 @@
 import React, { useState, useEffect } from 'react';
-import { RotateCcw, Trophy, Target, Eye, EyeOff, Lightbulb } from 'lucide-react';
+import { RotateCcw, Trophy, Target, Eye, EyeOff, Lightbulb, Mountain, Trees, Waves } from 'lucide-react';
 
-const DiagramCrosswordGame = ({ missionId, onComplete }) => {
+// Hardcoded mission4Questions data for misi-4
+const mission4Questions = [
+  {
+    type: 'crossword',
+    question_text: 'Selesaikan teka-teki silang berikut untuk memahami konsep dasar grafik dan visualisasi data!',
+    options: null,
+    correct_answer: {
+      'word-1': { word: 'TABEL', direction: 'across', startRow: 1, startCol: 5 },
+      'word-2': { word: 'BATANG', direction: 'down', startRow: 1, startCol: 7 },
+      'word-3': { word: 'LINGKARAN', direction: 'across', startRow: 4, startCol: 2 },
+      'word-4': { word: 'PLOTLINE', direction: 'down', startRow: 3, startCol: 2 },
+      'word-5': { word: 'DIAGRAM', direction: 'across', startRow: 8, startCol: 1 },
+      'word-6': { word: 'GARIS', direction: 'down', startRow: 3, startCol: 9 },
+    },
+    score: 36,
+    audio_url: null,
+    image_url: null,
+    targets: [
+      {
+        id: 'word-1',
+        number: 1,
+        clue: 'Penyajian data dalam bentuk kolom dan baris ',
+        direction: 'across',
+        startRow: 1,
+        startCol: 5,
+        word: 'TABEL',
+        score: 6,
+      },
+      {
+        id: 'word-2',
+        number: 2,
+        clue: 'Diagram yang cocok untuk membandingkan jumlah antar kategori ',
+        direction: 'down',
+        startRow: 1,
+        startCol: 7,
+        word: 'BATANG',
+        score: 8,
+      },
+      {
+        id: 'word-3',
+        number: 3,
+        clue: 'Diagram yang menunjukkan bagian-bagian dari keseluruhan dalam bentuk proporsi ',
+        direction: 'across',
+        startRow: 4,
+        startCol: 2,
+        word: 'LINGKARAN',
+        score: 6,
+      },
+      {
+        id: 'word-4',
+        number: 4,
+        clue: 'Penyajian data berupa titik-titik atau bertanda x yang terhubung mengikuti data ',
+        direction: 'down',
+        startRow: 3,
+        startCol: 2,
+        word: 'PLOTLINE',
+        score: 8,
+      },
+      {
+        id: 'word-5',
+        number: 5,
+        clue: 'Gambar atau visual yang digunakan untuk menyampaikan informasi data secara ringkas dan jelas ',
+        direction: 'across',
+        startRow: 8,
+        startCol: 1,
+        word: 'DIAGRAM',
+        score: 8,
+      },
+      {
+        id: 'word-6',
+        number: 6,
+        clue: 'Diagram yang menunjukkan perubahan nilai dengan cara menghubungkan titik-titik ',
+        direction: 'down',
+        startRow: 3,
+        startCol: 9,
+        word: 'GARIS',
+        score: 8,
+      },
+    ],
+  },
+];
+
+const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
   const [score, setScore] = useState(0);
   const [showAnswers, setShowAnswers] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
@@ -10,62 +92,94 @@ const DiagramCrosswordGame = ({ missionId, onComplete }) => {
   const [words, setWords] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [particles, setParticles] = useState([]);
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-
-  // Grid size based on the crossword image
+  // Grid size based on the crossword data
   const gridSize = { rows: 12, cols: 12 };
 
-  useEffect(() => {
-    const fetchWords = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`${API_URL}/api/question/${missionId}`);
-        const data = await response.json();
-        if (response.ok) {
-          setWords(data);
-        } else {
-          setError(data.error || 'Gagal memuat data TTS');
-        }
-      } catch (_) {
-        setError('Koneksi gagal. Silakan coba lagi.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchWords();
-  }, [missionId, API_URL]);
-
-  // Initialize grid based on fetched words
-  const [grid, setGrid] = useState(() => {
-    const initialGrid = Array(gridSize.rows)
+  // Initialize grid with a default value
+  const [grid, setGrid] = useState(() =>
+    Array(gridSize.rows)
       .fill(null)
       .map(() =>
         Array(gridSize.cols).fill({ letter: '', isBlock: true, number: null, wordIds: [], correctLetter: '' })
-      );
+      )
+  );
 
-    words.forEach((word) => {
-      for (let i = 0; i < word.word.length; i++) {
-        const row = word.direction === 'across' ? word.startRow : word.startRow + i;
-        const col = word.direction === 'across' ? word.startCol + i : word.startCol;
+  // Create floating particles for background animation
+  useEffect(() => {
+    const newParticles = [];
+    for (let i = 0; i < 50; i++) {
+      newParticles.push({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 4 + 2,
+        speed: Math.random() * 0.5 + 0.1,
+        opacity: Math.random() * 0.3 + 0.1,
+      });
+    }
+    setParticles(newParticles);
 
-        if (row < gridSize.rows && col < gridSize.cols) {
-          const existingWordIds = initialGrid[row][col].wordIds || [];
-          const existingNumber = initialGrid[row][col].number;
+    // Animate particles
+    const interval = setInterval(() => {
+      setParticles(prev => prev.map(particle => ({
+        ...particle,
+        y: (particle.y + particle.speed) % 100,
+      })));
+    }, 50);
 
-          initialGrid[row][col] = {
-            letter: '',
-            correctLetter: word.word[i],
-            isBlock: false,
-            number: i === 0 ? word.number : existingNumber,
-            wordIds: [...existingWordIds, word.id]
-          };
-        }
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    setIsLoading(true);
+    try {
+      // Set words based on missionId
+      if (missionId === 'misi-4') {
+        setWords(mission4Questions[0].targets);
+      } else {
+        setError('Misi tidak ditemukan.');
       }
-    });
+    } catch (_) {
+      setError('Gagal memuat data TTS.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [missionId]);
 
-    return initialGrid;
-  });
+  // Update grid when words change
+  useEffect(() => {
+    if (words.length > 0) {
+      const initialGrid = Array(gridSize.rows)
+        .fill(null)
+        .map(() =>
+          Array(gridSize.cols).fill({ letter: '', isBlock: true, number: null, wordIds: [], correctLetter: '' })
+        );
+
+      words.forEach((word) => {
+        for (let i = 0; i < word.word.length; i++) {
+          const row = word.direction === 'across' ? word.startRow : word.startRow + i;
+          const col = word.direction === 'across' ? word.startCol + i : word.startCol;
+
+          if (row < gridSize.rows && col < gridSize.cols) {
+            const existingWordIds = initialGrid[row][col].wordIds || [];
+            const existingNumber = initialGrid[row][col].number;
+
+            initialGrid[row][col] = {
+              letter: '',
+              correctLetter: word.word[i].toUpperCase(),
+              isBlock: false,
+              number: i === 0 ? word.number : existingNumber,
+              wordIds: [...existingWordIds, word.id]
+            };
+          }
+        }
+      });
+
+      setGrid(initialGrid);
+    }
+  }, [words]);
 
   const handleCellChange = (row, col, value) => {
     if (value.length > 1 || !/^[a-zA-Z]*$/.test(value)) return;
@@ -105,7 +219,7 @@ const DiagramCrosswordGame = ({ missionId, onComplete }) => {
 
       if (isComplete && isCorrect) {
         newCompletedWords.add(word.id);
-        totalScore += word.word.length * 2;
+        totalScore += word.score;
       }
     });
 
@@ -168,13 +282,13 @@ const DiagramCrosswordGame = ({ missionId, onComplete }) => {
 
   const getCellClass = (row, col) => {
     const cell = grid[row][col];
-    if (cell.isBlock) return 'bg-gray-900';
+    if (cell.isBlock) return 'bg-gradient-to-br from-amber-900 via-yellow-800 to-amber-700 shadow-inner';
 
-    let classes = 'bg-yellow-200 border border-gray-600 flex items-center justify-center relative text-black font-bold';
+    let classes = 'bg-gradient-to-br from-amber-50 to-yellow-100 border-2 border-amber-400 flex items-center justify-center relative text-amber-900 font-bold transition-all duration-300 hover:scale-105 hover:shadow-lg hover:border-amber-500 hover:from-yellow-100 hover:to-amber-200';
 
     const isPartOfCompletedWord = cell.wordIds?.some((id) => completedWords.has(id));
     if (isPartOfCompletedWord) {
-      classes = 'bg-green-200 border border-gray-600 flex items-center justify-center relative text-black font-bold';
+      classes = 'bg-gradient-to-br from-green-200 via-emerald-300 to-green-400 border-2 border-green-500 flex items-center justify-center relative text-green-900 font-bold transition-all duration-500 animate-pulse shadow-lg transform scale-105';
     }
 
     return classes;
@@ -184,62 +298,109 @@ const DiagramCrosswordGame = ({ missionId, onComplete }) => {
   const downClues = words.filter((word) => word.direction === 'down');
 
   if (isLoading) {
-    return <div className="text-white text-center text-2xl">Memuat data TTS...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-100 via-yellow-200 to-orange-300 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-amber-600 border-t-transparent mx-auto mb-4"></div>
+          <div className="text-amber-800 text-2xl font-bold animate-bounce">Memuat Petualangan TTS...</div>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="text-center text-red-400 text-2xl">
-        {error}
-        <button
-          onClick={() => {
-            setError(null);
-            setIsLoading(true);
-            fetchWords();
-          }}
-          className="ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          aria-label="Coba lagi"
-        >
-          Coba Lagi
-        </button>
+      <div className="min-h-screen bg-gradient-to-br from-red-100 to-orange-200 flex items-center justify-center">
+        <div className="text-center bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-2xl">
+          <div className="text-red-600 text-2xl mb-4">{error}</div>
+          <button
+            onClick={() => {
+              setError(null);
+              setIsLoading(true);
+            }}
+            className="px-6 py-3 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-xl hover:from-red-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-300 shadow-lg"
+            aria-label="Coba lagi"
+          >
+            Coba Lagi
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!grid || grid.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-100 to-orange-200 flex items-center justify-center">
+        <div className="text-center text-red-600 text-2xl bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-2xl">
+          Gagal menginisialisasi grid.
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-100 p-4">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-6">
-          <h1 className="text-4xl font-bold text-orange-800 mb-2">MATERI DIAGRAM</h1>
-          <p className="text-lg text-gray-600 mb-4">Teka-Teki Silang - Misi {missionId}</p>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-yellow-100 to-orange-200 relative overflow-hidden">
+      {/* Animated Background Particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {particles.map((particle) => (
+          <div
+            key={particle.id}
+            className="absolute rounded-full bg-amber-300/20 animate-pulse"
+            style={{
+              left: `${particle.x}%`,
+              top: `${particle.y}%`,
+              width: `${particle.size}px`,
+              height: `${particle.size}px`,
+              opacity: particle.opacity,
+            }}
+          />
+        ))}
+      </div>
 
-          <div className="flex justify-center items-center gap-4 mb-4">
-            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow">
-              <Target className="w-5 h-5 text-orange-600" />
-              <span className="font-semibold text-orange-800">Skor: {score}</span>
+      {/* Decorative Mountains */}
+      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-amber-200/30 to-transparent">
+        <Mountain className="absolute top-4 left-10 w-8 h-8 text-amber-600/40 animate-bounce" style={{ animationDelay: '0s' }} />
+        <Trees className="absolute top-6 right-20 w-6 h-6 text-green-600/40 animate-bounce" style={{ animationDelay: '1s' }} />
+        <Waves className="absolute top-8 left-1/2 w-7 h-7 text-blue-600/40 animate-bounce" style={{ animationDelay: '2s' }} />
+      </div>
+
+      <div className="max-w-7xl mx-auto p-6 relative z-10">
+        {/* Header */}
+        <div className="text-center mb-8 transform hover:scale-105 transition-transform duration-300">
+          <h1 className="text-6xl font-bold bg-gradient-to-r from-amber-800 via-yellow-700 to-orange-800 bg-clip-text text-transparent mb-4 animate-pulse drop-shadow-lg">
+            🏔️ PETUALANGAN DIAGRAM 🌲
+          </h1>
+          <p className="text-2xl text-amber-700 mb-4 font-semibold">Teka-Teki Silang Daratan - Misi {missionId}</p>
+          <p className="text-lg text-amber-600 italic bg-white/50 backdrop-blur-sm p-4 rounded-2xl shadow-lg max-w-4xl mx-auto border border-amber-300">
+            {mission4Questions[0].question_text}
+          </p>
+
+          <div className="flex justify-center items-center gap-6 mb-6 mt-6">
+            <div className="flex items-center gap-3 bg-gradient-to-r from-amber-100 to-yellow-200 px-6 py-3 rounded-2xl shadow-lg border border-amber-300 transform hover:scale-110 transition-all duration-300">
+              <Target className="w-6 h-6 text-amber-700 animate-spin" style={{ animationDuration: '3s' }} />
+              <span className="font-bold text-amber-800 text-lg">Skor: {score}</span>
             </div>
-            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow">
-              <Trophy className="w-5 h-5 text-green-600" />
-              <span className="font-semibold text-green-800">
+            <div className="flex items-center gap-3 bg-gradient-to-r from-green-100 to-emerald-200 px-6 py-3 rounded-2xl shadow-lg border border-green-300 transform hover:scale-110 transition-all duration-300">
+              <Trophy className="w-6 h-6 text-green-700 animate-bounce" />
+              <span className="font-bold text-green-800 text-lg">
                 Selesai: {completedWords.size}/{words.length}
               </span>
             </div>
           </div>
 
-          <div className="flex justify-center gap-2">
+          <div className="flex justify-center gap-4">
             <button
               onClick={toggleAnswers}
-              className="flex items-center gap-2 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors"
+              className="flex items-center gap-3 bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-6 py-3 rounded-2xl hover:from-yellow-600 hover:to-amber-700 transition-all duration-300 transform hover:scale-105 shadow-lg font-semibold"
             >
-              {showAnswers ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              {showAnswers ? <EyeOff className="w-5 h-5 animate-pulse" /> : <Eye className="w-5 h-5 animate-pulse" />}
               {showAnswers ? 'Sembunyikan' : 'Tampilkan'} Jawaban
             </button>
             <button
               onClick={resetGame}
-              className="flex items-center gap-2 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+              className="flex items-center gap-3 bg-gradient-to-r from-gray-500 to-slate-600 text-white px-6 py-3 rounded-2xl hover:from-gray-600 hover:to-slate-700 transition-all duration-300 transform hover:scale-105 shadow-lg font-semibold"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-5 h-5 animate-spin" style={{ animationDuration: '2s' }} />
               Reset TTS
             </button>
           </div>
@@ -247,28 +408,28 @@ const DiagramCrosswordGame = ({ missionId, onComplete }) => {
 
         {/* Game Complete Modal */}
         {gameComplete && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-md">
-              <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">Selamat!</h2>
-              <p className="text-gray-600 mb-4">Anda berhasil menyelesaikan TTS dengan skor {score}!</p>
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-gradient-to-br from-yellow-100 to-amber-200 p-10 rounded-3xl shadow-2xl text-center max-w-md transform animate-bounce border-4 border-yellow-400">
+              <Trophy className="w-20 h-20 text-yellow-600 mx-auto mb-6 animate-spin" style={{ animationDuration: '2s' }} />
+              <h2 className="text-3xl font-bold text-amber-800 mb-4">🎉 Fantastis! 🎉</h2>
+              <p className="text-amber-700 mb-6 text-lg">Anda berhasil menaklukkan TTS Daratan dengan skor <span className="font-bold text-2xl text-green-600">{score}</span>!</p>
               <button
                 onClick={resetGame}
-                className="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition-colors"
+                className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-2xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 transform hover:scale-110 shadow-lg font-bold text-lg"
               >
-                Main Lagi
+                🔄 Petualangan Baru
               </button>
             </div>
           </div>
         )}
 
         {/* Main Game Area */}
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid xl:grid-cols-2 gap-10">
           {/* Crossword Grid */}
           <div className="flex justify-center">
-            <div className="bg-white p-6 rounded-lg shadow-lg">
+            <div className="bg-gradient-to-br from-white/90 to-amber-50/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border-2 border-amber-300 transform hover:scale-102 transition-all duration-500">
               <div
-                className="grid gap-1"
+                className="grid gap-2"
                 style={{
                   gridTemplateColumns: `repeat(${gridSize.cols}, 1fr)`,
                   gridTemplateRows: `repeat(${gridSize.rows}, 1fr)`
@@ -278,18 +439,20 @@ const DiagramCrosswordGame = ({ missionId, onComplete }) => {
                   row.map((cell, colIndex) => (
                     <div
                       key={`${rowIndex}-${colIndex}`}
-                      className={`w-8 h-8 text-sm font-bold ${getCellClass(rowIndex, colIndex)}`}
+                      className={`w-10 h-10 text-sm font-bold rounded-lg ${getCellClass(rowIndex, colIndex)}`}
                     >
                       {!cell.isBlock && (
                         <>
                           {cell.number && (
-                            <span className="absolute top-0 left-0.5 text-xs text-black font-bold">{cell.number}</span>
+                            <span className="absolute top-0.5 left-1 text-xs text-amber-700 font-bold bg-white/70 rounded px-1">
+                              {cell.number}
+                            </span>
                           )}
                           <input
                             type="text"
                             value={showAnswers ? cell.correctLetter : cell.letter}
                             onChange={(e) => !showAnswers && handleCellChange(rowIndex, colIndex, e.target.value)}
-                            className="w-full h-full text-center border-none outline-none bg-transparent font-bold text-black"
+                            className="w-full h-full text-center border-none outline-none bg-transparent font-bold text-inherit rounded-lg focus:ring-2 focus:ring-amber-400 transition-all duration-300"
                             maxLength="1"
                             disabled={showAnswers}
                             style={{ backgroundColor: 'transparent' }}
@@ -305,30 +468,33 @@ const DiagramCrosswordGame = ({ missionId, onComplete }) => {
           </div>
 
           {/* Clues */}
-          <div className="space-y-6">
-            <div className="bg-white p-4 rounded-lg shadow-lg">
-              <h3 className="text-xl font-bold text-orange-800 mb-4 underline">Mendatar</h3>
-              <div className="space-y-3">
+          <div className="space-y-8">
+            <div className="bg-gradient-to-br from-white/90 to-amber-50/90 backdrop-blur-sm p-6 rounded-3xl shadow-2xl border-2 border-amber-300 transform hover:scale-102 transition-all duration-500">
+              <h3 className="text-2xl font-bold text-amber-800 mb-6 flex items-center gap-3">
+                <span className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-3 py-1 rounded-full">→</span>
+                Mendatar
+              </h3>
+              <div className="space-y-4">
                 {acrossClues.map((word) => (
-                  <div key={word.id} className="text-sm">
-                    <div className="flex items-start justify-between gap-2">
+                  <div key={word.id} className="text-sm bg-white/50 p-4 rounded-2xl border border-amber-200 hover:bg-white/70 transition-all duration-300 transform hover:scale-105">
+                    <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
-                        <span className="font-bold text-orange-600">{word.number}. </span>
+                        <span className="font-bold text-amber-700 text-lg">{word.number}. </span>
                         <span
-                          className={completedWords.has(word.id) ? 'text-green-600 font-semibold' : 'text-gray-800'}
+                          className={completedWords.has(word.id) ? 'text-green-700 font-bold' : 'text-amber-800'}
                         >
                           {word.clue}
                         </span>
-                        {completedWords.has(word.id) && <span className="ml-2 text-green-500">✓</span>}
+                        {completedWords.has(word.id) && <span className="ml-2 text-green-500 text-xl animate-bounce">✅</span>}
                       </div>
                       {!completedWords.has(word.id) && (
                         <button
                           onClick={() => showHint(word.id)}
-                          className="text-yellow-600 hover:text-yellow-700 p-1"
+                          className="text-yellow-600 hover:text-yellow-700 p-2 rounded-full hover:bg-yellow-100 transition-all duration-300 transform hover:scale-110"
                           title="Tampilkan petunjuk (-3 poin)"
                           disabled={hints[word.id]}
                         >
-                          <Lightbulb className={`w-4 h-4 ${hints[word.id] ? 'text-gray-400' : ''}`} />
+                          <Lightbulb className={`w-5 h-5 ${hints[word.id] ? 'text-gray-400' : 'animate-pulse'}`} />
                         </button>
                       )}
                     </div>
@@ -337,29 +503,32 @@ const DiagramCrosswordGame = ({ missionId, onComplete }) => {
               </div>
             </div>
 
-            <div className="bg-white p-4 rounded-lg shadow-lg">
-              <h3 className="text-xl font-bold text-orange-800 mb-4 underline">Menurun</h3>
-              <div className="space-y-3">
+            <div className="bg-gradient-to-br from-white/90 to-amber-50/90 backdrop-blur-sm p-6 rounded-3xl shadow-2xl border-2 border-amber-300 transform hover:scale-102 transition-all duration-500">
+              <h3 className="text-2xl font-bold text-amber-800 mb-6 flex items-center gap-3">
+                <span className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-3 py-1 rounded-full">↓</span>
+                Menurun
+              </h3>
+              <div className="space-y-4">
                 {downClues.map((word) => (
-                  <div key={word.id} className="text-sm">
-                    <div className="flex items-start justify-between gap-2">
+                  <div key={word.id} className="text-sm bg-white/50 p-4 rounded-2xl border border-amber-200 hover:bg-white/70 transition-all duration-300 transform hover:scale-105">
+                    <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
-                        <span className="font-bold text-orange-600">{word.number}. </span>
+                        <span className="font-bold text-amber-700 text-lg">{word.number}. </span>
                         <span
-                          className={completedWords.has(word.id) ? 'text-green-600 font-semibold' : 'text-gray-800'}
+                          className={completedWords.has(word.id) ? 'text-green-700 font-bold' : 'text-amber-800'}
                         >
                           {word.clue}
                         </span>
-                        {completedWords.has(word.id) && <span className="ml-2 text-green-500">✓</span>}
+                        {completedWords.has(word.id) && <span className="ml-2 text-green-500 text-xl animate-bounce">✅</span>}
                       </div>
                       {!completedWords.has(word.id) && (
                         <button
                           onClick={() => showHint(word.id)}
-                          className="text-yellow-600 hover:text-yellow-700 p-1"
+                          className="text-yellow-600 hover:text-yellow-700 p-2 rounded-full hover:bg-yellow-100 transition-all duration-300 transform hover:scale-110"
                           title="Tampilkan petunjuk (-3 poin)"
                           disabled={hints[word.id]}
                         >
-                          <Lightbulb className={`w-4 h-4 ${hints[word.id] ? 'text-gray-400' : ''}`} />
+                          <Lightbulb className={`w-5 h-5 ${hints[word.id] ? 'text-gray-400' : 'animate-pulse'}`} />
                         </button>
                       )}
                     </div>
@@ -368,20 +537,35 @@ const DiagramCrosswordGame = ({ missionId, onComplete }) => {
               </div>
             </div>
 
-            <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-              <h4 className="font-semibold text-orange-800 mb-2">Cara Bermain:</h4>
-              <ul className="text-sm text-orange-700 space-y-1">
-                <li>• Klik kotak kuning untuk mengisi huruf</li>
-                <li>• Setiap kata lengkap mendapat poin</li>
-                <li>• Gunakan petunjuk 💡 jika kesulitan (-3 poin)</li>
-                <li>• Kotak hijau menandakan kata sudah benar</li>
+            <div className="bg-gradient-to-br from-orange-100 to-amber-200 p-6 rounded-3xl border-2 border-orange-300 shadow-lg transform hover:scale-105 transition-all duration-300">
+              <h4 className="font-bold text-orange-800 mb-4 text-xl flex items-center gap-2">
+                🎯 Panduan Petualangan:
+              </h4>
+              <ul className="text-sm text-orange-700 space-y-2">
+                <li className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
+                  Klik kotak kuning untuk mengisi huruf
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
+                  Setiap kata lengkap mendapat poin sesuai skor
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
+                  Gunakan petunjuk 💡 jika kesulitan (-3 poin)
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
+                  Kotak hijau menandakan kata sudah benar
+                </li>
               </ul>
             </div>
           </div>
         </div>
 
-        <div className="text-center mt-8 text-sm text-gray-500">
-          <p>TTS Edukatif - Materi Diagram dan Visualisasi Data</p>
+        <div className="text-center mt-12 text-amber-600 bg-white/30 backdrop-blur-sm p-4 rounded-2xl border border-amber-200">
+          <p className="text-lg font-semibold">🏔️ TTS Petualangan Daratan - Materi Diagram dan Visualisasi Data 🌲</p>
+          <p className="text-sm mt-2 opacity-75">Jelajahi dunia pengetahuan dengan tema alam yang menawan!</p>
         </div>
       </div>
     </div>

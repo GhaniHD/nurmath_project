@@ -1,11 +1,5 @@
 import { useState } from 'react';
-
-// Mock Link component for demonstration
-const Link = ({ to, children, ...props }) => (
-  <div {...props} onClick={() => alert(`Navigate to: ${to}`)}>
-    {children}
-  </div>
-);
+import { Link } from 'react-router-dom'; 
 
 const DiagramPage = () => {
   const [hoveredMission, setHoveredMission] = useState(null);
@@ -72,7 +66,7 @@ const DiagramPage = () => {
         {/* Missions Grid */}
         <div className="grid grid-cols-1 gap-6 max-w-2xl mx-auto">
           {missions.map((mission) => {
-            const MissionComponent = mission.available ? Link : 'div';
+            const MissionComponent = mission.available ? Link : 'div'; // Use real Link for available missions
             const missionProps = mission.available ? { to: `/diagram/${mission.id}` } : {};
             
             return (

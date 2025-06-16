@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node backend/server.js",
+    "start": "node ./server.js",
     "init-db": "node scripts/initializeDB.js",
     "seed": "node scripts/seed.js"
   },

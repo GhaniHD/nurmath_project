@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import AngketModal from './Angket/AngketModal';
 
 const Dashboard = ({ totalScore: initialTotalScore = 0, userName }) => {
   const [hoveredCard, setHoveredCard] = useState(null);
@@ -300,7 +301,7 @@ const Dashboard = ({ totalScore: initialTotalScore = 0, userName }) => {
       )}
 
       {/* Custom CSS for Animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes scroll {
           0% {
             background-position: 0 0;
@@ -332,6 +333,12 @@ const Dashboard = ({ totalScore: initialTotalScore = 0, userName }) => {
           }
         }
       `}</style>
+      
+
+      {/* Angket Modal */}
+      <AngketModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+      {/* Footer */}
     </div>
   );
 };

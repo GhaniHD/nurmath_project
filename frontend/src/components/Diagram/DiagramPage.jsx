@@ -19,9 +19,9 @@ const DiagramPage = () => {
       title: 'Misi 2: Chart Master',
       description: 'Coming Soon',
       icon: '📈',
-      available: false,
+      available: true,
       color: 'from-gray-500 to-gray-600',
-      shadowColor: 'shadow-gray-500/30'
+      shadowColor: 'shadow-gray-500/30',
     },
     {
       id: 'misi-6',

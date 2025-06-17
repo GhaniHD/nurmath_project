@@ -30,7 +30,7 @@ const mission2Questions = [
   },
   {
     type: 'ceklis',
-    question_text: 'Petunjuk soal:\nSeorang guru ingin mengumpulkan data tentang jenis makanan favorit siswa di kantin.\nGuru tersebut bingung memilih teknik pengumpulan data yang tepat.\nDari pilihan berikut, manakah bentuk representasi yang menunjukkan teknik pengumpulan data yang paling sesuai?\nCeklis dua jawaban yang benar.\nA. Guru membuat daftar pertanyaan dan menyebarkannya ke siswa melalui Google Form.\nB. Guru berdiri di depan kantin dan mencatat makanan yang paling banyak dibeli siswa.\nC. Guru membaca buku tentang gizi makanan siswa di perpustakaan.\nD. Guru menebak makanan yang mungkin disukai berdasarkan pengalamannya.',
+    question_text: 'Petunjuk soal:\nSeorang guru ingin mengumpulkan data tentang jenis makanan favorit siswa di kantin.\nGuru tersebut bingung memilih teknik pengumpulan data yang tepat.\nDari pilihan berikut, manakah bentuk representasi yang menunjukkan teknik pengumpulan data yang paling sesuai?\nCeklis dua jawaban yang benar.',
     options: [
       'A. Guru membuat daftar pertanyaan dan menyebarkannya ke siswa melalui Google Form.',
       'B. Guru berdiri di depan kantin dan mencatat makanan yang paling banyak dibeli siswa.',
@@ -45,7 +45,7 @@ const mission2Questions = [
   },
   {
     type: 'pg',
-    question_text: 'Petunjuk soal:\nSeorang peneliti ingin mengumpulkan data tentang jam tidur siswa setiap malam dan data tentang warna sepatu yang mereka pakai ke sekolah.\nManakah dari pernyataan berikut yang paling tepat untuk menjelaskan jenis data dan teknik pengumpulan yang mungkin digunakan?\nA. Kedua data termasuk numerik dan dapat dikumpulkan dengan observasi.\nB. Data jam tidur adalah numerik, sedangkan warna sepatu adalah kategorik. Keduanya bisa dikumpulkan melalui wawancara.\nC. Data jam tidur adalah kategorik, sedangkan warna sepatu adalah numerik.\nD. Data jam tidur dan warna sepatu sama-sama dikumpulkan lewat eksperimen.',
+    question_text: 'Petunjuk soal:\nSeorang peneliti ingin mengumpulkan data tentang jam tidur siswa setiap malam dan data tentang warna sepatu yang mereka pakai ke sekolah.\nManakah dari pernyataan berikut yang paling tepat untuk menjelaskan jenis data dan teknik pengumpulan yang mungkin digunakan?',
     options: [
       'A. Kedua data termuk numerik dan dapat dikumpulkan dengan observasi.',
       'B. Data jam tidur adalah numerik, sedangkan warna sepatu adalah kategorik. Keduanya bisa dikumpulkan melalui wawancara.',

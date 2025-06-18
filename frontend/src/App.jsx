@@ -27,7 +27,7 @@ const App = () => {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchTotalScore = async () => {
@@ -122,13 +122,13 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen font-comic-sans text-gray-800">
+    <div className="min-h-screen text-gray-800 font-comic-sans">
       {error && (
-        <div className="fixed top-4 right-4 bg-red-600 text-white p-4 rounded-lg shadow-lg z-50">
+        <div className="fixed z-50 p-4 text-white bg-red-600 rounded-lg shadow-lg top-4 right-4">
           {error}
           <button
             onClick={() => setError(null)}
-            className="ml-2 px-2 py-1 bg-blue-500 rounded hover:bg-blue-600"
+            className="px-2 py-1 ml-2 bg-blue-500 rounded hover:bg-blue-600"
           >
             Tutup
           </button>

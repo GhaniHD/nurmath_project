@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+const API_URL = import.meta.env.VITE_API_URL;
 
 const DataPage = ({ totalScore: initialTotalScore = 0, userName }) => {
   const [hoveredMission, setHoveredMission] = useState(null);
@@ -9,10 +10,10 @@ const DataPage = ({ totalScore: initialTotalScore = 0, userName }) => {
   useEffect(() => {
     const fetchTotalScore = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/leaderboard');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        const response = await fetch(`${API_URL}/api/leaderboard`);
+if (!response.ok) {
+  throw new Error(`HTTP error! status: ${response.status}`);
+}
         const data = await response.json();
         const userScore = data
           .filter(entry => entry.username === userName)
@@ -89,8 +90,8 @@ const DataPage = ({ totalScore: initialTotalScore = 0, userName }) => {
   const completedMissions = missions.filter(m => m.completed).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-900/80 via-blue-900/30 to-gray-800/80 p-8 font-cinzel text-gray-200 overflow-hidden relative">
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+    <div className="relative min-h-screen p-8 overflow-hidden text-gray-200 bg-gradient-to-br from-green-900/80 via-blue-900/30 to-gray-800/80 font-cinzel">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
         {/* Background motif: Earth-like pattern with clouds and stars */}
         <div className="w-full h-full bg-[repeating-linear-gradient(45deg,transparent,transparent,20px,rgba(0,100,0,0.05),20px,rgba(0,150,150,0.2)] animate-drift-pattern"></div>
         {/* Glowing effects: Earthy glows */}
@@ -102,35 +103,35 @@ const DataPage = ({ totalScore: initialTotalScore = 0, userName }) => {
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto animate-fade-in">
-        <div className="text-center mb-12">
+        <div className="mb-12 text-center">
           <div className="inline-block bg-gradient-to-b from-gray-900/80 to-green-800/30 rounded-2xl p-8 border-4 border-green-700/30 shadow-[0_0_15px_rgba(0,255,0,0.3)] backdrop-blur-sm">
             <h1 className="text-5xl font-bold text-green-200 mb-4 drop-shadow-[0_2px_3px_rgba(0,255,0,0.5)]">
               Peta Petualang Bumi NurMath
             </h1>
-            <h2 className="text-2xl font-semibold text-gray-200 mb-6">
+            <h2 className="mb-6 text-2xl font-semibold text-gray-200">
               Jelajahi Jejak Alam Semesta</h2>
-            <div className="bg-gray-900/30 rounded-lg p-4 border border-green-600/20">
-              <div className="flex items-center gap-8 justify-between">
+            <div className="p-4 border rounded-lg bg-gray-900/30 border-green-600/20">
+              <div className="flex items-center justify-between gap-8">
                 <div className="text-center">
-                  <p className="text-gray-400 text-sm">Petualang</p>
-                  <p className="text-green-200 font-bold text-lg font-semibold">{userName || 'Tamu'}</p>
+                  <p className="text-sm text-gray-400">Petualang</p>
+                  <p className="text-lg font-semibold font-bold text-green-200">{userName || 'Tamu'}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-gray-400 text-sm">Level</p>
+                  <p className="text-sm text-gray-400">Level</p>
                   <div className={`px-4 py-1 rounded-lg bg-gradient-to-r ${scoreInfo.bg} text-gray-200 font-bold text-sm shadow-[0_0_8px_rgba(0,255,0,0.2)]`}>
                     {scoreInfo.level} {scoreInfo.icon}
                   </div>
                 </div>
                 <div className="text-center">
-                  <p className="text-gray-400 text-sm">Poin Ilmu</p>
-                  <p className="text-green-200 font-bold text-xl animate-pulse">🌍 {formatScore(currentTotalScore)}</p>
+                  <p className="text-sm text-gray-400">Poin Ilmu</p>
+                  <p className="text-xl font-bold text-green-200 animate-pulse">🌍 {formatScore(currentTotalScore)}</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="grid max-w-4xl grid-cols-1 gap-8 mx-auto md:grid-cols-2">
           {missions.map((mission, index) => {
             const MissionComponent = mission.available ? Link : 'div';
             const missionProps = mission.available ? { to: mission.path } : {};
@@ -162,7 +163,7 @@ const DataPage = ({ totalScore: initialTotalScore = 0, userName }) => {
                       <h3 className={`text-lg font-bold text-green-200 mb-2 ${mission.available ? 'group-hover:text-green-300' : ''} transition-colors drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]`}>
                         {mission.title}
                       </h3>
-                      <p className="text-gray-300 text-sm mb-4 font-medium leading-relaxed">
+                      <p className="mb-4 text-sm font-medium leading-relaxed text-gray-300">
                         {mission.description}
                       </p>
                       <div className="flex items-center gap-2">
@@ -177,7 +178,7 @@ const DataPage = ({ totalScore: initialTotalScore = 0, userName }) => {
                             </div>
                           )
                         ) : (
-                          <div className="px-3 py-1 bg-gray-600/50 rounded-full text-gray-400 font-semibold text-xs">
+                          <div className="px-3 py-1 text-xs font-semibold text-gray-400 rounded-full bg-gray-600/50">
                             🔒 TERKUNCI
                           </div>
                         )}
@@ -190,28 +191,28 @@ const DataPage = ({ totalScore: initialTotalScore = 0, userName }) => {
           })}
         </div>
 
-        <div className="mt-12 max-w-4xl mx-auto animate-slide-in delay-600">
+        <div className="max-w-4xl mx-auto mt-12 animate-slide-in delay-600">
           <div className="bg-gradient-to-b from-gray-900/80 to-green-800/30 rounded-xl p-6 border-4 border-gray-700/30 shadow-[0_0_15px_rgba(0,255,0,0.3)] backdrop-blur-sm">
             <h3 className="text-lg font-semibold text-green-200 mb-4 text-center drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">🌍 Catatan Petualangan</h3>
             <div className="flex justify-between gap-4">
-              <div className="text-center flex-1">
-                <div className="text-2xl mb-2 text-green-300">✅</div>
-                <div className="text-green-200 font-bold text-sm">{availableMissions}</div>
-                <div className="text-gray-400 text-xs">Tersedia</div>
+              <div className="flex-1 text-center">
+                <div className="mb-2 text-2xl text-green-300">✅</div>
+                <div className="text-sm font-bold text-green-200">{availableMissions}</div>
+                <div className="text-xs text-gray-400">Tersedia</div>
               </div>
-              <div className="text-center flex-1">
-                <div className="text-2xl mb-2 text-gray-400">🔒</div>
-                <div className="text-green-200 font-bold text-sm">{lockedMissions}</div>
-                <div className="text-gray-400 text-xs">Terkunci</div>
+              <div className="flex-1 text-center">
+                <div className="mb-2 text-2xl text-gray-400">🔒</div>
+                <div className="text-sm font-bold text-green-200">{lockedMissions}</div>
+                <div className="text-xs text-gray-400">Terkunci</div>
               </div>
-              <div className="text-center flex-1">
-                <div className="text-2xl mb-2 text-yellow-200">🏆</div>
-                <div className="text-green-200 font-bold text-sm">{completedMissions}</div>
-                <div className="text-gray-400 text-xs">Selesai</div>
+              <div className="flex-1 text-center">
+                <div className="mb-2 text-2xl text-yellow-200">🏆</div>
+                <div className="text-sm font-bold text-green-200">{completedMissions}</div>
+                <div className="text-xs text-gray-400">Selesai</div>
               </div>
             </div>
-            <div className="w-full bg-gray-700/50 rounded-full h-2 mt-4">
-              <div className="bg-green-600/70 h-2 rounded-full transition-all duration-500" style={{ width: `${(completedMissions / missions.length) * 100}%` }}></div>
+            <div className="w-full h-2 mt-4 rounded-full bg-gray-700/50">
+              <div className="h-2 transition-all duration-500 rounded-full bg-green-600/70" style={{ width: `${(completedMissions / missions.length) * 100}%` }}></div>
             </div>
           </div>
         </div>

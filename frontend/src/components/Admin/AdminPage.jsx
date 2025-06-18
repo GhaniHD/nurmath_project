@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom';
 import AdminSidebar from './AdminSidebar';
 import QuestionTable from './QuestionTable';
 import QuestionModal from './QuestionModal';
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 const AdminPage = () => {
   const [questions, setQuestions] = useState([]);
@@ -22,7 +24,7 @@ const AdminPage = () => {
       const fetchQuestions = async () => {
         setLoading(true);
         try {
-          const response = await fetch(`http://localhost:3001/api/questions/${missionIdFilter}`);
+          const response = await fetch(`${API_URL}/api/questions/${missionIdFilter}`);
           if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
           const data = await response.json();
           setQuestions(data);
@@ -40,7 +42,8 @@ const AdminPage = () => {
   // Tambah soal
   const handleAddQuestion = async (formData) => {
     try {
-      const response = await fetch('http://localhost:3001/api/questions', {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API_URL}/api/questions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -57,7 +60,7 @@ const AdminPage = () => {
   // Edit soal
   const handleEditQuestion = async (formData) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/questions/${editQuestion._id}`, {
+      const response = await fetch(`${API_URL}/api/questions/${editQuestion._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -74,7 +77,7 @@ const AdminPage = () => {
   // Hapus soal
   const handleDeleteQuestion = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/questions/${id}`, {
+      const response = await fetch(`${API_URL}/api/questions/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Gagal menghapus soal');
@@ -88,11 +91,11 @@ const AdminPage = () => {
   return (
     <div className="flex min-h-screen bg-gray-100 font-comic-sans">
       <AdminSidebar />
-      <div className="ml-64 p-6 w-full">
+      <div className="w-full p-6 ml-64">
         {isQuestionsPage ? (
           <>
-            <h2 className="text-3xl font-bold mb-6 text-blue-600">Kelola Soal</h2>
-            <div className="mb-4 flex justify-between items-center max-w-4xl mx-auto">
+            <h2 className="mb-6 text-3xl font-bold text-blue-600">Kelola Soal</h2>
+            <div className="flex items-center justify-between max-w-4xl mx-auto mb-4">
               <div>
                 <label className="mr-2">Pilih Misi:</label>
                 <select
@@ -110,12 +113,12 @@ const AdminPage = () => {
                   setEditQuestion(null);
                   setIsModalOpen(true);
                 }}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300"
+                className="px-4 py-2 text-white transition duration-300 bg-green-500 rounded hover:bg-green-600"
               >
                 Tambah Soal
               </button>
             </div>
-            {error && <p className="text-red-600 mb-4 max-w-4xl mx-auto">{error}</p>}
+            {error && <p className="max-w-4xl mx-auto mb-4 text-red-600">{error}</p>}
             {loading ? (
               <p className="text-center">Memuat...</p>
             ) : (
@@ -142,7 +145,7 @@ const AdminPage = () => {
             />
           </>
         ) : (
-          <h2 className="text-3xl font-bold mb-6 text-blue-600">
+          <h2 className="mb-6 text-3xl font-bold text-blue-600">
             {location.pathname === '/admin/leaderboard' ? 'Kelola Leaderboard' : 'Kelola Feedback'}
           </h2>
         )}

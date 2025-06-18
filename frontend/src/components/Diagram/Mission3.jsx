@@ -16,7 +16,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
   const [characterMessage, setCharacterMessage] = useState('Selamat datang, Penjelajah Langit!');
 
   const navigate = null; // Demo mode - navigation disabled
-  const API_URL = 'http://localhost:3001';
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Load saved progress from localStorage on mount
   useEffect(() => {
@@ -204,13 +204,13 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
 
   // Interactive character component
   const renderCharacter = () => (
-    <div className="fixed bottom-10 right-10 z-20 flex flex-col items-end gap-4">
-      <div className="bg-blue-900/80 backdrop-blur-sm rounded-2xl p-4 border border-blue-400/30 max-w-xs">
-        <p className="text-white text-lg font-semibold animate-pulse">{characterMessage}</p>
+    <div className="fixed z-20 flex flex-col items-end gap-4 bottom-10 right-10">
+      <div className="max-w-xs p-4 border bg-blue-900/80 backdrop-blur-sm rounded-2xl border-blue-400/30">
+        <p className="text-lg font-semibold text-white animate-pulse">{characterMessage}</p>
       </div>
       <div className="relative">
         <div className="text-6xl animate-bounce">🧙‍♂️</div>
-        <div className="absolute -top-2 -right-2 text-2xl animate-spin">✨</div>
+        <div className="absolute text-2xl -top-2 -right-2 animate-spin">✨</div>
       </div>
     </div>
   );
@@ -221,16 +221,16 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
       <div className="flex items-center justify-center mb-6">
         <div className="text-6xl animate-bounce">🌌</div>
       </div>
-      <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-blue-100 mb-4">📜 Petualangan Langit Dimulai...</h2>
-        <div className="bg-black/30 rounded-xl p-6 border border-blue-400/20">
-          <p className="text-lg text-blue-50 leading-relaxed">
+      <div className="space-y-4 text-center">
+        <h2 className="mb-4 text-3xl font-bold text-blue-100">📜 Petualangan Langit Dimulai...</h2>
+        <div className="p-6 border bg-black/30 rounded-xl border-blue-400/20">
+          <p className="text-lg leading-relaxed text-blue-50">
             <span className="font-bold text-blue-300">Astra</span> melayang di antara bintang-bintang di langit malam yang luas. 
-            Kabut kosmik menyembunyikan <span className="text-blue-400 font-semibold">rahasia representasi data</span> di dalam awan-awan misterius.
+            Kabut kosmik menyembunyikan <span className="font-semibold text-blue-400">rahasia representasi data</span> di dalam awan-awan misterius.
           </p>
-          <p className="text-lg text-blue-50 leading-relaxed mt-4">
+          <p className="mt-4 text-lg leading-relaxed text-blue-50">
             "Aku harus menjelajahi setiap awan dengan hati-hati," gumam Astra sambil memegang tongkat bintang. 
-            <span className="text-blue-400 font-semibold">"Setiap pertanyaan yang terjawab akan membuka rahasia kosmos!"</span>
+            <span className="font-semibold text-blue-400">"Setiap pertanyaan yang terjawab akan membuka rahasia kosmos!"</span>
           </p>
         </div>
       </div>
@@ -252,14 +252,14 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
       <div className="space-y-12">
         {storyPhase === 'intro' && renderStoryIntro()}
         
-        <div className="bg-gradient-to-b from-blue-900/80 to-indigo-900/80 backdrop-blur-sm rounded-3xl p-10 border-2 border-blue-400/30 shadow-2xl">
-          <div className="text-center mb-10">
-            <div className="text-5xl mb-6">✈️ 🌌 ✈️</div>
-            <h3 className="text-3xl font-bold text-blue-100 mb-4">Petualangan Langit Misterius</h3>
-            <p className="text-blue-200/80 text-lg">Pilih awan untuk mulai menjelajahi rahasia langit!</p>
+        <div className="p-10 border-2 shadow-2xl bg-gradient-to-b from-blue-900/80 to-indigo-900/80 backdrop-blur-sm rounded-3xl border-blue-400/30">
+          <div className="mb-10 text-center">
+            <div className="mb-6 text-5xl">✈️ 🌌 ✈️</div>
+            <h3 className="mb-4 text-3xl font-bold text-blue-100">Petualangan Langit Misterius</h3>
+            <p className="text-lg text-blue-200/80">Pilih awan untuk mulai menjelajahi rahasia langit!</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid max-w-5xl grid-cols-1 gap-8 mx-auto sm:grid-cols-2 md:grid-cols-3">
             {cloudLayers.map((layer, index) => {
               const question = questions.find(q => q.id === (index + 1));
               const isAnswered = question && answeredQuestions[question.id];
@@ -280,30 +280,30 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                   {isFlying && (
                     <div className="absolute inset-0 bg-blue-400/20 animate-ping rounded-2xl"></div>
                   )}
-                  <div className="absolute top-4 right-4 text-blue-400 animate-pulse opacity-60">🌟</div>
-                  <div className="absolute bottom-4 left-4 text-blue-300 animate-pulse opacity-40 delay-300">✨</div>
+                  <div className="absolute text-blue-400 top-4 right-4 animate-pulse opacity-60">🌟</div>
+                  <div className="absolute text-blue-300 delay-300 bottom-4 left-4 animate-pulse opacity-40">✨</div>
                   
                   <div className="relative z-10 text-center">
-                    <div className="text-5xl mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                    <div className="mb-4 text-5xl transition-transform duration-300 transform group-hover:scale-110">
                       {isFlying ? '⚡' : layer.icon}
                     </div>
-                    <div className="text-white font-bold text-xl mb-2">{layer.name}</div>
-                    <div className="text-blue-300 text-sm opacity-80">{layer.altitude}</div>
+                    <div className="mb-2 text-xl font-bold text-white">{layer.name}</div>
+                    <div className="text-sm text-blue-300 opacity-80">{layer.altitude}</div>
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-blue-400/0 via-blue-400/10 to-blue-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                  <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-t from-blue-400/0 via-blue-400/10 to-blue-400/0 group-hover:opacity-100 rounded-2xl"></div>
                 </button>
               );
             })}
           </div>
 
           <div className="mt-10 text-center">
-            <div className="bg-blue-800/50 rounded-full p-6 inline-block">
-              <div className="text-blue-300 text-xl font-semibold">
+            <div className="inline-block p-6 rounded-full bg-blue-800/50">
+              <div className="text-xl font-semibold text-blue-300">
                 🌠 Kemajuan Penjelajahan: {Object.keys(answeredQuestions).length}/{questions.length}
               </div>
-              <div className="w-80 bg-blue-700 rounded-full h-4 mt-4 mx-auto overflow-hidden">
+              <div className="h-4 mx-auto mt-4 overflow-hidden bg-blue-700 rounded-full w-80">
                 <div 
-                  className="bg-gradient-to-r from-blue-500 to-cyan-400 h-full rounded-full transition-all duration-1000 shadow-lg"
+                  className="h-full transition-all duration-1000 rounded-full shadow-lg bg-gradient-to-r from-blue-500 to-cyan-400"
                   style={{ width: `${(Object.keys(answeredQuestions).length / questions.length) * 100}%` }}
                 ></div>
               </div>
@@ -319,34 +319,34 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
     if (!currentQuestion) return null;
 
     return (
-      <div className="bg-gradient-to-br from-blue-900/95 to-indigo-900/95 backdrop-blur-sm rounded-3xl p-8 border-2 border-blue-400/30 shadow-2xl w-full max-w-3xl mx-auto relative overflow-hidden">
+      <div className="relative w-full max-w-3xl p-8 mx-auto overflow-hidden border-2 shadow-2xl bg-gradient-to-br from-blue-900/95 to-indigo-900/95 backdrop-blur-sm rounded-3xl border-blue-400/30">
         <div className="absolute top-0 left-0 w-full h-full opacity-10">
-          <div className="absolute top-6 left-6 text-5xl animate-pulse">🌟</div>
-          <div className="absolute top-6 right-6 text-3xl animate-bounce delay-300">✨</div>
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-4xl animate-pulse delay-700">🌌</div>
+          <div className="absolute text-5xl top-6 left-6 animate-pulse">🌟</div>
+          <div className="absolute text-3xl delay-300 top-6 right-6 animate-bounce">✨</div>
+          <div className="absolute text-4xl delay-700 transform -translate-x-1/2 bottom-6 left-1/2 animate-pulse">🌌</div>
         </div>
 
         <div className="relative z-10">
-          <div className="text-center mb-8">
-            <div className="text-5xl mb-4 animate-bounce">⭐</div>
-            <h3 className="text-3xl font-bold text-blue-200 mb-2">Bintang Data Ditemukan!</h3>
-            <div className="bg-blue-900/30 rounded-xl p-4 border border-blue-400/20">
-              <p className="text-blue-100 text-sm">Astra menemukan konstelasi berisi pertanyaan misterius...</p>
+          <div className="mb-8 text-center">
+            <div className="mb-4 text-5xl animate-bounce">⭐</div>
+            <h3 className="mb-2 text-3xl font-bold text-blue-200">Bintang Data Ditemukan!</h3>
+            <div className="p-4 border bg-blue-900/30 rounded-xl border-blue-400/20">
+              <p className="text-sm text-blue-100">Astra menemukan konstelasi berisi pertanyaan misterius...</p>
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-blue-900/40 to-cyan-900/40 rounded-2xl p-6 border border-blue-400/20 mb-6">
-            <p className="text-xl font-semibold text-white text-center leading-relaxed whitespace-pre-line">
+          <div className="p-6 mb-6 border bg-gradient-to-r from-blue-900/40 to-cyan-900/40 rounded-2xl border-blue-400/20">
+            <p className="text-xl font-semibold leading-relaxed text-center text-white whitespace-pre-line">
               {currentQuestion.question_text}
             </p>
             {currentQuestion.audio_url && (
-              <div className="mt-4 flex justify-center">
+              <div className="flex justify-center mt-4">
                 <audio controls src={currentQuestion.audio_url} className="w-full max-w-sm" />
               </div>
             )}
             {currentQuestion.image_url && currentQuestion.type === 'gambar-isian' && (
-              <div className="mt-4 flex justify-center">
-                <img src={currentQuestion.image_url} alt="Question Image" className="max-w-full h-auto rounded-lg shadow-md" />
+              <div className="flex justify-center mt-4">
+                <img src={currentQuestion.image_url} alt="Question Image" className="h-auto max-w-full rounded-lg shadow-md" />
               </div>
             )}
           </div>
@@ -354,11 +354,11 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
           <div className="space-y-6">
             {currentQuestion.type === 'pg' && (
               <div className="space-y-4">
-                <p className="text-blue-200 text-center mb-4">Pilih diagram batang yang sesuai dengan data penjualan buah:</p>
+                <p className="mb-4 text-center text-blue-200">Pilih diagram batang yang sesuai dengan data penjualan buah:</p>
                 {Object.entries(currentQuestion.options).map(([key, value]) => (
                   <label
                     key={key}
-                    className="flex items-center p-4 bg-blue-800/60 rounded-xl border border-blue-600/30 hover:bg-blue-700/60 transition-all duration-300 cursor-pointer"
+                    className="flex items-center p-4 transition-all duration-300 border cursor-pointer bg-blue-800/60 rounded-xl border-blue-600/30 hover:bg-blue-700/60"
                   >
                     <input
                       type="radio"
@@ -367,14 +367,14 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                       checked={userAnswer === key}
                       onChange={(e) => setUserAnswer(e.target.value)}
                       disabled={showFeedback}
-                      className="w-5 h-5 text-blue-600 bg-blue-700 border-blue-400 focus:ring-blue-400 mr-4"
+                      className="w-5 h-5 mr-4 text-blue-600 bg-blue-700 border-blue-400 focus:ring-blue-400"
                     />
                     <img
                       src={value}
                       alt={`Option ${key}`}
                       className="w-24 h-auto rounded-lg"
                     />
-                    <span className="text-white hover:text-blue-200 transition-colors duration-300 ml-4">{key}</span>
+                    <span className="ml-4 text-white transition-colors duration-300 hover:text-blue-200">{key}</span>
                   </label>
                 ))}
               </div>
@@ -382,7 +382,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
 
             {currentQuestion.type === 'ya-tidak' && (
               <div className="space-y-4">
-                <p className="text-blue-200 text-center mb-4">
+                <p className="mb-4 text-center text-blue-200">
                   {currentQuestion.question_text.includes('panen padi') 
                     ? 'Apakah diagram garis cocok untuk data panen padi?' 
                     : 'Apakah perhitungan persentase kegiatan ekstrakurikuler benar?'}
@@ -390,7 +390,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                 {currentQuestion.options.map(option => (
                   <label
                     key={option}
-                    className="flex items-center p-4 bg-blue-800/60 rounded-xl border border-blue-600/30 hover:bg-blue-700/60 transition-all duration-300 cursor-pointer"
+                    className="flex items-center p-4 transition-all duration-300 border cursor-pointer bg-blue-800/60 rounded-xl border-blue-600/30 hover:bg-blue-700/60"
                   >
                     <input
                       type="radio"
@@ -399,9 +399,9 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                       checked={userAnswer === option}
                       onChange={(e) => setUserAnswer(e.target.value)}
                       disabled={showFeedback}
-                      className="w-5 h-5 text-blue-600 bg-blue-700 border-blue-400 focus:ring-blue-400 mr-4"
+                      className="w-5 h-5 mr-4 text-blue-600 bg-blue-700 border-blue-400 focus:ring-blue-400"
                     />
-                    <span className="text-white hover:text-blue-200 transition-colors duration-300">{option}</span>
+                    <span className="text-white transition-colors duration-300 hover:text-blue-200">{option}</span>
                   </label>
                 ))}
               </div>
@@ -409,25 +409,25 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
 
             {currentQuestion.type === 'isian-singkat' && (
               <div className="text-center">
-                <p className="text-blue-200 mb-4">Masukkan sudut derajat untuk setiap aktivitas (format: [jawaban 1,jawaban 2,jawaban 3,jawaban 4]):</p>
+                <p className="mb-4 text-blue-200">Masukkan sudut derajat untuk setiap aktivitas (format: [jawaban 1,jawaban 2,jawaban 3,jawaban 4]):</p>
                 <div className="relative">
                   <input
                     type="text"
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
                     placeholder="Tuliskan jawaban kosmik mu..."
-                    className="p-4 rounded-xl bg-blue-800/80 text-white border-2 border-blue-400/30 w-full max-w-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-center text-lg transition-all duration-300"
+                    className="w-full max-w-md p-4 text-lg text-center text-white transition-all duration-300 border-2 rounded-xl bg-blue-800/80 border-blue-400/30 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                     disabled={showFeedback}
                     aria-label="Masukkan jawaban"
                   />
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-400">🌟</div>
+                  <div className="absolute text-blue-400 transform -translate-y-1/2 right-4 top-1/2">🌟</div>
                 </div>
               </div>
             )}
 
             {currentQuestion.type === 'menjodohkan' && (
               <div className="text-center">
-                <p className="text-blue-200 mb-4">Pasangkan data dengan jenis diagram yang sesuai:</p>
+                <p className="mb-4 text-blue-200">Pasangkan data dengan jenis diagram yang sesuai:</p>
                 <div className="flex flex-col items-center space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     {currentQuestion.options
@@ -437,7 +437,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                           key={item}
                           draggable
                           onDragStart={(e) => e.dataTransfer.setData('text/plain', item)}
-                          className="p-3 bg-blue-600/50 rounded-lg cursor-move text-white hover:bg-blue-500 transition-colors"
+                          className="p-3 text-white transition-colors rounded-lg cursor-move bg-blue-600/50 hover:bg-blue-500"
                         >
                           {item}
                         </div>
@@ -465,7 +465,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                             .map(opt => (
                               <div
                                 key={opt.item}
-                                className="p-2 bg-blue-500/50 rounded-lg cursor-pointer"
+                                className="p-2 rounded-lg cursor-pointer bg-blue-500/50"
                                 onClick={() => {
                                   setSelectedOptions(prev => prev.filter(o => o.item !== opt.item));
                                 }}
@@ -483,24 +483,24 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
 
             {currentQuestion.type === 'gambar-isian' && (
               <div className="text-center">
-                <p className="text-blue-200 mb-4">Masukkan besar sudut untuk siswa yang naik sepeda (hanya angka):</p>
+                <p className="mb-4 text-blue-200">Masukkan besar sudut untuk siswa yang naik sepeda (hanya angka):</p>
                 <div className="relative">
                   <input
                     type="text"
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
                     placeholder="Tuliskan jawaban kosmik mu..."
-                    className="p-4 rounded-xl bg-blue-800/80 text-white border-2 border-blue-400/30 w-full max-w-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-center text-lg transition-all duration-300"
+                    className="w-full max-w-md p-4 text-lg text-center text-white transition-all duration-300 border-2 rounded-xl bg-blue-800/80 border-blue-400/30 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                     disabled={showFeedback}
                     aria-label="Masukkan jawaban"
                   />
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-400">🌟</div>
+                  <div className="absolute text-blue-400 transform -translate-y-1/2 right-4 top-1/2">🌟</div>
                 </div>
               </div>
             )}
           </div>
 
-          <div className="text-center mt-8">
+          <div className="mt-8 text-center">
             <button
               onClick={handleSubmitAnswer}
               disabled={
@@ -509,7 +509,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                 ((currentQuestion.type === 'pg' || currentQuestion.type === 'ya-tidak') && !userAnswer) ||
                 ((currentQuestion.type === 'isian-singkat' || currentQuestion.type === 'gambar-isian') && !userAnswer.trim())
               }
-              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold rounded-xl shadow-lg hover:from-blue-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 transition-all duration-300 text-lg border-2 border-blue-400/20"
+              className="px-8 py-4 text-lg font-bold text-white transition-all duration-300 transform border-2 shadow-lg bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl hover:from-blue-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 border-blue-400/20"
               aria-label="Kirim jawaban"
             >
               <span className="flex items-center justify-center gap-2">
@@ -527,14 +527,14 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                     : 'bg-red-900/80 border-red-400/50 text-red-300'
                 }`}
               >
-                <div className="text-4xl mb-2">{result ? '🎉' : '🌌'}</div>
+                <div className="mb-2 text-4xl">{result ? '🎉' : '🌌'}</div>
                 <div className="text-2xl font-bold">
                   {result
                     ? `✨ Hebat! Data bintang terungkap! ✨\n🏆 +${currentQuestion.score} XP Penjelajah! 🏆`
                     : '🔄 Hmm, coba terbang lebih tinggi lagi... 🔄'}
                 </div>
                 {result && (
-                  <div className="text-green-200 mt-2 text-lg">
+                  <div className="mt-2 text-lg text-green-200">
                     "Pengetahuan baru bersinar di langit malam!"
                   </div>
                 )}
@@ -548,26 +548,26 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
 
   // Component to render the completion story
   const renderCompletionStory = () => (
-    <div className="bg-gradient-to-r from-blue-900/90 to-cyan-800/90 backdrop-blur-sm rounded-3xl p-8 border-2 border-blue-400/30 shadow-2xl text-center transform animate-pulse">
-      <div className="text-6xl mb-6 animate-bounce">🌟</div>
-      <h2 className="text-4xl font-bold text-blue-100 mb-4">Misi Langit Berhasil!</h2>
-      <div className="bg-black/30 rounded-xl p-6 border border-blue-400/20">
-        <p className="text-xl text-blue-50 leading-relaxed">
+    <div className="p-8 text-center transform border-2 shadow-2xl bg-gradient-to-r from-blue-900/90 to-cyan-800/90 backdrop-blur-sm rounded-3xl border-blue-400/30 animate-pulse">
+      <div className="mb-6 text-6xl animate-bounce">🌟</div>
+      <h2 className="mb-4 text-4xl font-bold text-blue-100">Misi Langit Berhasil!</h2>
+      <div className="p-6 border bg-black/30 rounded-xl border-blue-400/20">
+        <p className="text-xl leading-relaxed text-blue-50">
           Astra berhasil menjelajahi semua awan dan mengungkap rahasia representasi data! 
           Cahaya bintang kini bersinar terang, menerangi jalan menuju petualangan kosmik berikutnya...
         </p>
       </div>
-      <div className="mt-8 flex justify-center gap-4">
+      <div className="flex justify-center gap-4 mt-8">
         <button
           onClick={() => navigate ? navigate('/leaderboard') : console.log('Navigating to leaderboard...')}
-          className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-800 text-white font-bold rounded-xl shadow-lg hover:from-blue-700 hover:to-indigo-900 transform hover:scale-105 transition-all duration-300 text-lg border-2 border-blue-400/20"
+          className="px-8 py-4 text-lg font-bold text-white transition-all duration-300 transform border-2 shadow-lg bg-gradient-to-r from-blue-600 to-indigo-800 rounded-xl hover:from-blue-700 hover:to-indigo-900 hover:scale-105 border-blue-400/20"
           aria-label="Lihat Leaderboard"
         >
           🏅 Lihat Leaderboard
         </button>
         <button
           onClick={handlePlayAgain}
-          className="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold rounded-xl shadow-lg hover:from-blue-700 hover:to-cyan-700 transform hover:scale-105 transition-all duration-300 text-lg border-2 border-blue-400/20"
+          className="px-8 py-4 text-lg font-bold text-white transition-all duration-300 transform border-2 shadow-lg bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl hover:from-blue-700 hover:to-cyan-700 hover:scale-105 border-blue-400/20"
           aria-label="Main Lagi"
         >
           🔄 Terbang Lagi
@@ -577,12 +577,12 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-900 to-black relative overflow-hidden font-inter">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-blue-900 via-indigo-900 to-black font-inter">
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-10 text-6xl animate-float">🌟</div>
-        <div className="absolute top-40 right-20 text-4xl animate-float delay-1000">🌙</div>
-        <div className="absolute bottom-20 left-1/4 text-5xl animate-float delay-2000">✨</div>
-        <div className="absolute bottom-40 right-1/3 text-3xl animate-float delay-3000">☄️</div>
+        <div className="absolute text-6xl top-20 left-10 animate-float">🌟</div>
+        <div className="absolute text-4xl delay-1000 top-40 right-20 animate-float">🌙</div>
+        <div className="absolute text-5xl bottom-20 left-1/4 animate-float delay-2000">✨</div>
+        <div className="absolute text-3xl bottom-40 right-1/3 animate-float delay-3000">☄️</div>
       </div>
 
       {renderCharacter()}
@@ -590,14 +590,14 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
       <div className="relative z-10 p-6">
         <div className="max-w-6xl mx-auto">
           {isLoading && (
-            <div className="text-center text-white text-3xl space-y-4">
-              <div className="animate-spin text-6xl">⚡</div>
+            <div className="space-y-4 text-3xl text-center text-white">
+              <div className="text-6xl animate-spin">⚡</div>
               <div>Menjelajahi konstelasi data...</div>
             </div>
           )}
 
           {error && (
-            <div className="text-center text-red-400 text-2xl space-y-4">
+            <div className="space-y-4 text-2xl text-center text-red-400">
               <div className="text-6xl">😱</div>
               <div>{error}</div>
               <button
@@ -633,7 +633,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                   };
                   fetchQuestions();
                 }}
-                className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-300"
+                className="px-6 py-3 text-white transition-all duration-300 bg-blue-600 rounded-xl hover:bg-blue-700"
                 aria-label="Coba lagi"
               >
                 🔄 Coba Terbang Lagi
@@ -643,14 +643,14 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
 
           {!isLoading && !error && (
             <>
-              <div className="text-center mb-12">
-                <h1 className="text-5xl md:text-6xl font-bold text-blue-200 mb-6 drop-shadow-2xl">
+              <div className="mb-12 text-center">
+                <h1 className="mb-6 text-5xl font-bold text-blue-200 md:text-6xl drop-shadow-2xl">
                   🌌 Misi 6 – Rahasia Representasi Data Kosmik 🌠
                 </h1>
-                <div className="bg-gradient-to-r from-blue-900/60 to-cyan-900/60 backdrop-blur-sm rounded-2xl p-6 border border-blue-400/20 max-w-4xl mx-auto">
-                  <p className="text-xl md:text-2xl text-blue-100 leading-relaxed">
+                <div className="max-w-4xl p-6 mx-auto border bg-gradient-to-r from-blue-900/60 to-cyan-900/60 backdrop-blur-sm rounded-2xl border-blue-400/20">
+                  <p className="text-xl leading-relaxed text-blue-100 md:text-2xl">
                     <span className="font-bold text-blue-300">Astra</span> harus menjelajahi rahasia representasi data yang tersembunyi di awan-awan langit. 
-                    Ayo bantu memilih <span className="text-blue-400 font-semibold">diagram yang tepat</span>! 🔍✨
+                    Ayo bantu memilih <span className="font-semibold text-blue-400">diagram yang tepat</span>! 🔍✨
                   </p>
                 </div>
               </div>

@@ -64,7 +64,7 @@ const Dashboard = ({ totalScore: initialTotalScore = 0, userName }) => {
       id: 'leaderboard',
       title: 'Langit Informasi',
       icon: '☁️',
-      description: 'Terbang tinggi, lihat peringkat penjelajah sejati!',
+      description: 'Terbang tinggi, lihat peringkat penjelajah sejati di langit NurMath!',
       color: 'from-sky-700/80 to-cyan-800/80',
       shadowColor: 'shadow-cyan-600/30',
       path: '/leaderboard',

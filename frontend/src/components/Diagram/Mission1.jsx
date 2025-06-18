@@ -93,6 +93,7 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [particles, setParticles] = useState([]);
+  const [characterAnimation, setCharacterAnimation] = useState('idle'); // State for character animation
 
   // Grid size based on the crossword data
   const gridSize = { rows: 12, cols: 12 };
@@ -121,7 +122,6 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
     }
     setParticles(newParticles);
 
-    // Animate particles
     const interval = setInterval(() => {
       setParticles(prev => prev.map(particle => ({
         ...particle,
@@ -135,7 +135,6 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
   useEffect(() => {
     setIsLoading(true);
     try {
-      // Set words based on missionId
       if (missionId === 'misi-4') {
         setWords(mission4Questions[0].targets);
       } else {
@@ -148,7 +147,6 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
     }
   }, [missionId]);
 
-  // Update grid when words change
   useEffect(() => {
     if (words.length > 0) {
       const initialGrid = Array(gridSize.rows)
@@ -191,6 +189,8 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
     };
     setGrid(newGrid);
     checkWordCompletion(newGrid);
+    setCharacterAnimation('active'); // Trigger character animation on input
+    setTimeout(() => setCharacterAnimation('idle'), 1000); // Reset after 1 second
   };
 
   const checkWordCompletion = (currentGrid) => {
@@ -231,6 +231,7 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
       if (onComplete) {
         onComplete(totalScore, missionId);
       }
+      setCharacterAnimation('celebrate'); // Trigger celebration animation
     }
   };
 
@@ -248,10 +249,13 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
     setCompletedWords(new Set());
     setGameComplete(false);
     setHints({});
+    setCharacterAnimation('idle'); // Reset character animation
   };
 
   const toggleAnswers = () => {
     setShowAnswers(!showAnswers);
+    setCharacterAnimation(showAnswers ? 'idle' : 'active'); // Trigger animation on toggle
+    setTimeout(() => setCharacterAnimation('idle'), 1000);
   };
 
   const showHint = (wordId) => {
@@ -274,6 +278,8 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
           setHints((prev) => ({ ...prev, [wordId]: true }));
           setScore(Math.max(0, score - 3));
           checkWordCompletion(newGrid);
+          setCharacterAnimation('hint'); // Trigger hint animation
+          setTimeout(() => setCharacterAnimation('idle'), 1000);
           break;
         }
       }
@@ -405,6 +411,17 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
             </button>
           </div>
         </div>
+        {/* Interactive Character Above TTS Box */}
+      <div className="text-center mt-8 -mb-20 z-20">
+        <img
+          src="../public/images/misi-1.png"
+          alt="Forest Explorer Character"
+          className={`w-64 h-64 rounded-lg object-cover transition-all duration-300 ${characterAnimation === 'idle' ? 'animate-bounce' : ''} ${characterAnimation === 'active' ? 'animate-wiggle' : ''} ${characterAnimation === 'celebrate' ? 'animate-spin' : ''} ${characterAnimation === 'hint' ? 'animate-pulse' : ''}`}
+          onMouseEnter={() => setCharacterAnimation('active')}
+          onMouseLeave={() => setCharacterAnimation('idle')}
+          onClick={() => setCharacterAnimation('celebrate')}
+        />
+      </div>
 
         {/* Game Complete Modal */}
         {gameComplete && (
@@ -422,6 +439,7 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
             </div>
           </div>
         )}
+
 
         {/* Main Game Area */}
         <div className="grid xl:grid-cols-2 gap-10">
@@ -466,6 +484,7 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
               </div>
             </div>
           </div>
+          
 
           {/* Clues */}
           <div className="space-y-8">
@@ -536,6 +555,7 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
                 ))}
               </div>
             </div>
+            
 
             <div className="bg-gradient-to-br from-orange-100 to-amber-200 p-6 rounded-3xl border-2 border-orange-300 shadow-lg transform hover:scale-105 transition-all duration-300">
               <h4 className="font-bold text-orange-800 mb-4 text-xl flex items-center gap-2">
@@ -563,11 +583,39 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
           </div>
         </div>
 
-        <div className="text-center mt-12 text-amber-600 bg-white/30 backdrop-blur-sm p-4 rounded-2xl border border-amber-200">
+
+        <div className="text-center mt-4 text-amber-600 bg-white/30 backdrop-blur-sm p-4 rounded-2xl border border-amber-200">
           <p className="text-lg font-semibold">🏔️ TTS Petualangan Daratan - Materi Diagram dan Visualisasi Data 🌲</p>
           <p className="text-sm mt-2 opacity-75">Jelajahi dunia pengetahuan dengan tema alam yang menawan!</p>
         </div>
       </div>
+
+      {/* CSS Animations for Character */}
+      <style>
+        {`
+          @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+          }
+          @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+          }
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+          }
+          .animate-bounce { animation: bounce 1s infinite; }
+          .animate-wiggle { animation: wiggle 0.5s ease-in-out; }
+          .animate-spin { animation: spin 1s ease-out; }
+          .animate-pulse { animation: pulse 1s infinite; }
+        `}
+      </style>
     </div>
   );
 };

@@ -12,13 +12,15 @@ const mission2Questions = require('./dataSeeder/mission2_questions');
 const mission3Questions = require('./dataSeeder/mission3_questions');
 const mission4Questions = require('./dataSeeder/mission4_questions'); 
 const mission5Questions = require('./dataSeeder/mission5_questions');
+const mission6Questions = require('./dataSeeder/mission6_questions');
 
 const allMissionsData = {
   'misi-1': mission1Questions,
   'misi-2': mission2Questions,
   'misi-3': mission3Questions,
   'misi-4': mission4Questions,
-  'misi-5': mission5Questions,
+  'misi-2': mission5Questions,
+  'misi-3': mission6Questions
 };
 
 const dbConfig = {

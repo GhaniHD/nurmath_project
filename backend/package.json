@@ -2,12 +2,13 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "server.js",
- "scripts": {
-  "postinstall": "node scripts/initializeDB.js && node scripts/seed.js",
-  "start": "node ./server.js",
-  "init-db": "node scripts/initializeDB.js",
-  "seed": "node scripts/seed.js"
-},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "init-db": "node scripts/initializeDB.js",
+    "seed": "node scripts/seed.js",
+    "postinstall": "node scripts/initializeDB.js && node scripts/seed.js",
+    "start": "node ./server.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

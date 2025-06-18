@@ -29,7 +29,7 @@ const Mission1 = ({ missionId, onComplete }) => {
   // Refs and hooks
   const audioRef = useRef(null);
   const navigate = useNavigate();
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Constants
   const spinwheelOptionsMap = useMemo(() => ({
@@ -341,16 +341,16 @@ const Mission1 = ({ missionId, onComplete }) => {
       <div className="flex items-center justify-center mb-6">
         <div className="text-6xl animate-bounce">🌋</div>
       </div>
-      <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-orange-100 mb-4">📜 Kisah Dimulai...</h2>
-        <div className="bg-black/30 rounded-xl p-6 border border-orange-600/20">
-          <p className="text-lg text-orange-50 leading-relaxed">
+      <div className="space-y-4 text-center">
+        <h2 className="mb-4 text-3xl font-bold text-orange-100">📜 Kisah Dimulai...</h2>
+        <div className="p-6 border bg-black/30 rounded-xl border-orange-600/20">
+          <p className="text-lg leading-relaxed text-orange-50">
             <span className="font-bold text-orange-300">{userName || 'NurM'}</span> mendaki puncak Gunung Pengetahuan yang masih berasap. 
             Letusan purba telah memecah batuan ilmu menjadi kristal data yang berserakan di lereng berapi.
           </p>
-          <p className="text-lg text-orange-50 leading-relaxed mt-4">
+          <p className="mt-4 text-lg leading-relaxed text-orange-50">
             "Aku harus memutar Roda Batu Bercahaya untuk mengumpulkan kristal-kristal ini," tekad NurM sambil memegang obor petualang. 
-            <span className="text-blue-400 font-semibold">"Setiap teka-teki yang terpecahkan akan menyatukan kembali kebijaksanaan kuno!"</span>
+            <span className="font-semibold text-blue-400">"Setiap teka-teki yang terpecahkan akan menyatukan kembali kebijaksanaan kuno!"</span>
           </p>
         </div>
       </div>
@@ -378,11 +378,11 @@ const Mission1 = ({ missionId, onComplete }) => {
     return (
       <div className="space-y-12">
         {renderStoryIntro()}
-        <div className="bg-gradient-to-br from-slate-900/95 to-stone-900/95 backdrop-blur-sm rounded-3xl p-10 border-2 border-amber-600/30 shadow-2xl">
-          <div className="text-center mb-10">
-            <div className="text-5xl mb-6">🌋 🔮 🌋</div>
-            <h3 className="text-3xl font-bold text-amber-100 mb-4">Roda Batu Bercahaya</h3>
-            <p className="text-amber-200/80 text-lg">Putar roda untuk memilih kristal ilmu!</p>
+        <div className="p-10 border-2 shadow-2xl bg-gradient-to-br from-slate-900/95 to-stone-900/95 backdrop-blur-sm rounded-3xl border-amber-600/30">
+          <div className="mb-10 text-center">
+            <div className="mb-6 text-5xl">🌋 🔮 🌋</div>
+            <h3 className="mb-4 text-3xl font-bold text-amber-100">Roda Batu Bercahaya</h3>
+            <p className="text-lg text-amber-200/80">Putar roda untuk memilih kristal ilmu!</p>
           </div>
 
           <div className="flex flex-col items-center justify-center">
@@ -447,7 +447,7 @@ const Mission1 = ({ missionId, onComplete }) => {
                 <button
                   onClick={handleSpin}
                   disabled={spinning}
-                  className="w-full h-full flex items-center justify-center text-white disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-amber-500"
+                  className="flex items-center justify-center w-full h-full text-white disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-amber-500"
                   aria-label="Putar roda"
                   aria-disabled={spinning}
                 >
@@ -465,7 +465,7 @@ const Mission1 = ({ missionId, onComplete }) => {
                 </div>
                 <button 
                   onClick={() => setSpinResultTopic(null)} 
-                  className="mt-4 px-8 py-4 bg-gradient-to-r from-amber-600 to-yellow-600 text-white font-bold rounded-xl shadow-lg hover:from-amber-700 hover:to-yellow-700 transform hover:scale-105 transition-all duration-300"
+                  className="px-8 py-4 mt-4 font-bold text-white transition-all duration-300 transform shadow-lg bg-gradient-to-r from-amber-600 to-yellow-600 rounded-xl hover:from-amber-700 hover:to-yellow-700 hover:scale-105"
                   aria-label="Lanjutkan ke soal"
                 >
                   Lanjutkan ke Soal
@@ -475,13 +475,13 @@ const Mission1 = ({ missionId, onComplete }) => {
           </div>
 
           <div className="mt-10 text-center">
-            <div className="bg-stone-800/50 rounded-full p-6 inline-block">
-              <div className="text-amber-300 text-xl font-semibold">
+            <div className="inline-block p-6 rounded-full bg-stone-800/50">
+              <div className="text-xl font-semibold text-amber-300">
                 📊 Kemajuan Pengumpulan: {Object.keys(answeredQuestions).length}/{allQuestions.length}
               </div>
-              <div className="w-80 bg-stone-700 rounded-full h-4 mt-4 mx-auto overflow-hidden">
+              <div className="h-4 mx-auto mt-4 overflow-hidden rounded-full w-80 bg-stone-700">
                 <div 
-                  className="bg-gradient-to-r from-amber-500 to-yellow-400 h-full rounded-full transition-all duration-1000 shadow-lg"
+                  className="h-full transition-all duration-1000 rounded-full shadow-lg bg-gradient-to-r from-amber-500 to-yellow-400"
                   style={{ width: `${(Object.keys(answeredQuestions).length / allQuestions.length) * 100}%` }}
                 ></div>
               </div>
@@ -496,39 +496,39 @@ const Mission1 = ({ missionId, onComplete }) => {
     if (!currentQuestion) return null;
 
     return (
-      <div className="bg-gradient-to-br from-slate-900/95 to-stone-900/95 backdrop-blur-sm rounded-3xl p-8 border-2 border-amber-500/30 shadow-2xl w-full max-w-3xl mx-auto relative overflow-hidden">
+      <div className="relative w-full max-w-3xl p-8 mx-auto overflow-hidden border-2 shadow-2xl bg-gradient-to-br from-slate-900/95 to-stone-900/95 backdrop-blur-sm rounded-3xl border-amber-500/30">
         <div className="absolute top-0 left-0 w-full h-full opacity-10">
-          <div className="absolute top-6 left-6 text-5xl animate-pulse">🔮</div>
-          <div className="absolute top-6 right-6 text-3xl animate-bounce delay-300">✨</div>
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-4xl animate-pulse delay-700">📜</div>
+          <div className="absolute text-5xl top-6 left-6 animate-pulse">🔮</div>
+          <div className="absolute text-3xl delay-300 top-6 right-6 animate-bounce">✨</div>
+          <div className="absolute text-4xl delay-700 transform -translate-x-1/2 bottom-6 left-1/2 animate-pulse">📜</div>
         </div>
 
         <div className="relative z-10">
-          <div className="text-center mb-8">
-            <div className="text-5xl mb-4 animate-bounce">💎</div>
-            <h3 className="text-3xl font-bold text-amber-200 mb-2">Kristal Ilmu Ditemukan!</h3>
-            <div className="bg-amber-900/30 rounded-xl p-4 border border-amber-600/20">
-              <p className="text-amber-100 text-sm">{userName || 'NurM'} menemukan kristal bercahaya berisi teka-teki kuno...</p>
+          <div className="mb-8 text-center">
+            <div className="mb-4 text-5xl animate-bounce">💎</div>
+            <h3 className="mb-2 text-3xl font-bold text-amber-200">Kristal Ilmu Ditemukan!</h3>
+            <div className="p-4 border bg-amber-900/30 rounded-xl border-amber-600/20">
+              <p className="text-sm text-amber-100">{userName || 'NurM'} menemukan kristal bercahaya berisi teka-teki kuno...</p>
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-amber-900/40 to-yellow-900/40 rounded-2xl p-6 border border-amber-500/20 mb-6">
-            <p className="text-xl font-semibold text-white text-center leading-relaxed whitespace-pre-line">
+          <div className="p-6 mb-6 border bg-gradient-to-r from-amber-900/40 to-yellow-900/40 rounded-2xl border-amber-500/20">
+            <p className="text-xl font-semibold leading-relaxed text-center text-white whitespace-pre-line">
               {currentQuestion.question_text}
             </p>
           </div>
 
           <div className="space-y-6">
             {currentQuestion.type === 'audio-isian' && currentQuestion.audio_url ? (
-              <div className="text-center mb-6">
+              <div className="mb-6 text-center">
                 {audioError ? (
-                  <div className="text-red-300 mb-4">{audioError}</div>
+                  <div className="mb-4 text-red-300">{audioError}</div>
                 ) : (
                   <audio
                     ref={audioRef}
                     src={currentQuestion.audio_url}
                     controls
-                    className="mb-4 mx-auto w-full max-w-md"
+                    className="w-full max-w-md mx-auto mb-4"
                     onError={() => setAudioError('Audio tidak dapat dimuat. Silakan periksa file atau coba lagi.')}
                   />
                 )}
@@ -540,7 +540,7 @@ const Mission1 = ({ missionId, onComplete }) => {
                       });
                     }
                   }}
-                  className="px-6 py-3 bg-gradient-to-r from-amber-600 to-yellow-600 text-white rounded-xl shadow-lg hover:from-amber-700 hover:to-yellow-700 transform hover:scale-105 transition-all duration-300"
+                  className="px-6 py-3 text-white transition-all duration-300 transform shadow-lg bg-gradient-to-r from-amber-600 to-yellow-600 rounded-xl hover:from-amber-700 hover:to-yellow-700 hover:scale-105"
                   aria-label="Putar ulang audio"
                   disabled={audioError}
                 >
@@ -548,7 +548,7 @@ const Mission1 = ({ missionId, onComplete }) => {
                 </button>
               </div>
             ) : currentQuestion.type === 'audio-isian' ? (
-              <div className="text-center mb-6 text-red-300">
+              <div className="mb-6 text-center text-red-300">
                 Audio tidak tersedia untuk soal ini.
               </div>
             ) : null}
@@ -586,25 +586,25 @@ const Mission1 = ({ missionId, onComplete }) => {
                           value={userAnswer}
                           onChange={(e) => setUserAnswer(e.target.value)}
                           placeholder="Tuliskan jawaban magis mu..."
-                          className="p-4 rounded-xl bg-slate-800/80 text-white border-2 border-amber-600/30 w-full max-w-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-center text-lg transition-all duration-300"
+                          className="w-full max-w-md p-4 text-lg text-center text-white transition-all duration-300 border-2 rounded-xl bg-slate-800/80 border-amber-600/30 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                           disabled={showFeedback}
                           aria-label="Masukkan jawaban"
                         />
-                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-amber-400">🖊️</div>
+                        <div className="absolute transform -translate-y-1/2 right-4 top-1/2 text-amber-400">🖊️</div>
                       </div>
                     </div>
                   );
                 case 'menjodohkan':
                   return (
                     <div className="text-center">
-                      <div className="flex flex-col gap-4 max-w-xl mx-auto">
+                      <div className="flex flex-col max-w-xl gap-4 mx-auto">
                         {currentQuestion.options.map((item, idx) => (
-                          <div key={idx} className="flex flex-col sm:flex-row items-center justify-between p-4 bg-slate-800/60 rounded-xl border border-slate-600/30 text-white">
-                            <span className="mb-2 sm:mb-0 text-left flex-1 whitespace-pre-line">{item}</span>
+                          <div key={idx} className="flex flex-col items-center justify-between p-4 text-white border sm:flex-row bg-slate-800/60 rounded-xl border-slate-600/30">
+                            <span className="flex-1 mb-2 text-left whitespace-pre-line sm:mb-0">{item}</span>
                             <select
                               value={userMatchingAnswers[item] || ''}
                               onChange={(e) => handleMatchingChange(item, e.target.value)}
-                              className="p-3 rounded-xl bg-slate-800/80 text-white border-2 border-amber-600/30 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-amber-500"
+                              className="w-full p-3 text-white border-2 rounded-xl bg-slate-800/80 border-amber-600/30 sm:w-auto focus:outline-none focus:ring-2 focus:ring-amber-500"
                               disabled={showFeedback}
                               aria-label={`Pilih kategori untuk ${item}`}
                             >
@@ -626,7 +626,7 @@ const Mission1 = ({ missionId, onComplete }) => {
                         onChange={(e) => setUserAnswer(e.target.value)}
                         placeholder="Tulis jawaban di sini (pisahkan dengan koma jika ada beberapa jawaban kunci)..."
                         rows="4"
-                        className="w-full p-4 rounded-xl bg-slate-800/80 text-white border-2 border-amber-600/30 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        className="w-full p-4 text-white border-2 rounded-xl bg-slate-800/80 border-amber-600/30 focus:outline-none focus:ring-2 focus:ring-amber-500"
                         disabled={showFeedback}
                         aria-label="Masukkan jawaban uraian"
                       />
@@ -638,13 +638,13 @@ const Mission1 = ({ missionId, onComplete }) => {
             })()}
 
             {(currentQuestion.type === 'audio-isian' || currentQuestion.type === 'gambar-isian' || currentQuestion.type === 'uraian' || currentQuestion.type === 'menjodohkan') && (
-              <div className="text-center mt-8">
+              <div className="mt-8 text-center">
                 <button
                   onClick={() => handleSubmitAnswer(currentQuestion.type === 'menjodohkan' ? userMatchingAnswers : userAnswer)}
                   disabled={showFeedback || 
                     (currentQuestion.type === 'menjodohkan' && Object.keys(userMatchingAnswers).length !== currentQuestion.options.length) || 
                     (['audio-isian', 'gambar-isian', 'uraian'].includes(currentQuestion.type) && !userAnswer.trim())}
-                  className="px-8 py-4 bg-gradient-to-r from-amber-600 to-yellow-600 text-white font-bold rounded-xl shadow-lg hover:from-amber-700 hover:to-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 transition-all duration-300 text-lg border-2 border-amber-500/20"
+                  className="px-8 py-4 text-lg font-bold text-white transition-all duration-300 transform border-2 shadow-lg bg-gradient-to-r from-amber-600 to-yellow-600 rounded-xl hover:from-amber-700 hover:to-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 border-amber-500/20"
                   aria-label="Kirim jawaban"
                 >
                   <span className="flex items-center justify-center gap-2">
@@ -661,7 +661,7 @@ const Mission1 = ({ missionId, onComplete }) => {
                     ? 'bg-green-900/80 border-green-500/50 text-green-300' 
                     : 'bg-red-900/80 border-red-500/50 text-red-300'
                 }`}>
-                  <div className="text-4xl mb-2">
+                  <div className="mb-2 text-4xl">
                     {result ? '🎉' : '💫'} 
                   </div>
                   <div className="text-2xl font-bold">
@@ -671,7 +671,7 @@ const Mission1 = ({ missionId, onComplete }) => {
                     }
                   </div>
                   {result && (
-                    <div className="text-green-200 mt-2 text-lg">
+                    <div className="mt-2 text-lg text-green-200">
                       "Serpihan pengetahuan telah tersusun kembali!"
                     </div>
                   )}
@@ -685,26 +685,26 @@ const Mission1 = ({ missionId, onComplete }) => {
   };
 
   const renderCompletionStory = () => (
-    <div className="bg-gradient-to-r from-green-900/90 to-emerald-800/90 backdrop-blur-sm rounded-3xl p-8 border-2 border-green-500/30 shadow-2xl text-center transform animate-pulse">
-      <div className="text-6xl mb-6 animate-bounce">🏆</div>
-      <h2 className="text-4xl font-bold text-green-100 mb-4">Misi Berhasil Diselesaikan!</h2>
-      <div className="bg-black/30 rounded-xl p-6 border border-green-500/20">
-        <p className="text-xl text-green-50 leading-relaxed">
+    <div className="p-8 text-center transform border-2 shadow-2xl bg-gradient-to-r from-green-900/90 to-emerald-800/90 backdrop-blur-sm rounded-3xl border-green-500/30 animate-pulse">
+      <div className="mb-6 text-6xl animate-bounce">🏆</div>
+      <h2 className="mb-4 text-4xl font-bold text-green-100">Misi Berhasil Diselesaikan!</h2>
+      <div className="p-6 border bg-black/30 rounded-xl border-green-500/20">
+        <p className="text-xl leading-relaxed text-green-50">
           {userName || 'NurM'} berhasil mengumpulkan semua kristal ilmu dan menyatukan kembali pengetahuan yang retak! 
           Cahaya kebijaksanaan kini bersinar dari puncak gunung, menerangi jalan menuju petualangan data berikutnya...
         </p>
       </div>
-      <div className="mt-8 flex justify-center gap-4">
+      <div className="flex justify-center gap-4 mt-8">
         <button
           onClick={() => navigate('/leaderboard')}
-          className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-bold rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-900 transform hover:scale-105 transition-all duration-300 text-lg border-2 border-blue-500/20"
+          className="px-8 py-4 text-lg font-bold text-white transition-all duration-300 transform border-2 shadow-lg bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl hover:from-blue-700 hover:to-blue-900 hover:scale-105 border-blue-500/20"
           aria-label="Lihat Leaderboard"
         >
           🏅 Lihat Leaderboard
         </button>
         <button
           onClick={resetMission}
-          className="px-8 py-4 bg-gradient-to-r from-amber-600 to-yellow-600 text-white font-bold rounded-xl shadow-lg hover:from-amber-700 hover:to-yellow-700 transform hover:scale-105 transition-all duration-300 text-lg border-2 border-amber-500/20"
+          className="px-8 py-4 text-lg font-bold text-white transition-all duration-300 transform border-2 shadow-lg bg-gradient-to-r from-amber-600 to-yellow-600 rounded-xl hover:from-amber-700 hover:to-yellow-700 hover:scale-105 border-amber-500/20"
           aria-label="Main Lagi"
         >
           🔄 Main Lagi
@@ -715,31 +715,31 @@ const Mission1 = ({ missionId, onComplete }) => {
 
   // Main render
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-900 via-gray-900 to-black relative overflow-hidden font-inter">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-red-900 via-gray-900 to-black font-inter">
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-10 text-6xl animate-float">🌋</div>
-        <div className="absolute top-40 right-20 text-4xl animate-float delay-1000">🔥</div>
-        <div className="absolute bottom-20 left-1/4 text-5xl animate-float delay-2000">💎</div>
-        <div className="absolute bottom-40 right-1/3 text-3xl animate-float delay-3000">🪨</div>
+        <div className="absolute text-6xl top-20 left-10 animate-float">🌋</div>
+        <div className="absolute text-4xl delay-1000 top-40 right-20 animate-float">🔥</div>
+        <div className="absolute text-5xl bottom-20 left-1/4 animate-float delay-2000">💎</div>
+        <div className="absolute text-3xl bottom-40 right-1/3 animate-float delay-3000">🪨</div>
       </div>
 
       <div className="relative z-10 p-6">
         <div className="max-w-6xl mx-auto">
           {showNameModal && (
-            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-              <div className="bg-gradient-to-br from-slate-900/95 to-stone-900/95 backdrop-blur-sm rounded-3xl p-8 border-2 border-amber-500/30 shadow-2xl max-w-md w-full">
-                <h2 className="text-3xl font-bold text-amber-200 mb-6 text-center">Masukkan Nama Petualang!</h2>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+              <div className="w-full max-w-md p-8 border-2 shadow-2xl bg-gradient-to-br from-slate-900/95 to-stone-900/95 backdrop-blur-sm rounded-3xl border-amber-500/30">
+                <h2 className="mb-6 text-3xl font-bold text-center text-amber-200">Masukkan Nama Petualang!</h2>
                 <form onSubmit={handleNameSubmit}>
                   <input
                     type="text"
                     name="name"
                     placeholder="Nama petualang..."
-                    className="w-full p-4 rounded-xl bg-slate-800/80 text-white border-2 border-amber-600/30 focus:outline-none focus:ring-2 focus:ring-amber-500 text-center"
+                    className="w-full p-4 text-center text-white border-2 rounded-xl bg-slate-800/80 border-amber-600/30 focus:outline-none focus:ring-2 focus:ring-amber-500"
                     aria-label="Masukkan nama pengguna"
                   />
                   <button
                     type="submit"
-                    className="w-full mt-4 px-8 py-4 bg-gradient-to-r from-amber-600 to-yellow-600 text-white font-bold rounded-xl shadow-lg hover:from-amber-700 hover:to-yellow-700 transform hover:scale-105 transition-all duration-300"
+                    className="w-full px-8 py-4 mt-4 font-bold text-white transition-all duration-300 transform shadow-lg bg-gradient-to-r from-amber-600 to-yellow-600 rounded-xl hover:from-amber-700 hover:to-yellow-700 hover:scale-105"
                     aria-label="Kirim nama"
                   >
                     Mulai Pencarian Ilmu!
@@ -750,19 +750,19 @@ const Mission1 = ({ missionId, onComplete }) => {
           )}
 
           {isLoading && (
-            <div className="text-center text-white text-3xl space-y-4">
-              <div className="animate-spin text-6xl">⚡</div>
+            <div className="space-y-4 text-3xl text-center text-white">
+              <div className="text-6xl animate-spin">⚡</div>
               <div>Mengumpulkan kristal ilmu...</div>
             </div>
           )}
 
           {error && (
-            <div className="text-center text-red-400 text-2xl space-y-4">
+            <div className="space-y-4 text-2xl text-center text-red-400">
               <div className="text-6xl">😱</div>
               <div>{error}</div>
               <button
                 onClick={retryFetch}
-                className="px-6 py-3 bg-amber-600 text-white rounded-xl hover:bg-amber-700 transition-all duration-300"
+                className="px-6 py-3 text-white transition-all duration-300 bg-amber-600 rounded-xl hover:bg-amber-700"
                 aria-label="Coba lagi"
               >
                 🔄 Coba Kumpulkan Lagi
@@ -772,14 +772,14 @@ const Mission1 = ({ missionId, onComplete }) => {
 
           {!isLoading && !error && !showNameModal && (
             <>
-              <div className="text-center mb-12">
-                <h1 className="text-5xl md:text-6xl font-bold text-amber-200 mb-6 drop-shadow-2xl">
+              <div className="mb-12 text-center">
+                <h1 className="mb-6 text-5xl font-bold md:text-6xl text-amber-200 drop-shadow-2xl">
                   ⛏️ Misi 1 – Batuan Ilmu Retak 🗺️
                 </h1>
-                <div className="bg-gradient-to-r from-amber-900/60 to-yellow-900/60 backdrop-blur-sm rounded-2xl p-6 border border-amber-500/20 max-w-4xl mx-auto">
-                  <p className="text-xl md:text-2xl text-amber-100 leading-relaxed">
+                <div className="max-w-4xl p-6 mx-auto border bg-gradient-to-r from-amber-900/60 to-yellow-900/60 backdrop-blur-sm rounded-2xl border-amber-500/20">
+                  <p className="text-xl leading-relaxed md:text-2xl text-amber-100">
                     <span className="font-bold text-yellow-300">{userName || 'NurM'}</span> harus mengumpulkan kristal data dari pecahan batuan ilmu yang retak akibat letusan purba. 
-                    Ayo bantu memutar <span className="text-green-400 font-semibold">Roda Batu Bercahaya</span> untuk menyatukan kebijaksanaan! 🔍✨
+                    Ayo bantu memutar <span className="font-semibold text-green-400">Roda Batu Bercahaya</span> untuk menyatukan kebijaksanaan! 🔍✨
                   </p>
                 </div>
               </div>

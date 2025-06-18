@@ -29,7 +29,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
   // Refs and hooks
   const audioRef = useRef(null);
   const navigate = useNavigate();
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Constants
   const spinwheelOptionsMap = useMemo(() => ({
@@ -341,19 +341,19 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
   const renderStoryIntro = () => (
     <div className="bg-gradient-to-r from-blue-900/90 to-cyan-800/90 backdrop-blur-sm rounded-3xl p-8 border-2 border-cyan-600/30 shadow-2xl mb-12 transform hover:scale-[1.02] transition-all duration-500">
       <div className="flex items-center justify-center mb-6">
-        <img src="../public/images/karatkterLangit.png" alt="NurM Avatar" className="w-32 h-32 rounded-full object-cover animate-pulse" />
-        <div className="text-6xl animate-bounce ml-4">☁️</div>
+        <img src="../public/images/karatkterLangit.png" alt="NurM Avatar" className="object-cover w-32 h-32 rounded-full animate-pulse" />
+        <div className="ml-4 text-6xl animate-bounce">☁️</div>
       </div>
-      <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-cyan-100 mb-4">📜 Kisah Dimulai di Langit...</h2>
-        <div className="bg-black/30 rounded-xl p-6 border border-cyan-600/20">
-          <p className="text-lg text-cyan-50 leading-relaxed">
+      <div className="space-y-4 text-center">
+        <h2 className="mb-4 text-3xl font-bold text-cyan-100">📜 Kisah Dimulai di Langit...</h2>
+        <div className="p-6 border bg-black/30 rounded-xl border-cyan-600/20">
+          <p className="text-lg leading-relaxed text-cyan-50">
             <span className="font-bold text-cyan-300">{userName || 'NurM'}</span> melayang di atas awan, mencari kristal ilmu yang tersembunyi di angkasa. 
             Angin membawa petunjuk data yang tersebar di langit luas.
           </p>
-          <p className="text-lg text-cyan-50 leading-relaxed mt-4">
+          <p className="mt-4 text-lg leading-relaxed text-cyan-50">
             "Aku harus memutar Roda Awan Bercahaya untuk mengumpulkan kristal-kristal ini," kata NurM sambil memegang kompas langit. 
-            <span className="text-blue-400 font-semibold">"Setiap teka-teki yang terpecahkan akan menerangi langit pengetahuan!"</span>
+            <span className="font-semibold text-blue-400">"Setiap teka-teki yang terpecahkan akan menerangi langit pengetahuan!"</span>
           </p>
         </div>
       </div>
@@ -381,11 +381,11 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
     return (
       <div className="space-y-12">
         {renderStoryIntro()}
-        <div className="bg-gradient-to-br from-blue-900/95 to-cyan-900/95 backdrop-blur-sm rounded-3xl p-10 border-2 border-cyan-600/30 shadow-2xl">
-          <div className="text-center mb-10">
-            <div className="text-5xl mb-6">☁️ 🔮 ☁️</div>
-            <h3 className="text-3xl font-bold text-cyan-100 mb-4">Roda Awan Bercahaya</h3>
-            <p className="text-cyan-200/80 text-lg">Putar roda untuk memilih kristal ilmu!</p>
+        <div className="p-10 border-2 shadow-2xl bg-gradient-to-br from-blue-900/95 to-cyan-900/95 backdrop-blur-sm rounded-3xl border-cyan-600/30">
+          <div className="mb-10 text-center">
+            <div className="mb-6 text-5xl">☁️ 🔮 ☁️</div>
+            <h3 className="mb-4 text-3xl font-bold text-cyan-100">Roda Awan Bercahaya</h3>
+            <p className="text-lg text-cyan-200/80">Putar roda untuk memilih kristal ilmu!</p>
           </div>
 
           <div className="flex flex-col items-center justify-center">
@@ -450,7 +450,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                 <button
                   onClick={handleSpin}
                   disabled={spinning}
-                  className="w-full h-full flex items-center justify-center text-white disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-cyan-500"
+                  className="flex items-center justify-center w-full h-full text-white disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-cyan-500"
                   aria-label="Putar roda"
                   aria-disabled={spinning}
                 >
@@ -468,7 +468,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                 </div>
                 <button 
                   onClick={() => setSpinResultTopic(null)} 
-                  className="mt-4 px-8 py-4 bg-gradient-to-r from-cyan-600 to-sky-600 text-white font-bold rounded-xl shadow-lg hover:from-cyan-700 hover:to-sky-700 transform hover:scale-105 transition-all duration-300"
+                  className="px-8 py-4 mt-4 font-bold text-white transition-all duration-300 transform shadow-lg bg-gradient-to-r from-cyan-600 to-sky-600 rounded-xl hover:from-cyan-700 hover:to-sky-700 hover:scale-105"
                   aria-label="Lanjutkan ke soal"
                 >
                   Lanjutkan ke Soal
@@ -478,13 +478,13 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
           </div>
 
           <div className="mt-10 text-center">
-            <div className="bg-stone-800/50 rounded-full p-6 inline-block">
-              <div className="text-cyan-300 text-xl font-semibold">
+            <div className="inline-block p-6 rounded-full bg-stone-800/50">
+              <div className="text-xl font-semibold text-cyan-300">
                 📊 Kemajuan Pengumpulan: {Object.keys(answeredQuestions).length}/{allQuestions.length}
               </div>
-              <div className="w-80 bg-stone-700 rounded-full h-4 mt-4 mx-auto overflow-hidden">
+              <div className="h-4 mx-auto mt-4 overflow-hidden rounded-full w-80 bg-stone-700">
                 <div 
-                  className="bg-gradient-to-r from-cyan-500 to-sky-400 h-full rounded-full transition-all duration-1000 shadow-lg"
+                  className="h-full transition-all duration-1000 rounded-full shadow-lg bg-gradient-to-r from-cyan-500 to-sky-400"
                   style={{ width: `${(Object.keys(answeredQuestions).length / allQuestions.length) * 100}%` }}
                 ></div>
               </div>
@@ -499,31 +499,31 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
     if (!currentQuestion) return null;
 
     return (
-      <div className="bg-gradient-to-br from-blue-900/95 to-cyan-900/95 backdrop-blur-sm rounded-3xl p-8 border-2 border-cyan-600/30 shadow-2xl w-full max-w-3xl mx-auto relative overflow-hidden">
+      <div className="relative w-full max-w-3xl p-8 mx-auto overflow-hidden border-2 shadow-2xl bg-gradient-to-br from-blue-900/95 to-cyan-900/95 backdrop-blur-sm rounded-3xl border-cyan-600/30">
         <div className="absolute top-0 left-0 w-full h-full opacity-10">
-          <div className="absolute top-6 left-6 text-5xl animate-pulse">🔮</div>
-          <div className="absolute top-6 right-6 text-3xl animate-bounce delay-300">✨</div>
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-4xl animate-pulse delay-700">📜</div>
+          <div className="absolute text-5xl top-6 left-6 animate-pulse">🔮</div>
+          <div className="absolute text-3xl delay-300 top-6 right-6 animate-bounce">✨</div>
+          <div className="absolute text-4xl delay-700 transform -translate-x-1/2 bottom-6 left-1/2 animate-pulse">📜</div>
         </div>
 
         <div className="relative z-10">
-          <div className="text-center mb-8 flex items-center justify-center">
-            <img src="../public/images/karatkterLangit.png" alt="NurM Avatar" className="w-24 h-24 rounded-full object-cover mr-4" />
+          <div className="flex items-center justify-center mb-8 text-center">
+            <img src="../public/images/karatkterLangit.png" alt="NurM Avatar" className="object-cover w-24 h-24 mr-4 rounded-full" />
             <div>
-              <div className="text-5xl mb-4 animate-bounce">💎</div>
-              <h3 className="text-3xl font-bold text-cyan-200 mb-2">Kristal Ilmu Ditemukan!</h3>
-              <div className="bg-black/30 rounded-xl p-4 border border-cyan-600/20">
-                <p className="text-cyan-100 text-sm">{userName || 'NurM'} menemukan kristal bercahaya berisi teka-teki kuno...</p>
+              <div className="mb-4 text-5xl animate-bounce">💎</div>
+              <h3 className="mb-2 text-3xl font-bold text-cyan-200">Kristal Ilmu Ditemukan!</h3>
+              <div className="p-4 border bg-black/30 rounded-xl border-cyan-600/20">
+                <p className="text-sm text-cyan-100">{userName || 'NurM'} menemukan kristal bercahaya berisi teka-teki kuno...</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-cyan-900/40 to-sky-900/40 rounded-2xl p-6 border border-cyan-600/20 mb-6">
-            <p className="text-xl font-semibold text-white text-center leading-relaxed whitespace-pre-line">
+          <div className="p-6 mb-6 border bg-gradient-to-r from-cyan-900/40 to-sky-900/40 rounded-2xl border-cyan-600/20">
+            <p className="text-xl font-semibold leading-relaxed text-center text-white whitespace-pre-line">
               {currentQuestion.question_text}
             </p>
             {currentQuestion.type === 'menjodohkan' && currentQuestion.image_urls && currentQuestion.image_urls.length > 0 && (
-              <div className="mt-4 grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4 mt-4">
                 {currentQuestion.image_urls.map((url, index) => (
                   <img
                     key={index}
@@ -547,15 +547,15 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
 
           <div className="space-y-6">
             {currentQuestion.type === 'audio-isian' && currentQuestion.audio_url ? (
-              <div className="text-center mb-6">
+              <div className="mb-6 text-center">
                 {audioError ? (
-                  <div className="text-red-300 mb-4">{audioError}</div>
+                  <div className="mb-4 text-red-300">{audioError}</div>
                 ) : (
                   <audio
                     ref={audioRef}
                     src={currentQuestion.audio_url}
                     controls
-                    className="mb-4 mx-auto w-full max-w-md"
+                    className="w-full max-w-md mx-auto mb-4"
                     onError={() => setAudioError('Audio tidak dapat dimuat. Silakan periksa file atau coba lagi.')}
                   />
                 )}
@@ -567,7 +567,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                       });
                     }
                   }}
-                  className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-sky-600 text-white rounded-xl shadow-lg hover:from-cyan-700 hover:to-sky-700 transform hover:scale-105 transition-all duration-300"
+                  className="px-6 py-3 text-white transition-all duration-300 transform shadow-lg bg-gradient-to-r from-cyan-600 to-sky-600 rounded-xl hover:from-cyan-700 hover:to-sky-700 hover:scale-105"
                   aria-label="Putar ulang audio"
                   disabled={audioError}
                 >
@@ -575,7 +575,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                 </button>
               </div>
             ) : currentQuestion.type === 'audio-isian' ? (
-              <div className="text-center mb-6 text-red-300">
+              <div className="mb-6 text-center text-red-300">
                 Audio tidak tersedia untuk soal ini.
               </div>
             ) : null}
@@ -630,11 +630,11 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                           value={userAnswer}
                           onChange={(e) => setUserAnswer(e.target.value)}
                           placeholder="Tuliskan jawaban magis mu..."
-                          className="p-4 rounded-xl bg-slate-800/80 text-white border-2 border-cyan-600/30 w-full max-w-md focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-center text-lg transition-all duration-300"
+                          className="w-full max-w-md p-4 text-lg text-center text-white transition-all duration-300 border-2 rounded-xl bg-slate-800/80 border-cyan-600/30 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                           disabled={showFeedback}
                           aria-label="Masukkan jawaban"
                         />
-                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-cyan-400">🖊️</div>
+                        <div className="absolute transform -translate-y-1/2 right-4 top-1/2 text-cyan-400">🖊️</div>
                       </div>
                     </div>
                   );
@@ -642,16 +642,16 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                   const targets = Object.entries(currentQuestion.targets || {}).map(([label, url]) => ({ label, url }));
                   return (
                     <div className="text-center">
-                      <div className="flex flex-col gap-4 max-w-xl mx-auto">
+                      <div className="flex flex-col max-w-xl gap-4 mx-auto">
                         {currentQuestion.options && currentQuestion.options.length > 0 ? (
                           currentQuestion.options.map((item, idx) => (
-                            <div key={idx} className="flex flex-col sm:flex-row items-center justify-between p-4 bg-slate-800/60 rounded-xl border border-slate-600/30 text-white">
-                              <span className="mb-2 sm:mb-0 text-left flex-1 whitespace-pre-line">{item}</span>
+                            <div key={idx} className="flex flex-col items-center justify-between p-4 text-white border sm:flex-row bg-slate-800/60 rounded-xl border-slate-600/30">
+                              <span className="flex-1 mb-2 text-left whitespace-pre-line sm:mb-0">{item}</span>
                               <div className="relative w-full sm:w-auto">
                                 <select
                                   value={userMatchingAnswers[item] || ''}
                                   onChange={(e) => handleMatchingChange(item, e.target.value)}
-                                  className="p-3 rounded-xl bg-slate-800/80 text-white border-2 border-cyan-600/30 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-cyan-500 appearance-none pr-10"
+                                  className="w-full p-3 pr-10 text-white border-2 appearance-none rounded-xl bg-slate-800/80 border-cyan-600/30 sm:w-auto focus:outline-none focus:ring-2 focus:ring-cyan-500"
                                   disabled={showFeedback}
                                   aria-label={`Pilih diagram untuk ${item}`}
                                 >
@@ -660,7 +660,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                                     <option key={targetIdx} value={target.url}>{target.label}</option>
                                   ))}
                                 </select>
-                                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                <div className="absolute transform -translate-y-1/2 pointer-events-none right-3 top-1/2">
                                   <svg className="w-5 h-5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v5a1 1 0 102 0V5z" clipRule="evenodd" />
@@ -683,7 +683,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                         onChange={(e) => setUserAnswer(e.target.value)}
                         placeholder="Tulis jawaban di sini (pisahkan dengan koma jika ada beberapa jawaban kunci)..."
                         rows="4"
-                        className="w-full p-4 rounded-xl bg-slate-800/80 text-white border-2 border-cyan-600/30 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                        className="w-full p-4 text-white border-2 rounded-xl bg-slate-800/80 border-cyan-600/30 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                         disabled={showFeedback}
                         aria-label="Masukkan jawaban uraian"
                       />
@@ -695,13 +695,13 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
             })()}
 
             {(currentQuestion.type === 'audio-isian' || currentQuestion.type === 'gambar-isian' || currentQuestion.type === 'uraian' || currentQuestion.type === 'menjodohkan') && (
-              <div className="text-center mt-8">
+              <div className="mt-8 text-center">
                 <button
                   onClick={() => handleSubmitAnswer(currentQuestion.type === 'menjodohkan' ? userMatchingAnswers : userAnswer)}
                   disabled={showFeedback || 
                     (currentQuestion.type === 'menjodohkan' && Object.keys(userMatchingAnswers).length !== currentQuestion.options.length) || 
                     (['audio-isian', 'gambar-isian', 'uraian'].includes(currentQuestion.type) && !userAnswer.trim())}
-                  className="px-8 py-4 bg-gradient-to-r from-cyan-600 to-sky-600 text-white font-bold rounded-xl shadow-lg hover:from-cyan-700 hover:to-sky-700 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 transition-all duration-300 text-lg border-2 border-cyan-500/20"
+                  className="px-8 py-4 text-lg font-bold text-white transition-all duration-300 transform border-2 shadow-lg bg-gradient-to-r from-cyan-600 to-sky-600 rounded-xl hover:from-cyan-700 hover:to-sky-700 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 border-cyan-500/20"
                   aria-label="Kirim jawaban"
                 >
                   <span className="flex items-center justify-center gap-2">
@@ -718,7 +718,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                     ? 'bg-green-900/80 border-green-500/50 text-green-300' 
                     : 'bg-red-900/80 border-red-500/50 text-red-300'
                 }`}>
-                  <div className="text-4xl mb-2">
+                  <div className="mb-2 text-4xl">
                     {result ? '🎉' : '💫'} 
                   </div>
                   <div className="text-2xl font-bold">
@@ -728,7 +728,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                     }
                   </div>
                   {result && (
-                    <div className="text-green-200 mt-2 text-lg">
+                    <div className="mt-2 text-lg text-green-200">
                       "Serpihan pengetahuan telah tersusun kembali di angkasa!"
                     </div>
                   )}
@@ -742,26 +742,26 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
   };
 
   const renderCompletionStory = () => (
-    <div className="bg-gradient-to-r from-blue-900/90 to-cyan-800/90 backdrop-blur-sm rounded-3xl p-8 border-2 border-cyan-500/30 shadow-2xl text-center transform animate-pulse">
-      <div className="text-6xl mb-6 animate-bounce">🏆</div>
-      <h2 className="text-4xl font-bold text-cyan-100 mb-4">Misi Berhasil Diselesaikan!</h2>
-      <div className="bg-black/30 rounded-xl p-6 border border-cyan-500/20">
-        <p className="text-xl text-cyan-50 leading-relaxed">
+    <div className="p-8 text-center transform border-2 shadow-2xl bg-gradient-to-r from-blue-900/90 to-cyan-800/90 backdrop-blur-sm rounded-3xl border-cyan-500/30 animate-pulse">
+      <div className="mb-6 text-6xl animate-bounce">🏆</div>
+      <h2 className="mb-4 text-4xl font-bold text-cyan-100">Misi Berhasil Diselesaikan!</h2>
+      <div className="p-6 border bg-black/30 rounded-xl border-cyan-500/20">
+        <p className="text-xl leading-relaxed text-cyan-50">
           {userName || 'NurM'} berhasil mengumpulkan semua kristal ilmu dan menerangi langit dengan kebijaksanaan! 
           Awan pengetahuan kini bersinar, membuka jalan menuju petualangan baru...
         </p>
       </div>
-      <div className="mt-8 flex justify-center gap-4">
+      <div className="flex justify-center gap-4 mt-8">
         <button
           onClick={() => navigate('/leaderboard')}
-          className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-bold rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-900 transform hover:scale-105 transition-all duration-300 text-lg border-2 border-blue-500/20"
+          className="px-8 py-4 text-lg font-bold text-white transition-all duration-300 transform border-2 shadow-lg bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl hover:from-blue-700 hover:to-blue-900 hover:scale-105 border-blue-500/20"
           aria-label="Lihat Leaderboard"
         >
           🏅 Lihat Leaderboard
         </button>
         <button
           onClick={resetMission}
-          className="px-8 py-4 bg-gradient-to-r from-cyan-600 to-sky-600 text-white font-bold rounded-xl shadow-lg hover:from-cyan-700 hover:to-sky-700 transform hover:scale-105 transition-all duration-300 text-lg border-2 border-cyan-500/20"
+          className="px-8 py-4 text-lg font-bold text-white transition-all duration-300 transform border-2 shadow-lg bg-gradient-to-r from-cyan-600 to-sky-600 rounded-xl hover:from-cyan-700 hover:to-sky-700 hover:scale-105 border-cyan-500/20"
           aria-label="Main Lagi"
         >
           🔄 Main Lagi
@@ -772,31 +772,31 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
 
   // Main render
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-cyan-900/30 to-gray-800/80 relative overflow-hidden font-inter">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-blue-900 via-cyan-900/30 to-gray-800/80 font-inter">
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-10 text-6xl animate-float">☁️</div>
-        <div className="absolute top-40 right-20 text-4xl animate-float delay-1000">🌬️</div>
-        <div className="absolute bottom-20 left-1/4 text-5xl animate-float delay-2000">💎</div>
-        <div className="absolute bottom-40 right-1/3 text-3xl animate-float delay-3000">⭐</div>
+        <div className="absolute text-6xl top-20 left-10 animate-float">☁️</div>
+        <div className="absolute text-4xl delay-1000 top-40 right-20 animate-float">🌬️</div>
+        <div className="absolute text-5xl bottom-20 left-1/4 animate-float delay-2000">💎</div>
+        <div className="absolute text-3xl bottom-40 right-1/3 animate-float delay-3000">⭐</div>
       </div>
 
       <div className="relative z-10 p-6">
         <div className="max-w-6xl mx-auto">
           {showNameModal && (
-            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-              <div className="bg-gradient-to-br from-blue-900/95 to-cyan-900/95 backdrop-blur-sm rounded-3xl p-8 border-2 border-cyan-600/30 shadow-2xl max-w-md w-full">
-                <h2 className="text-3xl font-bold text-cyan-200 mb-6 text-center">Masukkan Nama Petualang!</h2>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+              <div className="w-full max-w-md p-8 border-2 shadow-2xl bg-gradient-to-br from-blue-900/95 to-cyan-900/95 backdrop-blur-sm rounded-3xl border-cyan-600/30">
+                <h2 className="mb-6 text-3xl font-bold text-center text-cyan-200">Masukkan Nama Petualang!</h2>
                 <form onSubmit={handleNameSubmit}>
                   <input
                     type="text"
                     name="name"
                     placeholder="Nama petualang..."
-                    className="w-full p-4 rounded-xl bg-slate-800/80 text-white border-2 border-cyan-600/30 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-center"
+                    className="w-full p-4 text-center text-white border-2 rounded-xl bg-slate-800/80 border-cyan-600/30 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                     aria-label="Masukkan nama pengguna"
                   />
                   <button
                     type="submit"
-                    className="w-full mt-4 px-8 py-4 bg-gradient-to-r from-cyan-600 to-sky-600 text-white font-bold rounded-xl shadow-lg hover:from-cyan-700 hover:to-sky-700 transform hover:scale-105 transition-all duration-300"
+                    className="w-full px-8 py-4 mt-4 font-bold text-white transition-all duration-300 transform shadow-lg bg-gradient-to-r from-cyan-600 to-sky-600 rounded-xl hover:from-cyan-700 hover:to-sky-700 hover:scale-105"
                     aria-label="Kirim nama"
                   >
                     Mulai Pencarian Ilmu!
@@ -807,19 +807,19 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
           )}
 
           {isLoading && (
-            <div className="text-center text-white text-3xl space-y-4">
-              <div className="animate-spin text-6xl">⚡</div>
+            <div className="space-y-4 text-3xl text-center text-white">
+              <div className="text-6xl animate-spin">⚡</div>
               <div>Mengumpulkan kristal ilmu...</div>
             </div>
           )}
 
           {error && (
-            <div className="text-center text-red-400 text-2xl space-y-4">
+            <div className="space-y-4 text-2xl text-center text-red-400">
               <div className="text-6xl">😱</div>
               <div>{error}</div>
               <button
                 onClick={retryFetch}
-                className="px-6 py-3 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-all duration-300"
+                className="px-6 py-3 text-white transition-all duration-300 bg-cyan-600 rounded-xl hover:bg-cyan-700"
                 aria-label="Coba lagi"
               >
                 🔄 Coba Kumpulkan Lagi
@@ -829,14 +829,14 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
 
           {!isLoading && !error && !showNameModal && (
             <>
-              <div className="text-center mb-12">
-                <h1 className="text-5xl md:text-6xl font-bold text-cyan-200 mb-6 drop-shadow-2xl">
+              <div className="mb-12 text-center">
+                <h1 className="mb-6 text-5xl font-bold md:text-6xl text-cyan-200 drop-shadow-2xl">
                   ☁️ Misi 2 – Langit Fakta 🌤️
                 </h1>
-                <div className="bg-gradient-to-r from-cyan-900/60 to-sky-900/60 backdrop-blur-sm rounded-2xl p-6 border border-cyan-600/20 max-w-4xl mx-auto">
-                  <p className="text-xl md:text-2xl text-cyan-100 leading-relaxed">
+                <div className="max-w-4xl p-6 mx-auto border bg-gradient-to-r from-cyan-900/60 to-sky-900/60 backdrop-blur-sm rounded-2xl border-cyan-600/20">
+                  <p className="text-xl leading-relaxed md:text-2xl text-cyan-100">
                     <span className="font-bold text-sky-300">{userName || 'NurM'}</span> melayang di langit untuk mengumpulkan kristal data dari awan yang bergerak. 
-                    Putar <span className="text-blue-400 font-semibold">Roda Awan Bercahaya</span> untuk menyatukan fakta langit! 🔍✨
+                    Putar <span className="font-semibold text-blue-400">Roda Awan Bercahaya</span> untuk menyatukan fakta langit! 🔍✨
                   </p>
                 </div>
               </div>

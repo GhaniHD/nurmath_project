@@ -12,7 +12,7 @@ const Leaderboard = ({ userName = 'Player123' }) => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`http://localhost:3001/api/leaderboard`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/leaderboard`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -50,35 +50,35 @@ const Leaderboard = ({ userName = 'Player123' }) => {
   const isCurrentPlayer = (playerName) => playerName === userName;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-yellow-900 to-slate-900 p-6">
+    <div className="min-h-screen p-6 bg-gradient-to-br from-slate-900 via-yellow-900 to-slate-900">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-400/10 rounded-full blur-xl animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-orange-400/10 rounded-full blur-xl animate-pulse delay-1000"></div>
-        <div className="absolute bottom-32 left-1/4 w-28 h-28 bg-amber-400/10 rounded-full blur-xl animate-pulse delay-2000"></div>
+        <div className="absolute w-32 h-32 rounded-full top-20 left-10 bg-yellow-400/10 blur-xl animate-pulse"></div>
+        <div className="absolute w-24 h-24 delay-1000 rounded-full top-40 right-20 bg-orange-400/10 blur-xl animate-pulse"></div>
+        <div className="absolute rounded-full bottom-32 left-1/4 w-28 h-28 bg-amber-400/10 blur-xl animate-pulse delay-2000"></div>
       </div>
 
       <div className="relative z-10 max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent mb-4 animate-pulse">
+        <div className="mb-8 text-center">
+          <h1 className="mb-4 text-5xl font-bold text-transparent bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text animate-pulse">
             🏆 HALL OF CHAMPIONS 🏆
           </h1>
-          <h2 className="text-3xl font-bold text-white mb-4">
+          <h2 className="mb-4 text-3xl font-bold text-white">
             Leaderboard {missionId ? `- ${missionId.toUpperCase()}` : 'Global'}
           </h2>
-          <div className="bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-2xl p-4 border border-white/10 mb-6">
-            <p className="text-gray-400 text-sm mb-2">Your Champion Name</p>
-            <div className="px-6 py-2 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-full text-white font-bold text-lg inline-block">
+          <div className="p-4 mb-6 border bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-2xl border-white/10">
+            <p className="mb-2 text-sm text-gray-400">Your Champion Name</p>
+            <div className="inline-block px-6 py-2 text-lg font-bold text-white rounded-full bg-gradient-to-r from-yellow-600 to-orange-600">
               ⚡ {userName || 'Guest'} ⚡
             </div>
           </div>
         </div>
 
         {error && (
-          <div className="text-center py-12 text-red-400">
+          <div className="py-12 text-center text-red-400">
             <p className="text-xl font-bold">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="px-4 py-2 mt-4 text-white bg-blue-500 rounded hover:bg-blue-600"
             >
               Refresh
             </button>
@@ -86,9 +86,9 @@ const Leaderboard = ({ userName = 'Player123' }) => {
         )}
 
         {loading && !error && (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-yellow-400 border-t-transparent"></div>
-            <p className="text-white mt-4 text-lg">Loading champions...</p>
+          <div className="py-12 text-center">
+            <div className="inline-block w-16 h-16 border-4 border-yellow-400 rounded-full animate-spin border-t-transparent"></div>
+            <p className="mt-4 text-lg text-white">Loading champions...</p>
           </div>
         )}
 
@@ -113,7 +113,7 @@ const Leaderboard = ({ userName = 'Player123' }) => {
                               <div className="text-center">
                                 <div className="text-3xl font-bold text-white">#{rank}</div>
                                 {rank <= 3 && (
-                                  <div className="text-yellow-200 text-xs font-semibold">
+                                  <div className="text-xs font-semibold text-yellow-200">
                                     {rank === 1 ? 'LEGEND' : rank === 2 ? 'MASTER' : 'EXPERT'}
                                   </div>
                                 )}
@@ -123,11 +123,11 @@ const Leaderboard = ({ userName = 'Player123' }) => {
                               <div className="flex items-center gap-2">
                                 <h3 className="text-2xl font-bold text-white">{entry.username}</h3>
                                 {isPlayer && (
-                                  <span className="px-3 py-1 bg-cyan-500 text-white text-xs font-bold rounded-full animate-bounce">YOU</span>
+                                  <span className="px-3 py-1 text-xs font-bold text-white rounded-full bg-cyan-500 animate-bounce">YOU</span>
                                 )}
                               </div>
                               {rank <= 3 && (
-                                <p className="text-yellow-200 text-sm mt-1">
+                                <p className="mt-1 text-sm text-yellow-200">
                                   {rank === 1 ? '🎯 Perfect Score Master!' :
                                    rank === 2 ? '🎪 Amazing Performance!' :
                                    '🌟 Excellent Work!'}
@@ -136,12 +136,12 @@ const Leaderboard = ({ userName = 'Player123' }) => {
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="text-3xl font-bold text-white mb-1">{entry.total_score || entry.score}</div>
-                            <div className="text-yellow-200 text-sm font-semibold">XP POINTS</div>
+                            <div className="mb-1 text-3xl font-bold text-white">{entry.total_score || entry.score}</div>
+                            <div className="text-sm font-semibold text-yellow-200">XP POINTS</div>
                           </div>
                         </div>
                         {rank <= 3 && (
-                          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/10 to-transparent opacity-50"></div>
+                          <div className="absolute inset-0 opacity-50 rounded-2xl bg-gradient-to-br from-white/10 to-transparent"></div>
                         )}
                       </div>
                     </div>
@@ -149,39 +149,39 @@ const Leaderboard = ({ userName = 'Player123' }) => {
                 })}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4">🏆</div>
-                <h3 className="text-2xl font-bold text-white mb-4">No Champions Yet!</h3>
-                <p className="text-gray-400 text-lg">Be the first to complete missions and claim your spot on the leaderboard!</p>
+              <div className="py-12 text-center">
+                <div className="mb-4 text-6xl">🏆</div>
+                <h3 className="mb-4 text-2xl font-bold text-white">No Champions Yet!</h3>
+                <p className="text-lg text-gray-400">Be the first to complete missions and claim your spot on the leaderboard!</p>
               </div>
             )}
           </div>
         )}
 
         {!loading && !error && leaderboard.length > 0 && (
-          <div className="mt-12 max-w-3xl mx-auto">
-            <div className="bg-gradient-to-r from-gray-800/30 to-gray-900/30 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-              <h3 className="text-xl font-semibold text-white mb-6 text-center">📊 Leaderboard Stats</h3>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="text-center bg-yellow-600/20 rounded-xl p-4">
-                  <div className="text-2xl mb-2">👑</div>
+          <div className="max-w-3xl mx-auto mt-12">
+            <div className="p-6 border bg-gradient-to-r from-gray-800/30 to-gray-900/30 backdrop-blur-sm rounded-2xl border-white/10">
+              <h3 className="mb-6 text-xl font-semibold text-center text-white">📊 Leaderboard Stats</h3>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+                <div className="p-4 text-center bg-yellow-600/20 rounded-xl">
+                  <div className="mb-2 text-2xl">👑</div>
                   <div className="text-2xl font-bold text-yellow-400">{Math.max(...leaderboard.map(entry => entry.total_score || entry.score))}</div>
-                  <div className="text-yellow-200 text-sm">Top Score</div>
+                  <div className="text-sm text-yellow-200">Top Score</div>
                 </div>
-                <div className="text-center bg-blue-600/20 rounded-xl p-4">
-                  <div className="text-2xl mb-2">👥</div>
+                <div className="p-4 text-center bg-blue-600/20 rounded-xl">
+                  <div className="mb-2 text-2xl">👥</div>
                   <div className="text-2xl font-bold text-blue-400">{leaderboard.length}</div>
-                  <div className="text-blue-200 text-sm">Total Players</div>
+                  <div className="text-sm text-blue-200">Total Players</div>
                 </div>
-                <div className="text-center bg-green-600/20 rounded-xl p-4">
-                  <div className="text-2xl mb-2">📈</div>
+                <div className="p-4 text-center bg-green-600/20 rounded-xl">
+                  <div className="mb-2 text-2xl">📈</div>
                   <div className="text-2xl font-bold text-green-400">{(leaderboard.reduce((sum, entry) => sum + (entry.total_score || entry.score), 0) / leaderboard.length).toFixed(2)}</div>
-                  <div className="text-green-200 text-sm">Avg XP</div>
+                  <div className="text-sm text-green-200">Avg XP</div>
                 </div>
-                <div className="text-center bg-red-600/20 rounded-xl p-4">
-                  <div className="text-2xl mb-2">📉</div>
+                <div className="p-4 text-center bg-red-600/20 rounded-xl">
+                  <div className="mb-2 text-2xl">📉</div>
                   <div className="text-2xl font-bold text-red-400">{Math.min(...leaderboard.map(entry => entry.total_score || entry.score))}</div>
-                  <div className="text-red-200 text-sm">Lowest XP</div>
+                  <div className="text-sm text-red-200">Lowest XP</div>
                 </div>
               </div>
             </div>

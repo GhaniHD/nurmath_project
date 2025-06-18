@@ -15,7 +15,7 @@ const Mission2 = ({ missionId, onComplete }) => {
   const [storyPhase, setStoryPhase] = useState('intro');
 
   const navigate = null; // Demo mode - navigation disabled
-  const API_URL = 'http://localhost:3001';
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Load saved progress from localStorage on mount
   useEffect(() => {
@@ -181,18 +181,18 @@ const Mission2 = ({ missionId, onComplete }) => {
       <div className="flex items-center justify-center mb-6">
         <div className="text-6xl animate-bounce">🗺️</div>
       </div>
-      <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-yellow-100 mb-4">📜 Kisah Dimulai...</h2>
-        <div className="bg-black/30 rounded-xl p-6 border border-yellow-600/20">
-          <p className="text-lg text-yellow-50 leading-relaxed">
+      <div className="space-y-4 text-center">
+        <h2 className="mb-4 text-3xl font-bold text-yellow-100">📜 Kisah Dimulai...</h2>
+        <div className="p-6 border bg-black/30 rounded-xl border-yellow-600/20">
+          <p className="text-lg leading-relaxed text-yellow-50">
             <span className="font-bold text-yellow-300">NurM</span> berdiri di tepi jurang data yang dalam. 
             Angin berdesir membawa kabut misterius yang menutupi lapisan-lapisan tanah di bawahnya. 
-            Di kedalaman tersebut, tersembunyi <span className="text-green-400 font-semibold">teknik-teknik pengumpulan data</span> 
+            Di kedalaman tersebut, tersembunyi <span className="font-semibold text-green-400">teknik-teknik pengumpulan data</span> 
             yang telah hilang selama berabad-abad.
           </p>
-          <p className="text-lg text-yellow-50 leading-relaxed mt-4">
+          <p className="mt-4 text-lg leading-relaxed text-yellow-50">
             "Aku harus menggali setiap lapisan dengan hati-hati," gumam NurM sambil menggenggam beliung ajaib. 
-            <span className="text-blue-400 font-semibold">"Setiap pertanyaan yang terjawab akan mengungkap rahasia data yang tersembunyi!"</span>
+            <span className="font-semibold text-blue-400">"Setiap pertanyaan yang terjawab akan mengungkap rahasia data yang tersembunyi!"</span>
           </p>
         </div>
       </div>
@@ -214,14 +214,14 @@ const Mission2 = ({ missionId, onComplete }) => {
       <div className="space-y-12">
         {storyPhase === 'intro' && renderStoryIntro()}
         
-        <div className="bg-gradient-to-b from-brown-900/80 to-stone-900/80 backdrop-blur-sm rounded-3xl p-10 border-2 border-amber-600/30 shadow-2xl">
-          <div className="text-center mb-10">
-            <div className="text-5xl mb-6">⛏️ 🏛️ ⛏️</div>
-            <h3 className="text-3xl font-bold text-amber-100 mb-4">Situs Penggalian Data Kuno</h3>
-            <p className="text-amber-200/80 text-lg">Pilih lapisan tanah untuk memulai penggalian arkeologi data!</p>
+        <div className="p-10 border-2 shadow-2xl bg-gradient-to-b from-brown-900/80 to-stone-900/80 backdrop-blur-sm rounded-3xl border-amber-600/30">
+          <div className="mb-10 text-center">
+            <div className="mb-6 text-5xl">⛏️ 🏛️ ⛏️</div>
+            <h3 className="mb-4 text-3xl font-bold text-amber-100">Situs Penggalian Data Kuno</h3>
+            <p className="text-lg text-amber-200/80">Pilih lapisan tanah untuk memulai penggalian arkeologi data!</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid max-w-5xl grid-cols-1 gap-8 mx-auto sm:grid-cols-2 md:grid-cols-3">
             {soilLayers.map((layer, index) => {
               const question = questions.find(q => q.id === (index + 1));
               const isAnswered = question && answeredQuestions[question.id];
@@ -242,30 +242,30 @@ const Mission2 = ({ missionId, onComplete }) => {
                   {isDigging && (
                     <div className="absolute inset-0 bg-yellow-400/20 animate-ping rounded-2xl"></div>
                   )}
-                  <div className="absolute top-4 right-4 text-yellow-400 animate-pulse opacity-60">✨</div>
-                  <div className="absolute bottom-4 left-4 text-yellow-300 animate-pulse opacity-40 delay-300">⭐</div>
+                  <div className="absolute text-yellow-400 top-4 right-4 animate-pulse opacity-60">✨</div>
+                  <div className="absolute text-yellow-300 delay-300 bottom-4 left-4 animate-pulse opacity-40">⭐</div>
                   
                   <div className="relative z-10 text-center">
-                    <div className="text-5xl mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                    <div className="mb-4 text-5xl transition-transform duration-300 transform group-hover:scale-110">
                       {isDigging ? '⚡' : layer.icon}
                     </div>
-                    <div className="text-white font-bold text-xl mb-2">{layer.name}</div>
-                    <div className="text-stone-300 text-sm opacity-80">{layer.depth}</div>
+                    <div className="mb-2 text-xl font-bold text-white">{layer.name}</div>
+                    <div className="text-sm text-stone-300 opacity-80">{layer.depth}</div>
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-yellow-400/0 via-yellow-400/10 to-yellow-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                  <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-t from-yellow-400/0 via-yellow-400/10 to-yellow-400/0 group-hover:opacity-100 rounded-2xl"></div>
                 </button>
               );
             })}
           </div>
 
           <div className="mt-10 text-center">
-            <div className="bg-stone-800/50 rounded-full p-6 inline-block">
-              <div className="text-amber-300 text-xl font-semibold">
+            <div className="inline-block p-6 rounded-full bg-stone-800/50">
+              <div className="text-xl font-semibold text-amber-300">
                 📊 Kemajuan Penggalian: {Object.keys(answeredQuestions).length}/{questions.length}
               </div>
-              <div className="w-80 bg-stone-700 rounded-full h-4 mt-4 mx-auto overflow-hidden">
+              <div className="h-4 mx-auto mt-4 overflow-hidden rounded-full w-80 bg-stone-700">
                 <div 
-                  className="bg-gradient-to-r from-amber-500 to-yellow-400 h-full rounded-full transition-all duration-1000 shadow-lg"
+                  className="h-full transition-all duration-1000 rounded-full shadow-lg bg-gradient-to-r from-amber-500 to-yellow-400"
                   style={{ width: `${(Object.keys(answeredQuestions).length / questions.length) * 100}%` }}
                 ></div>
               </div>
@@ -281,24 +281,24 @@ const Mission2 = ({ missionId, onComplete }) => {
     if (!currentQuestion) return null;
 
     return (
-      <div className="bg-gradient-to-br from-slate-900/95 to-stone-900/95 backdrop-blur-sm rounded-3xl p-8 border-2 border-amber-500/30 shadow-2xl w-full max-w-3xl mx-auto relative overflow-hidden">
+      <div className="relative w-full max-w-3xl p-8 mx-auto overflow-hidden border-2 shadow-2xl bg-gradient-to-br from-slate-900/95 to-stone-900/95 backdrop-blur-sm rounded-3xl border-amber-500/30">
         <div className="absolute top-0 left-0 w-full h-full opacity-10">
-          <div className="absolute top-6 left-6 text-5xl animate-pulse">🔮</div>
-          <div className="absolute top-6 right-6 text-3xl animate-bounce delay-300">✨</div>
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-4xl animate-pulse delay-700">📜</div>
+          <div className="absolute text-5xl top-6 left-6 animate-pulse">🔮</div>
+          <div className="absolute text-3xl delay-300 top-6 right-6 animate-bounce">✨</div>
+          <div className="absolute text-4xl delay-700 transform -translate-x-1/2 bottom-6 left-1/2 animate-pulse">📜</div>
         </div>
 
         <div className="relative z-10">
-          <div className="text-center mb-8">
-            <div className="text-5xl mb-4 animate-bounce">🏺</div>
-            <h3 className="text-3xl font-bold text-amber-200 mb-2">Artefak Data Ditemukan!</h3>
-            <div className="bg-amber-900/30 rounded-xl p-4 border border-amber-600/20">
-              <p className="text-amber-100 text-sm">NurM menemukan tablet kuno berisi pertanyaan misterius...</p>
+          <div className="mb-8 text-center">
+            <div className="mb-4 text-5xl animate-bounce">🏺</div>
+            <h3 className="mb-2 text-3xl font-bold text-amber-200">Artefak Data Ditemukan!</h3>
+            <div className="p-4 border bg-amber-900/30 rounded-xl border-amber-600/20">
+              <p className="text-sm text-amber-100">NurM menemukan tablet kuno berisi pertanyaan misterius...</p>
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-amber-900/40 to-yellow-900/40 rounded-2xl p-6 border border-amber-500/20 mb-6">
-            <p className="text-xl font-semibold text-white text-center leading-relaxed">
+          <div className="p-6 mb-6 border bg-gradient-to-r from-amber-900/40 to-yellow-900/40 rounded-2xl border-amber-500/20">
+            <p className="text-xl font-semibold leading-relaxed text-center text-white">
               {currentQuestion.question_text}
             </p>
           </div>
@@ -306,7 +306,7 @@ const Mission2 = ({ missionId, onComplete }) => {
           <div className="space-y-6">
             {currentQuestion.type === 'drag-and-drop' && (
               <div className="text-center">
-                <p className="text-amber-200 mb-4">Seret data ke kolom yang sesuai:</p>
+                <p className="mb-4 text-amber-200">Seret data ke kolom yang sesuai:</p>
                 <div className="flex flex-col items-center space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     {currentQuestion.options
@@ -316,7 +316,7 @@ const Mission2 = ({ missionId, onComplete }) => {
                           key={item}
                           draggable
                           onDragStart={(e) => e.dataTransfer.setData('text/plain', item)}
-                          className="p-3 bg-amber-700/50 rounded-lg cursor-move text-white hover:bg-amber-600 transition-colors"
+                          className="p-3 text-white transition-colors rounded-lg cursor-move bg-amber-700/50 hover:bg-amber-600"
                         >
                           {item}
                         </div>
@@ -344,7 +344,7 @@ const Mission2 = ({ missionId, onComplete }) => {
                             .map(opt => (
                               <div
                                 key={opt.item}
-                                className="p-2 bg-amber-600/50 rounded-lg cursor-pointer"
+                                className="p-2 rounded-lg cursor-pointer bg-amber-600/50"
                                 onClick={() => {
                                   setSelectedOptions(prev => prev.filter(o => o.item !== opt.item));
                                 }}
@@ -369,20 +369,20 @@ const Mission2 = ({ missionId, onComplete }) => {
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
                     placeholder="Tuliskan jawaban magis mu..."
-                    className="p-4 rounded-xl bg-slate-800/80 text-white border-2 border-amber-600/30 w-full max-w-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-center text-lg transition-all duration-300"
+                    className="w-full max-w-md p-4 text-lg text-center text-white transition-all duration-300 border-2 rounded-xl bg-slate-800/80 border-amber-600/30 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                     disabled={showFeedback}
                     aria-label="Masukkan jawaban"
                   />
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-amber-400">🖊️</div>
+                  <div className="absolute transform -translate-y-1/2 right-4 top-1/2 text-amber-400">🖊️</div>
                 </div>
               </div>
             )}
 
             {currentQuestion.type === 'ceklis' && (
               <div className="space-y-4">
-                <p className="text-amber-200 text-center font-semibold mb-4">Pilih semua jawaban yang benar:</p>
+                <p className="mb-4 font-semibold text-center text-amber-200">Pilih semua jawaban yang benar:</p>
                 {currentQuestion.options.map(option => (
-                  <label key={option} className="flex items-center p-4 bg-slate-800/60 rounded-xl border border-slate-600/30 hover:bg-slate-700/60 transition-all duration-300 cursor-pointer">
+                  <label key={option} className="flex items-center p-4 transition-all duration-300 border cursor-pointer bg-slate-800/60 rounded-xl border-slate-600/30 hover:bg-slate-700/60">
                     <input
                       type="checkbox"
                       checked={selectedOptions.includes(option)}
@@ -391,9 +391,9 @@ const Mission2 = ({ missionId, onComplete }) => {
                         else setSelectedOptions(prev => prev.filter(o => o !== option));
                       }}
                       disabled={showFeedback}
-                      className="w-5 h-5 text-amber-600 bg-slate-700 border-amber-500 rounded focus:ring-amber-500 mr-4"
+                      className="w-5 h-5 mr-4 rounded text-amber-600 bg-slate-700 border-amber-500 focus:ring-amber-500"
                     />
-                    <span className="text-white hover:text-amber-200 transition-colors duration-300">{option}</span>
+                    <span className="text-white transition-colors duration-300 hover:text-amber-200">{option}</span>
                   </label>
                 ))}
               </div>
@@ -402,7 +402,7 @@ const Mission2 = ({ missionId, onComplete }) => {
             {(currentQuestion.type === 'pg' || currentQuestion.type === 'ya-tidak') && (
               <div className="space-y-4">
                 {currentQuestion.options.map(option => (
-                  <label key={option} className="flex items-center p-4 bg-slate-800/60 rounded-xl border border-slate-600/30 hover:bg-slate-700/60 transition-all duration-300 cursor-pointer">
+                  <label key={option} className="flex items-center p-4 transition-all duration-300 border cursor-pointer bg-slate-800/60 rounded-xl border-slate-600/30 hover:bg-slate-700/60">
                     <input
                       type="radio"
                       name="question-answer"
@@ -410,16 +410,16 @@ const Mission2 = ({ missionId, onComplete }) => {
                       checked={userAnswer === option}
                       onChange={(e) => setUserAnswer(e.target.value)}
                       disabled={showFeedback}
-                      className="w-5 h-5 text-amber-600 bg-slate-700 border-amber-500 focus:ring-amber-500 mr-4"
+                      className="w-5 h-5 mr-4 text-amber-600 bg-slate-700 border-amber-500 focus:ring-amber-500"
                     />
-                    <span className="text-white hover:text-amber-200 transition-colors duration-300">{option}</span>
+                    <span className="text-white transition-colors duration-300 hover:text-amber-200">{option}</span>
                   </label>
                 ))}
               </div>
             )}
           </div>
 
-          <div className="text-center mt-8">
+          <div className="mt-8 text-center">
             <button
               onClick={handleSubmitAnswer}
               disabled={showFeedback || 
@@ -427,7 +427,7 @@ const Mission2 = ({ missionId, onComplete }) => {
                 ((currentQuestion.type === 'ceklis' || currentQuestion.type === 'pg' || currentQuestion.type === 'ya-tidak') && selectedOptions.length === 0 && !userAnswer) ||
                 (currentQuestion.type === 'isian-singkat' && !userAnswer.trim())
               }
-              className="px-8 py-4 bg-gradient-to-r from-amber-600 to-yellow-600 text-white font-bold rounded-xl shadow-lg hover:from-amber-700 hover:to-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 transition-all duration-300 text-lg border-2 border-amber-500/20"
+              className="px-8 py-4 text-lg font-bold text-white transition-all duration-300 transform border-2 shadow-lg bg-gradient-to-r from-amber-600 to-yellow-600 rounded-xl hover:from-amber-700 hover:to-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 border-amber-500/20"
               aria-label="Kirim jawaban"
             >
               <span className="flex items-center justify-center gap-2">
@@ -443,7 +443,7 @@ const Mission2 = ({ missionId, onComplete }) => {
                   ? 'bg-green-900/80 border-green-500/50 text-green-300' 
                   : 'bg-red-900/80 border-red-500/50 text-red-300'
               }`}>
-                <div className="text-4xl mb-2">
+                <div className="mb-2 text-4xl">
                   {result ? '🎉' : '💫'} 
                 </div>
                 <div className="text-2xl font-bold">
@@ -453,7 +453,7 @@ const Mission2 = ({ missionId, onComplete }) => {
                   }
                 </div>
                 {result && (
-                  <div className="text-green-200 mt-2 text-lg">
+                  <div className="mt-2 text-lg text-green-200">
                     "Pengetahuan baru telah terungkap dari kedalaman data!"
                   </div>
                 )}
@@ -467,26 +467,26 @@ const Mission2 = ({ missionId, onComplete }) => {
 
   // Component to render the completion story with leaderboard/play again options
   const renderCompletionStory = () => (
-    <div className="bg-gradient-to-r from-green-900/90 to-emerald-800/90 backdrop-blur-sm rounded-3xl p-8 border-2 border-green-500/30 shadow-2xl text-center transform animate-pulse">
-      <div className="text-6xl mb-6 animate-bounce">🏆</div>
-      <h2 className="text-4xl font-bold text-green-100 mb-4">Misi Berhasil Diselesaikan!</h2>
-      <div className="bg-black/30 rounded-xl p-6 border border-green-500/20">
-        <p className="text-xl text-green-50 leading-relaxed">
+    <div className="p-8 text-center transform border-2 shadow-2xl bg-gradient-to-r from-green-900/90 to-emerald-800/90 backdrop-blur-sm rounded-3xl border-green-500/30 animate-pulse">
+      <div className="mb-6 text-6xl animate-bounce">🏆</div>
+      <h2 className="mb-4 text-4xl font-bold text-green-100">Misi Berhasil Diselesaikan!</h2>
+      <div className="p-6 border bg-black/30 rounded-xl border-green-500/20">
+        <p className="text-xl leading-relaxed text-green-50">
           NurM berhasil menggali semua lapisan tanah dan mengungkap rahasia teknik pengumpulan data yang hilang! 
           Cahaya kebijaksaan kini bersinar terang, menerangi jalan menuju petualangan data berikutnya...
         </p>
       </div>
-      <div className="mt-8 flex justify-center gap-4">
+      <div className="flex justify-center gap-4 mt-8">
         <button
           onClick={() => navigate ? navigate('/leaderboard') : console.log('Navigating to leaderboard...')}
-          className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-bold rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-900 transform hover:scale-105 transition-all duration-300 text-lg border-2 border-blue-500/20"
+          className="px-8 py-4 text-lg font-bold text-white transition-all duration-300 transform border-2 shadow-lg bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl hover:from-blue-700 hover:to-blue-900 hover:scale-105 border-blue-500/20"
           aria-label="Lihat Leaderboard"
         >
           🏅 Lihat Leaderboard
         </button>
         <button
           onClick={handlePlayAgain}
-          className="px-8 py-4 bg-gradient-to-r from-amber-600 to-yellow-600 text-white font-bold rounded-xl shadow-lg hover:from-amber-700 hover:to-yellow-700 transform hover:scale-105 transition-all duration-300 text-lg border-2 border-amber-500/20"
+          className="px-8 py-4 text-lg font-bold text-white transition-all duration-300 transform border-2 shadow-lg bg-gradient-to-r from-amber-600 to-yellow-600 rounded-xl hover:from-amber-700 hover:to-yellow-700 hover:scale-105 border-amber-500/20"
           aria-label="Main Lagi"
         >
           🔄 Main Lagi
@@ -496,25 +496,25 @@ const Mission2 = ({ missionId, onComplete }) => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-900 via-stone-900 to-slate-900 relative overflow-hidden font-inter">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-amber-900 via-stone-900 to-slate-900 font-inter">
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-10 text-6xl animate-float">🌟</div>
-        <div className="absolute top-40 right-20 text-4xl animate-float delay-1000">🗿</div>
-        <div className="absolute bottom-20 left-1/4 text-5xl animate-float delay-2000">⚱️</div>
-        <div className="absolute bottom-40 right-1/3 text-3xl animate-float delay-3000">📚</div>
+        <div className="absolute text-6xl top-20 left-10 animate-float">🌟</div>
+        <div className="absolute text-4xl delay-1000 top-40 right-20 animate-float">🗿</div>
+        <div className="absolute text-5xl bottom-20 left-1/4 animate-float delay-2000">⚱️</div>
+        <div className="absolute text-3xl bottom-40 right-1/3 animate-float delay-3000">📚</div>
       </div>
 
       <div className="relative z-10 p-6">
         <div className="max-w-6xl mx-auto">
           {isLoading && (
-            <div className="text-center text-white text-3xl space-y-4">
-              <div className="animate-spin text-6xl">⚡</div>
+            <div className="space-y-4 text-3xl text-center text-white">
+              <div className="text-6xl animate-spin">⚡</div>
               <div>Menggali data dari kedalaman bumi...</div>
             </div>
           )}
 
           {error && (
-            <div className="text-center text-red-400 text-2xl space-y-4">
+            <div className="space-y-4 text-2xl text-center text-red-400">
               <div className="text-6xl">😱</div>
               <div>{error}</div>
               <button
@@ -540,7 +540,7 @@ const Mission2 = ({ missionId, onComplete }) => {
                   };
                   fetchQuestions();
                 }}
-                className="px-6 py-3 bg-amber-600 text-white rounded-xl hover:bg-amber-700 transition-all duration-300"
+                className="px-6 py-3 text-white transition-all duration-300 bg-amber-600 rounded-xl hover:bg-amber-700"
                 aria-label="Coba lagi"
               >
                 🔄 Coba Gali Lagi
@@ -550,14 +550,14 @@ const Mission2 = ({ missionId, onComplete }) => {
 
           {!isLoading && !error && (
             <>
-              <div className="text-center mb-12">
-                <h1 className="text-5xl md:text-6xl font-bold text-amber-200 mb-6 drop-shadow-2xl">
+              <div className="mb-12 text-center">
+                <h1 className="mb-6 text-5xl font-bold md:text-6xl text-amber-200 drop-shadow-2xl">
                   ⛏️ Misi 2 – Tanah Data yang Hilang 🗺️
                 </h1>
-                <div className="bg-gradient-to-r from-amber-900/60 to-yellow-900/60 backdrop-blur-sm rounded-2xl p-6 border border-amber-500/20 max-w-4xl mx-auto">
-                  <p className="text-xl md:text-2xl text-amber-100 leading-relaxed">
+                <div className="max-w-4xl p-6 mx-auto border bg-gradient-to-r from-amber-900/60 to-yellow-900/60 backdrop-blur-sm rounded-2xl border-amber-500/20">
+                  <p className="text-xl leading-relaxed md:text-2xl text-amber-100">
                     <span className="font-bold text-yellow-300">NurM</span> harus menggali informasi yang tersembunyi dalam lapisan-lapisan tanah. 
-                    Ayo bantu memilih <span className="text-green-400 font-semibold">teknik pengumpulan data</span> yang tepat! 🔍✨
+                    Ayo bantu memilih <span className="font-semibold text-green-400">teknik pengumpulan data</span> yang tepat! 🔍✨
                   </p>
                 </div>
               </div>

@@ -12,7 +12,7 @@ const Mission3 = ({ missionId, onComplete }) => {
   const [storyPhase, setStoryPhase] = useState('intro');
 
   const navigate = null; // Demo mode - navigation disabled
-  const API_URL = 'http://localhost:3001';
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Fetch questions from API
   useEffect(() => {
@@ -136,16 +136,16 @@ const Mission3 = ({ missionId, onComplete }) => {
       <div className="flex items-center justify-center mb-6">
         <div className="text-6xl animate-bounce">⿣</div>
       </div>
-      <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-teal-100 mb-4">📜 Misi 3 – Arus Lautan Fakta</h2>
-        <div className="bg-black/30 rounded-xl p-6 border border-teal-600/20">
-          <p className="text-lg text-teal-50 leading-relaxed">
+      <div className="space-y-4 text-center">
+        <h2 className="mb-4 text-3xl font-bold text-teal-100">📜 Misi 3 – Arus Lautan Fakta</h2>
+        <div className="p-6 border bg-black/30 rounded-xl border-teal-600/20">
+          <p className="text-lg leading-relaxed text-teal-50">
             <span className="font-bold text-teal-300">NurM</span> berlayar di Lautan NurMath yang penuh data tak beraturan. 
             Ombak informasi menggoyangkan kapalnya, menyembunyikan fakta berharga di kedalaman.
           </p>
-          <p className="text-lg text-teal-50 leading-relaxed mt-4">
+          <p className="mt-4 text-lg leading-relaxed text-teal-50">
             "Aku harus menavigasi arus ini dengan cerdas," gumam NurM sambil menggenggam peta laut ajaib. 
-            <span className="text-blue-400 font-semibold">"Setiap fakta yang disaring akan membukakan jalan ke kebenaran data!"</span>
+            <span className="font-semibold text-blue-400">"Setiap fakta yang disaring akan membukakan jalan ke kebenaran data!"</span>
           </p>
         </div>
       </div>
@@ -157,24 +157,24 @@ const Mission3 = ({ missionId, onComplete }) => {
     const currentQuestion = questions[currentQuestionIndex];
 
     return (
-      <div className="bg-gradient-to-br from-blue-900/95 to-teal-900/95 backdrop-blur-lg rounded-3xl p-8 border-2 border-teal-500/30 shadow-2xl w-full max-w-3xl mx-auto relative overflow-hidden">
+      <div className="relative w-full max-w-3xl p-8 mx-auto overflow-hidden border-2 shadow-2xl bg-gradient-to-br from-blue-900/95 to-teal-900/95 backdrop-blur-lg rounded-3xl border-teal-500/30">
         <div className="absolute top-0 left-0 w-full h-full opacity-10">
-          <div className="absolute top-6 left-6 text-5xl animate-pulse">🌊</div>
-          <div className="absolute top-6 right-6 text-3xl animate-bounce delay-300">✨</div>
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-4xl animate-pulse delay-700">📜</div>
+          <div className="absolute text-5xl top-6 left-6 animate-pulse">🌊</div>
+          <div className="absolute text-3xl delay-300 top-6 right-6 animate-bounce">✨</div>
+          <div className="absolute text-4xl delay-700 transform -translate-x-1/2 bottom-6 left-1/2 animate-pulse">📜</div>
         </div>
 
         <div className="relative z-10">
-          <div className="text-center mb-8">
-            <div className="text-5xl mb-4 animate-bounce">🏺</div>
-            <h3 className="text-3xl font-bold text-teal-200 mb-2">Soal {currentQuestion.id}</h3>
-            <div className="bg-teal-900/30 rounded-xl p-4 border border-teal-600/20">
-              <p className="text-teal-100 text-sm">NurM menemukan gulungan kuno berisi teka-teki data...</p>
+          <div className="mb-8 text-center">
+            <div className="mb-4 text-5xl animate-bounce">🏺</div>
+            <h3 className="mb-2 text-3xl font-bold text-teal-200">Soal {currentQuestion.id}</h3>
+            <div className="p-4 border bg-teal-900/30 rounded-xl border-teal-600/20">
+              <p className="text-sm text-teal-100">NurM menemukan gulungan kuno berisi teka-teki data...</p>
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-blue-900/40 to-teal-900/40 rounded-2xl p-6 border border-teal-500/20 mb-6">
-            <p className="text-xl font-semibold text-white text-center leading-relaxed">
+          <div className="p-6 mb-6 border bg-gradient-to-r from-blue-900/40 to-teal-900/40 rounded-2xl border-teal-500/20">
+            <p className="text-xl font-semibold leading-relaxed text-center text-white">
               {currentQuestion.question_text}
             </p>
           </div>
@@ -182,7 +182,7 @@ const Mission3 = ({ missionId, onComplete }) => {
           <div className="space-y-6">
             {currentQuestion.type === 'drag-and-drop' && (
               <div className="text-center">
-                <p className="text-teal-200 mb-4">Susun langkah-langkah secara urut:</p>
+                <p className="mb-4 text-teal-200">Susun langkah-langkah secara urut:</p>
                 <div className="flex flex-col items-center space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     {currentQuestion.options
@@ -192,7 +192,7 @@ const Mission3 = ({ missionId, onComplete }) => {
                           key={item}
                           draggable
                           onDragStart={(e) => e.dataTransfer.setData('text/plain', item)}
-                          className="p-3 bg-blue-700/50 rounded-lg cursor-move text-white hover:bg-blue-600 transition-colors"
+                          className="p-3 text-white transition-colors rounded-lg cursor-move bg-blue-700/50 hover:bg-blue-600"
                         >
                           {item}
                         </div>
@@ -216,7 +216,7 @@ const Mission3 = ({ missionId, onComplete }) => {
                         selectedOptions.map((opt, idx) => (
                           <div
                             key={opt.item}
-                            className="p-2 bg-teal-600/50 rounded-lg cursor-pointer"
+                            className="p-2 rounded-lg cursor-pointer bg-teal-600/50"
                             onClick={() => {
                               setSelectedOptions(prev => prev.filter((_, i) => i !== idx));
                             }}
@@ -234,8 +234,8 @@ const Mission3 = ({ missionId, onComplete }) => {
             {currentQuestion.type === 'ya-tidak' && (
               <div className="space-y-4">
                 {currentQuestion.options.map((option, idx) => (
-                  <div key={option} className="p-4 bg-stone-700/60 rounded-xl border border-stone-600/30">
-                    <p className="text-white mb-2">{option}</p>
+                  <div key={option} className="p-4 border bg-stone-700/60 rounded-xl border-stone-600/30">
+                    <p className="mb-2 text-white">{option}</p>
                     <div className="flex space-x-4">
                       <label className="flex items-center">
                         <input
@@ -251,7 +251,7 @@ const Mission3 = ({ missionId, onComplete }) => {
                             });
                           }}
                           disabled={showFeedback}
-                          className="w-5 h-5 text-teal-600 bg-stone-700 border-teal-500 focus:ring-teal-500 mr-2"
+                          className="w-5 h-5 mr-2 text-teal-600 border-teal-500 bg-stone-700 focus:ring-teal-500"
                         />
                         <span className="text-white">Ya</span>
                       </label>
@@ -269,7 +269,7 @@ const Mission3 = ({ missionId, onComplete }) => {
                             });
                           }}
                           disabled={showFeedback}
-                          className="w-5 h-5 text-teal-600 bg-stone-700 border-teal-500 focus:ring-teal-500 mr-2"
+                          className="w-5 h-5 mr-2 text-teal-600 border-teal-500 bg-stone-700 focus:ring-teal-500"
                         />
                         <span className="text-white">Tidak</span>
                       </label>
@@ -281,9 +281,9 @@ const Mission3 = ({ missionId, onComplete }) => {
 
             {currentQuestion.type === 'ceklis' && (
               <div className="space-y-4">
-                <p className="text-teal-200 text-center font-semibold mb-4">Pilih semua jawaban yang tepat:</p>
+                <p className="mb-4 font-semibold text-center text-teal-200">Pilih semua jawaban yang tepat:</p>
                 {currentQuestion.options.map((option, idx) => (
-                  <label key={option} className="flex items-center p-4 bg-stone-700/60 rounded-xl border border-stone-600/30 hover:bg-stone-600/60 transition-all duration-300 cursor-pointer">
+                  <label key={option} className="flex items-center p-4 transition-all duration-300 border cursor-pointer bg-stone-700/60 rounded-xl border-stone-600/30 hover:bg-stone-600/60">
                     <input
                       type="checkbox"
                       checked={selectedOptions.includes(String.fromCharCode(65 + idx))}
@@ -298,9 +298,9 @@ const Mission3 = ({ missionId, onComplete }) => {
                         });
                       }}
                       disabled={showFeedback}
-                      className="w-5 h-5 text-teal-600 bg-stone-700 border-teal-500 rounded focus:ring-teal-500 mr-4"
+                      className="w-5 h-5 mr-4 text-teal-600 border-teal-500 rounded bg-stone-700 focus:ring-teal-500"
                     />
-                    <span className="text-white hover:text-teal-200 transition-colors duration-300">{`${String.fromCharCode(65 + idx)}. ${option}`}</span>
+                    <span className="text-white transition-colors duration-300 hover:text-teal-200">{`${String.fromCharCode(65 + idx)}. ${option}`}</span>
                   </label>
                 ))}
               </div>
@@ -309,7 +309,7 @@ const Mission3 = ({ missionId, onComplete }) => {
             {currentQuestion.type === 'pg' && (
               <div className="space-y-4">
                 {currentQuestion.options.map((option, idx) => (
-                  <label key={option} className="flex items-center p-4 bg-stone-700/60 rounded-xl border border-stone-600/30 hover:bg-stone-600/60 transition-all duration-300 cursor-pointer">
+                  <label key={option} className="flex items-center p-4 transition-all duration-300 border cursor-pointer bg-stone-700/60 rounded-xl border-stone-600/30 hover:bg-stone-600/60">
                     <input
                       type="radio"
                       name="question-answer"
@@ -317,9 +317,9 @@ const Mission3 = ({ missionId, onComplete }) => {
                       checked={userAnswer === String.fromCharCode(65 + idx)}
                       onChange={(e) => setUserAnswer(e.target.value)}
                       disabled={showFeedback}
-                      className="w-5 h-5 text-teal-600 bg-stone-700 border-teal-500 focus:ring-teal-500 mr-4"
+                      className="w-5 h-5 mr-4 text-teal-600 border-teal-500 bg-stone-700 focus:ring-teal-500"
                     />
-                    <span className="text-white hover:text-teal-200 transition-colors duration-300">{`${String.fromCharCode(65 + idx)}. ${option}`}</span>
+                    <span className="text-white transition-colors duration-300 hover:text-teal-200">{`${String.fromCharCode(65 + idx)}. ${option}`}</span>
                   </label>
                 ))}
               </div>
@@ -331,7 +331,7 @@ const Mission3 = ({ missionId, onComplete }) => {
                   value={userAnswer}
                   onChange={(e) => setUserAnswer(e.target.value)}
                   placeholder="Tuliskan rencana alur investigasi..."
-                  className="p-4 rounded-xl bg-stone-700/80 text-white border-2 border-teal-600/30 w-full max-w-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-center text-lg transition-all duration-300"
+                  className="w-full max-w-md p-4 text-lg text-center text-white transition-all duration-300 border-2 rounded-xl bg-stone-700/80 border-teal-600/30 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   rows="4"
                   disabled={showFeedback}
                   aria-label="Masukkan jawaban"
@@ -342,8 +342,8 @@ const Mission3 = ({ missionId, onComplete }) => {
             {currentQuestion.type === 'benar-salah' && (
               <div className="space-y-4">
                 {currentQuestion.options.map((option, idx) => (
-                  <div key={option} className="p-4 bg-stone-700/60 rounded-xl border border-stone-600/30">
-                    <p className="text-white mb-2">{option}</p>
+                  <div key={option} className="p-4 border bg-stone-700/60 rounded-xl border-stone-600/30">
+                    <p className="mb-2 text-white">{option}</p>
                     <div className="flex space-x-4">
                       <label className="flex items-center">
                         <input
@@ -359,7 +359,7 @@ const Mission3 = ({ missionId, onComplete }) => {
                             });
                           }}
                           disabled={showFeedback}
-                          className="w-5 h-5 text-teal-600 bg-stone-700 border-teal-500 focus:ring-teal-500 mr-2"
+                          className="w-5 h-5 mr-2 text-teal-600 border-teal-500 bg-stone-700 focus:ring-teal-500"
                         />
                         <span className="text-white">Benar</span>
                       </label>
@@ -377,7 +377,7 @@ const Mission3 = ({ missionId, onComplete }) => {
                             });
                           }}
                           disabled={showFeedback}
-                          className="w-5 h-5 text-teal-600 bg-stone-700 border-teal-500 focus:ring-teal-500 mr-2"
+                          className="w-5 h-5 mr-2 text-teal-600 border-teal-500 bg-stone-700 focus:ring-teal-500"
                         />
                         <span className="text-white">Salah</span>
                       </label>
@@ -388,7 +388,7 @@ const Mission3 = ({ missionId, onComplete }) => {
             )}
           </div>
 
-          <div className="text-center mt-8">
+          <div className="mt-8 text-center">
             <button
               onClick={handleSubmitAnswer}
               disabled={showFeedback || (
@@ -398,7 +398,7 @@ const Mission3 = ({ missionId, onComplete }) => {
                 currentQuestion.type === 'pg' ? !userAnswer :
                 !selectedOptions.every(opt => opt !== undefined)
               )}
-              className="px-8 py-4 bg-gradient-to-r from-teal-600 to-blue-600 text-white font-bold rounded-xl shadow-lg hover:from-teal-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 transition-all duration-300 text-lg border-2 border-teal-500/20"
+              className="px-8 py-4 text-lg font-bold text-white transition-all duration-300 transform border-2 shadow-lg bg-gradient-to-r from-teal-600 to-blue-600 rounded-xl hover:from-teal-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 border-teal-500/20"
               aria-label="Kirim jawaban"
             >
               <span className="flex items-center justify-center gap-2">
@@ -414,7 +414,7 @@ const Mission3 = ({ missionId, onComplete }) => {
                   ? 'bg-green-900/80 border-green-500/50 text-green-300' 
                   : 'bg-red-900/80 border-red-500/50 text-red-300'
               }`}>
-                <div className="text-4xl mb-2">
+                <div className="mb-2 text-4xl">
                   {result ? '🎉' : '💦'} 
                 </div>
                 <div className="text-2xl font-bold">
@@ -424,7 +424,7 @@ const Mission3 = ({ missionId, onComplete }) => {
                   }
                 </div>
                 {result && (
-                  <div className="text-green-200 mt-2 text-lg">
+                  <div className="mt-2 text-lg text-green-200">
                     "Lautan fakta kini lebih jernih!"
                   </div>
                 )}
@@ -437,11 +437,11 @@ const Mission3 = ({ missionId, onComplete }) => {
   };
 
   const renderCompletionStory = () => (
-    <div className="bg-gradient-to-r from-green-900/90 to-teal-800/90 backdrop-blur-sm rounded-3xl p-8 border-2 border-green-500/30 shadow-2xl text-center transform animate-pulse">
-      <div className="text-6xl mb-6 animate-bounce">🏆</div>
-      <h2 className="text-4xl font-bold text-green-100 mb-4">Misi Berhasil Diselesaikan!</h2>
-      <div className="bg-black/30 rounded-xl p-6 border border-green-500/20">
-        <p className="text-xl text-green-50 leading-relaxed">
+    <div className="p-8 text-center transform border-2 shadow-2xl bg-gradient-to-r from-green-900/90 to-teal-800/90 backdrop-blur-sm rounded-3xl border-green-500/30 animate-pulse">
+      <div className="mb-6 text-6xl animate-bounce">🏆</div>
+      <h2 className="mb-4 text-4xl font-bold text-green-100">Misi Berhasil Diselesaikan!</h2>
+      <div className="p-6 border bg-black/30 rounded-xl border-green-500/20">
+        <p className="text-xl leading-relaxed text-green-50">
           NurM berhasil menavigasi Arus Lautan Fakta dan menyaring kebenaran data! 
           Cahaya pengetahuan kini memandu kapalnya ke petualangan berikutnya...
         </p>
@@ -450,7 +450,7 @@ const Mission3 = ({ missionId, onComplete }) => {
   );
 
   const renderPagination = () => (
-    <div className="text-center mt-8">
+    <div className="mt-8 text-center">
       {questions.map((question, index) => {
         const isAnswered = question.answered;
         const isCorrect = question.correct;
@@ -482,25 +482,25 @@ const Mission3 = ({ missionId, onComplete }) => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-teal-900 to-gray-900 relative overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-blue-900 via-teal-900 to-gray-900">
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-10 text-6xl animate-float">🌊</div>
-        <div className="absolute top-40 right-20 text-4xl animate-float delay-1000">🐳</div>
-        <div className="absolute bottom-20 left-1/4 text-5xl animate-float delay-2000">⚓</div>
-        <div className="absolute bottom-40 right-1/3 text-3xl animate-float delay-3000">📖</div>
+        <div className="absolute text-6xl top-20 left-10 animate-float">🌊</div>
+        <div className="absolute text-4xl delay-1000 top-40 right-20 animate-float">🐳</div>
+        <div className="absolute text-5xl bottom-20 left-1/4 animate-float delay-2000">⚓</div>
+        <div className="absolute text-3xl bottom-40 right-1/3 animate-float delay-3000">📖</div>
       </div>
 
       <div className="relative z-10 p-6 font-comic-sans">
         <div className="max-w-6xl mx-auto">
           {isLoading && (
-            <div className="text-center text-white text-3xl space-y-4">
-              <div className="animate-spin text-6xl">⚡</div>
+            <div className="space-y-4 text-3xl text-center text-white">
+              <div className="text-6xl animate-spin">⚡</div>
               <div>Menjelajah lautan data...</div>
             </div>
           )}
 
           {error && (
-            <div className="text-center text-red-400 text-2xl space-y-4">
+            <div className="space-y-4 text-2xl text-center text-red-400">
               <div className="text-6xl">😱</div>
               <div>{error}</div>
               <button
@@ -524,7 +524,7 @@ const Mission3 = ({ missionId, onComplete }) => {
                   };
                   fetchQuestions();
                 }}
-                className="px-6 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-all duration-300"
+                className="px-6 py-3 text-white transition-all duration-300 bg-teal-600 rounded-xl hover:bg-teal-700"
                 aria-label="Coba lagi"
               >
                 🔄 Coba Jelajah Lagi
@@ -534,14 +534,14 @@ const Mission3 = ({ missionId, onComplete }) => {
 
           {!isLoading && !error && (
             <>
-              <div className="text-center mb-12">
-                <h1 className="text-5xl md:text-6xl font-bold text-teal-200 mb-6 drop-shadow-2xl">
+              <div className="mb-12 text-center">
+                <h1 className="mb-6 text-5xl font-bold text-teal-200 md:text-6xl drop-shadow-2xl">
                   ⿣ Misi 3 – Arus Lautan Fakta 🗺️
                 </h1>
-                <div className="bg-gradient-to-r from-blue-900/60 to-teal-900/60 backdrop-blur-sm rounded-2xl p-6 border border-teal-500/20 max-w-4xl mx-auto">
-                  <p className="text-xl md:text-2xl text-teal-100 leading-relaxed">
+                <div className="max-w-4xl p-6 mx-auto border bg-gradient-to-r from-blue-900/60 to-teal-900/60 backdrop-blur-sm rounded-2xl border-teal-500/20">
+                  <p className="text-xl leading-relaxed text-teal-100 md:text-2xl">
                     <span className="font-bold text-teal-300">NurM</span> harus menavigasi lautan data tak beraturan. 
-                    Ayo bantu menyaring <span className="text-green-400 font-semibold">fakta yang benar</span>! 🔍✨
+                    Ayo bantu menyaring <span className="font-semibold text-green-400">fakta yang benar</span>! 🔍✨
                   </p>
                 </div>
               </div>

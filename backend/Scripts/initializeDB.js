@@ -14,7 +14,7 @@ const dbConfig = {
   database: process.env.DB_NAME,
   ssl: {
     rejectUnauthorized: true,
-    ca: process.env.DB_SSL_CA 
+    ca: process.env.DB_SSL_CA
   }
 };
 
@@ -59,11 +59,20 @@ const initializeTables = async () => {
     console.log('✅ Tables initialized successfully');
   } catch (err) {
     console.error('❌ Initialization error:', err.stack);
-    process.exit(1);
+    throw err; // Lempar error agar dapat ditangani di luar
   } finally {
     await client.end();
     console.log('🔌 Connection closed');
   }
 };
 
-initializeTables();
+// Ekspor fungsi untuk digunakan di tempat lain (misalnya, endpoint atau postinstall)
+module.exports = initializeTables;
+
+// Jalankan initializeTables jika file ini dijalankan langsung (misalnya, via CLI)
+if (require.main === module) {
+  initializeTables().catch(err => {
+    console.error('Initialization process failed:', err.stack);
+    process.exit(1);
+  });
+}

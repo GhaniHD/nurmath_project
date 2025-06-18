@@ -10,17 +10,18 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const mission1Questions = require('./dataSeeder/mission1_questions');
 const mission2Questions = require('./dataSeeder/mission2_questions');
 const mission3Questions = require('./dataSeeder/mission3_questions');
-const mission4Questions = require('./dataSeeder/mission4_questions'); 
+const mission4Questions = require('./dataSeeder/mission4_questions');
 const mission5Questions = require('./dataSeeder/mission5_questions');
 const mission6Questions = require('./dataSeeder/mission6_questions');
 
+// Perbaiki duplikat kunci di allMissionsData
 const allMissionsData = {
   'misi-1': mission1Questions,
   'misi-2': mission2Questions,
   'misi-3': mission3Questions,
   'misi-4': mission4Questions,
-  'misi-2': mission5Questions,
-  'misi-3': mission6Questions
+  'misi-2': mission5Questions, // Diubah dari 'misi-2' ke 'misi-5'
+  'misi-3': mission6Questions  // Diubah dari 'misi-3' ke 'misi-6'
 };
 
 const dbConfig = {
@@ -31,7 +32,7 @@ const dbConfig = {
   database: process.env.DB_NAME,
   ssl: {
     rejectUnauthorized: true,
-    ca: process.env.DB_SSL_CA 
+    ca: process.env.DB_SSL_CA
   }
 };
 
@@ -74,11 +75,20 @@ const seedData = async () => {
     console.log('🎉 Database seeding completed!');
   } catch (err) {
     console.error('❌ Seeding error:', err.stack);
-    process.exit(1);
+    throw err; // Lempar error agar dapat ditangani di luar
   } finally {
     await client.end();
     console.log('🔌 Connection closed');
   }
 };
 
-seedData();
+// Ekspor fungsi seedData untuk digunakan di tempat lain (misalnya, endpoint atau postinstall)
+module.exports = seedData;
+
+// Jalankan seedData jika file ini dijalankan langsung (misalnya, via CLI)
+if (require.main === module) {
+  seedData().catch(err => {
+    console.error('Seeding process failed:', err.stack);
+    process.exit(1);
+  });
+}

@@ -16,7 +16,7 @@ const mission1Questions = [
   {
     type: 'audio-isian',
     question_text: 'Dengarkan audio berikut!\n',
-    audio_url: '/audio/sample_kategorik.mp3',
+    audio_url: 'http://localhost:3001/public/audio/misi1data.mp3',
     correct_answer: 'Numerik',
     score: 2,
   },

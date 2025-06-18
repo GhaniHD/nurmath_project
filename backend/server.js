@@ -31,10 +31,9 @@ const dbConfig = {
   database: process.env.DB_NAME,
   ssl: {
     rejectUnauthorized: true,
-    ca: fs.readFileSync(path.join(__dirname, 'certs', 'ca.crt')).toString(),
-  },
+    ca: process.env.DB_SSL_CA 
+  }
 };
-
 // Initialize PostgreSQL client
 const client = new Client(dbConfig);
 

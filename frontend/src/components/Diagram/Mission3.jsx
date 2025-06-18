@@ -39,7 +39,14 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
         const response = await fetch(`${API_URL}/api/questions/${missionId}`);
         const data = await response.json();
         if (response.ok) {
-          setQuestions(data.map((q, index) => ({ ...q, id: q.id || index + 1 })));
+          setQuestions(data.map((q, index) => ({
+            ...q,
+            id: q.id || index + 1,
+            type: q.type.toLowerCase()
+              .replace('isian singkat', 'isian-singkat')
+              .replace('benar-salah', 'ya-tidak')
+              // Keep 'menjodohkan' as is
+          })));
           setCharacterMessage('Pilih awan untuk mulai menjelajahi langit!');
         } else {
           setError(data.error || 'Gagal memuat soal');
@@ -103,7 +110,21 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
 
     let isCorrect = false;
     switch (currentQuestion.type) {
-      case 'drag-and-drop': {
+      case 'pg': {
+        isCorrect = userAnswer === currentQuestion.correct_answer; // e.g., 'B'
+        break;
+      }
+      case 'ya-tidak': {
+        isCorrect = userAnswer === currentQuestion.correct_answer; // e.g., 'Benar' or 'Ya'
+        break;
+      }
+      case 'isian-singkat': {
+        const normalizedUserAnswer = userAnswer.trim().replace(/\s+/g, '');
+        const normalizedCorrectAnswer = currentQuestion.correct_answer.trim().replace(/\s+/g, '');
+        isCorrect = normalizedUserAnswer.toLowerCase() === normalizedCorrectAnswer.toLowerCase(); // e.g., '[108,72,90,90]'
+        break;
+      }
+      case 'menjodohkan': {
         const sortedSelected = [...selectedOptions].sort((a, b) => a.item.localeCompare(b.item));
         const sortedCorrect = Object.entries(currentQuestion.correct_answer)
           .map(([item, target]) => ({ item, target }))
@@ -111,18 +132,10 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
         isCorrect = JSON.stringify(sortedSelected) === JSON.stringify(sortedCorrect);
         break;
       }
-      case 'isian-singkat': {
-        isCorrect = userAnswer.trim().toLowerCase() === currentQuestion.correct_answer.toLowerCase();
+      case 'gambar-isian': {
+        isCorrect = userAnswer.trim() === currentQuestion.correct_answer.trim(); // e.g., '90'
         break;
       }
-      case 'ceklis': {
-        isCorrect = JSON.stringify([...selectedOptions].sort()) === JSON.stringify([...currentQuestion.correct_answer].sort());
-        break;
-      }
-      case 'pg':
-      case 'ya-tidak':
-        isCorrect = userAnswer === currentQuestion.correct_answer;
-        break;
       default:
         break;
     }
@@ -170,7 +183,13 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
         const response = await fetch(`${API_URL}/api/questions/${missionId}`);
         const data = await response.json();
         if (response.ok) {
-          setQuestions(data.map((q, index) => ({ ...q, id: q.id || index + 1 })));
+          setQuestions(data.map((q, index) => ({
+            ...q,
+            id: q.id || index + 1,
+            type: q.type.toLowerCase()
+              .replace('isian singkat', 'isian-singkat')
+              .replace('benar-salah', 'ya-tidak')
+          })));
         } else {
           setError(data.error || 'Gagal memuat soal');
         }
@@ -207,7 +226,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
         <div className="bg-black/30 rounded-xl p-6 border border-blue-400/20">
           <p className="text-lg text-blue-50 leading-relaxed">
             <span className="font-bold text-blue-300">Astra</span> melayang di antara bintang-bintang di langit malam yang luas. 
-            Kabut kosmik menyembunyikan <span className="text-blue-400 font-semibold">rahasia data langit</span> di dalam awan-awan misterius.
+            Kabut kosmik menyembunyikan <span className="text-blue-400 font-semibold">rahasia representasi data</span> di dalam awan-awan misterius.
           </p>
           <p className="text-lg text-blue-50 leading-relaxed mt-4">
             "Aku harus menjelajahi setiap awan dengan hati-hati," gumam Astra sambil memegang tongkat bintang. 
@@ -317,15 +336,98 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
           </div>
 
           <div className="bg-gradient-to-r from-blue-900/40 to-cyan-900/40 rounded-2xl p-6 border border-blue-400/20 mb-6">
-            <p className="text-xl font-semibold text-white text-center leading-relaxed">
+            <p className="text-xl font-semibold text-white text-center leading-relaxed whitespace-pre-line">
               {currentQuestion.question_text}
             </p>
+            {currentQuestion.audio_url && (
+              <div className="mt-4 flex justify-center">
+                <audio controls src={currentQuestion.audio_url} className="w-full max-w-sm" />
+              </div>
+            )}
+            {currentQuestion.image_url && currentQuestion.type === 'gambar-isian' && (
+              <div className="mt-4 flex justify-center">
+                <img src={currentQuestion.image_url} alt="Question Image" className="max-w-full h-auto rounded-lg shadow-md" />
+              </div>
+            )}
           </div>
 
           <div className="space-y-6">
-            {currentQuestion.type === 'drag-and-drop' && (
+            {currentQuestion.type === 'pg' && (
+              <div className="space-y-4">
+                <p className="text-blue-200 text-center mb-4">Pilih diagram batang yang sesuai dengan data penjualan buah:</p>
+                {Object.entries(currentQuestion.options).map(([key, value]) => (
+                  <label
+                    key={key}
+                    className="flex items-center p-4 bg-blue-800/60 rounded-xl border border-blue-600/30 hover:bg-blue-700/60 transition-all duration-300 cursor-pointer"
+                  >
+                    <input
+                      type="radio"
+                      name="question-answer"
+                      value={key}
+                      checked={userAnswer === key}
+                      onChange={(e) => setUserAnswer(e.target.value)}
+                      disabled={showFeedback}
+                      className="w-5 h-5 text-blue-600 bg-blue-700 border-blue-400 focus:ring-blue-400 mr-4"
+                    />
+                    <img
+                      src={value}
+                      alt={`Option ${key}`}
+                      className="w-24 h-auto rounded-lg"
+                    />
+                    <span className="text-white hover:text-blue-200 transition-colors duration-300 ml-4">{key}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+
+            {currentQuestion.type === 'ya-tidak' && (
+              <div className="space-y-4">
+                <p className="text-blue-200 text-center mb-4">
+                  {currentQuestion.question_text.includes('panen padi') 
+                    ? 'Apakah diagram garis cocok untuk data panen padi?' 
+                    : 'Apakah perhitungan persentase kegiatan ekstrakurikuler benar?'}
+                </p>
+                {currentQuestion.options.map(option => (
+                  <label
+                    key={option}
+                    className="flex items-center p-4 bg-blue-800/60 rounded-xl border border-blue-600/30 hover:bg-blue-700/60 transition-all duration-300 cursor-pointer"
+                  >
+                    <input
+                      type="radio"
+                      name="question-answer"
+                      value={option}
+                      checked={userAnswer === option}
+                      onChange={(e) => setUserAnswer(e.target.value)}
+                      disabled={showFeedback}
+                      className="w-5 h-5 text-blue-600 bg-blue-700 border-blue-400 focus:ring-blue-400 mr-4"
+                    />
+                    <span className="text-white hover:text-blue-200 transition-colors duration-300">{option}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+
+            {currentQuestion.type === 'isian-singkat' && (
               <div className="text-center">
-                <p className="text-blue-200 mb-4">Seret data ke konstelasi yang sesuai:</p>
+                <p className="text-blue-200 mb-4">Masukkan sudut derajat untuk setiap aktivitas (format: [jawaban 1,jawaban 2,jawaban 3,jawaban 4]):</p>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={userAnswer}
+                    onChange={(e) => setUserAnswer(e.target.value)}
+                    placeholder="Tuliskan jawaban kosmik mu..."
+                    className="p-4 rounded-xl bg-blue-800/80 text-white border-2 border-blue-400/30 w-full max-w-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-center text-lg transition-all duration-300"
+                    disabled={showFeedback}
+                    aria-label="Masukkan jawaban"
+                  />
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-400">🌟</div>
+                </div>
+              </div>
+            )}
+
+            {currentQuestion.type === 'menjodohkan' && (
+              <div className="text-center">
+                <p className="text-blue-200 mb-4">Pasangkan data dengan jenis diagram yang sesuai:</p>
                 <div className="flex flex-col items-center space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     {currentQuestion.options
@@ -379,9 +481,9 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
               </div>
             )}
 
-            {currentQuestion.type === 'isian-singkat' && (
+            {currentQuestion.type === 'gambar-isian' && (
               <div className="text-center">
-                {currentQuestion.audio_url && <audio controls src={currentQuestion.audio_url} className="mb-4" />}
+                <p className="text-blue-200 mb-4">Masukkan besar sudut untuk siswa yang naik sepeda (hanya angka):</p>
                 <div className="relative">
                   <input
                     type="text"
@@ -396,55 +498,16 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                 </div>
               </div>
             )}
-
-            {currentQuestion.type === 'ceklis' && (
-              <div className="space-y-4">
-                <p className="text-blue-200 text-center font-semibold mb-4">Pilih semua jawaban yang benar:</p>
-                {currentQuestion.options.map(option => (
-                  <label key={option} className="flex items-center p-4 bg-blue-800/60 rounded-xl border border-blue-600/30 hover:bg-blue-700/60 transition-all duration-300 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={selectedOptions.includes(option)}
-                      onChange={(e) => {
-                        if (e.target.checked) setSelectedOptions(prev => [...prev, option]);
-                        else setSelectedOptions(prev => prev.filter(o => o !== option));
-                      }}
-                      disabled={showFeedback}
-                      className="w-5 h-5 text-blue-600 bg-blue-700 border-blue-400 rounded focus:ring-blue-400 mr-4"
-                    />
-                    <span className="text-white hover:text-blue-200 transition-colors duration-300">{option}</span>
-                  </label>
-                ))}
-              </div>
-            )}
-
-            {(currentQuestion.type === 'pg' || currentQuestion.type === 'ya-tidak') && (
-              <div className="space-y-4">
-                {currentQuestion.options.map(option => (
-                  <label key={option} className="flex items-center p-4 bg-blue-800/60 rounded-xl border border-blue-600/30 hover:bg-blue-700/60 transition-all duration-300 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="question-answer"
-                      value={option}
-                      checked={userAnswer === option}
-                      onChange={(e) => setUserAnswer(e.target.value)}
-                      disabled={showFeedback}
-                      className="w-5 h-5 text-blue-600 bg-blue-700 border-blue-400 focus:ring-blue-400 mr-4"
-                    />
-                    <span className="text-white hover:text-blue-200 transition-colors duration-300">{option}</span>
-                  </label>
-                ))}
-              </div>
-            )}
           </div>
 
           <div className="text-center mt-8">
             <button
               onClick={handleSubmitAnswer}
-              disabled={showFeedback || 
-                (currentQuestion.type === 'drag-and-drop' && selectedOptions.length !== currentQuestion.options.length) || 
-                ((currentQuestion.type === 'ceklis' || currentQuestion.type === 'pg' || currentQuestion.type === 'ya-tidak') && selectedOptions.length === 0 && !userAnswer) ||
-                (currentQuestion.type === 'isian-singkat' && !userAnswer.trim())
+              disabled={
+                showFeedback ||
+                (currentQuestion.type === 'menjodohkan' && selectedOptions.length !== currentQuestion.options.length) ||
+                ((currentQuestion.type === 'pg' || currentQuestion.type === 'ya-tidak') && !userAnswer) ||
+                ((currentQuestion.type === 'isian-singkat' || currentQuestion.type === 'gambar-isian') && !userAnswer.trim())
               }
               className="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold rounded-xl shadow-lg hover:from-blue-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 transition-all duration-300 text-lg border-2 border-blue-400/20"
               aria-label="Kirim jawaban"
@@ -457,19 +520,18 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
 
           {showFeedback && (
             <div className={`mt-8 text-center transform animate-bounce ${result ? 'animate-pulse' : ''}`}>
-              <div className={`inline-block p-6 rounded-2xl border-2 ${
-                result 
-                  ? 'bg-green-900/80 border-green-400/50 text-green-300' 
-                  : 'bg-red-900/80 border-red-400/50 text-red-300'
-              }`}>
-                <div className="text-4xl mb-2">
-                  {result ? '🎉' : '🌌'} 
-                </div>
+              <div
+                className={`inline-block p-6 rounded-2xl border-2 ${
+                  result
+                    ? 'bg-green-900/80 border-green-400/50 text-green-300'
+                    : 'bg-red-900/80 border-red-400/50 text-red-300'
+                }`}
+              >
+                <div className="text-4xl mb-2">{result ? '🎉' : '🌌'}</div>
                 <div className="text-2xl font-bold">
-                  {result 
-                    ? `✨ Hebat! Data bintang terungkap! ✨\n🏆 +${currentQuestion.score} XP Penjelajah! 🏆` 
-                    : '🔄 Hmm, coba terbang lebih tinggi lagi... 🔄'
-                  }
+                  {result
+                    ? `✨ Hebat! Data bintang terungkap! ✨\n🏆 +${currentQuestion.score} XP Penjelajah! 🏆`
+                    : '🔄 Hmm, coba terbang lebih tinggi lagi... 🔄'}
                 </div>
                 {result && (
                   <div className="text-green-200 mt-2 text-lg">
@@ -491,7 +553,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
       <h2 className="text-4xl font-bold text-blue-100 mb-4">Misi Langit Berhasil!</h2>
       <div className="bg-black/30 rounded-xl p-6 border border-blue-400/20">
         <p className="text-xl text-blue-50 leading-relaxed">
-          Astra berhasil menjelajahi semua awan dan mengungkap rahasia data langit! 
+          Astra berhasil menjelajahi semua awan dan mengungkap rahasia representasi data! 
           Cahaya bintang kini bersinar terang, menerangi jalan menuju petualangan kosmik berikutnya...
         </p>
       </div>
@@ -550,7 +612,13 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                       const response = await fetch(`${API_URL}/api/questions/${missionId}`);
                       const data = await response.json();
                       if (response.ok) {
-                        setQuestions(data.map((q, index) => ({ ...q, id: q.id || index + 1 })));
+                        setQuestions(data.map((q, index) => ({
+                          ...q,
+                          id: q.id || index + 1,
+                          type: q.type.toLowerCase()
+                            .replace('isian singkat', 'isian-singkat')
+                            .replace('benar-salah', 'ya-tidak')
+                        })));
                         setCharacterMessage('Pilih awan untuk mulai menjelajahi langit!');
                       } else {
                         setError(data.error || 'Gagal memuat soal');
@@ -577,12 +645,12 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
             <>
               <div className="text-center mb-12">
                 <h1 className="text-5xl md:text-6xl font-bold text-blue-200 mb-6 drop-shadow-2xl">
-                  🌌 Misi 2 – Rahasia Langit Kosmik 🌠
+                  🌌 Misi 6 – Rahasia Representasi Data Kosmik 🌠
                 </h1>
                 <div className="bg-gradient-to-r from-blue-900/60 to-cyan-900/60 backdrop-blur-sm rounded-2xl p-6 border border-blue-400/20 max-w-4xl mx-auto">
                   <p className="text-xl md:text-2xl text-blue-100 leading-relaxed">
-                    <span className="font-bold text-blue-300">Astra</span> harus menjelajahi rahasia data yang tersembunyi di awan-awan langit. 
-                    Ayo bantu memilih <span className="text-blue-400 font-semibold">teknik pengumpulan data</span> yang tepat! 🔍✨
+                    <span className="font-bold text-blue-300">Astra</span> harus menjelajahi rahasia representasi data yang tersembunyi di awan-awan langit. 
+                    Ayo bantu memilih <span className="text-blue-400 font-semibold">diagram yang tepat</span>! 🔍✨
                   </p>
                 </div>
               </div>

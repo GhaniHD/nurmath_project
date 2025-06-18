@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "init-db": "node scripts/initializeDB.js",
     "seed": "node scripts/seed.js",
-    "postinstall": "node scripts/initializeDB.js && node scripts/seed.js",
+    "postinstall": "node Scripts/initializeDB.js && node Scripts/seed.js",
     "start": "node ./server.js"
   },
   "keywords": [],

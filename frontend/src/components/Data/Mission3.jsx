@@ -231,53 +231,55 @@ const Mission3 = ({ missionId, onComplete }) => {
               </div>
             )}
 
-            {currentQuestion.type === 'ya-tidak' && (
-              <div className="space-y-4">
-                {currentQuestion.options.map((option, idx) => (
-                  <div key={option} className="p-4 border bg-stone-700/60 rounded-xl border-stone-600/30">
-                    <p className="mb-2 text-white">{option}</p>
-                    <div className="flex space-x-4">
-                      <label className="flex items-center">
-                        <input
-                          type="radio"
-                          name={`question-answer-${idx}`}
-                          value="Ya"
-                          checked={selectedOptions[idx] === 'Ya'}
-                          onChange={() => {
-                            setSelectedOptions(prev => {
-                              const newOptions = [...prev];
-                              newOptions[idx] = 'Ya';
-                              return newOptions;
-                            });
-                          }}
-                          disabled={showFeedback}
-                          className="w-5 h-5 mr-2 text-teal-600 border-teal-500 bg-stone-700 focus:ring-teal-500"
-                        />
-                        <span className="text-white">Ya</span>
-                      </label>
-                      <label className="flex items-center">
-                        <input
-                          type="radio"
-                          name={`question-answer-${idx}`}
-                          value="Tidak"
-                          checked={selectedOptions[idx] === 'Tidak'}
-                          onChange={() => {
-                            setSelectedOptions(prev => {
-                              const newOptions = [...prev];
-                              newOptions[idx] = 'Tidak';
-                              return newOptions;
-                            });
-                          }}
-                          disabled={showFeedback}
-                          className="w-5 h-5 mr-2 text-teal-600 border-teal-500 bg-stone-700 focus:ring-teal-500"
-                        />
-                        <span className="text-white">Tidak</span>
-                      </label>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+{currentQuestion.type === 'ya-tidak' && (
+  <div className="space-y-4">
+    {Array.isArray(currentQuestion.options) &&
+      currentQuestion.options.map((option, idx) => (
+        <div key={option} className="p-4 border bg-stone-700/60 rounded-xl border-stone-600/30">
+          <p className="mb-2 text-white">{option}</p>
+          <div className="flex space-x-4">
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name={`question-answer-${idx}`}
+                value="Ya"
+                checked={selectedOptions[idx] === 'Ya'}
+                onChange={() => {
+                  setSelectedOptions(prev => {
+                    const newOptions = [...prev];
+                    newOptions[idx] = 'Ya';
+                    return newOptions;
+                  });
+                }}
+                disabled={showFeedback}
+                className="w-5 h-5 mr-2 text-teal-600 border-teal-500 bg-stone-700 focus:ring-teal-500"
+              />
+              <span className="text-white">Ya</span>
+            </label>
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name={`question-answer-${idx}`}
+                value="Tidak"
+                checked={selectedOptions[idx] === 'Tidak'}
+                onChange={() => {
+                  setSelectedOptions(prev => {
+                    const newOptions = [...prev];
+                    newOptions[idx] = 'Tidak';
+                    return newOptions;
+                  });
+                }}
+                disabled={showFeedback}
+                className="w-5 h-5 mr-2 text-teal-600 border-teal-500 bg-stone-700 focus:ring-teal-500"
+              />
+              <span className="text-white">Tidak</span>
+            </label>
+          </div>
+        </div>
+      ))}
+  </div>
+)}
+
 
             {currentQuestion.type === 'ceklis' && (
               <div className="space-y-4">

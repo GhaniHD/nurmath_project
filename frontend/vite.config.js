@@ -16,6 +16,7 @@ export default defineConfig({
   server: {
     port: 3000,
     strictPort: true,
+    historyApiFallback: true, // Tambahkan ini
   },
   build: {
     outDir: 'dist' // ✅ WAJIB untuk Vercel tahu output folder

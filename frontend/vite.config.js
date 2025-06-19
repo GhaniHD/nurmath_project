@@ -19,6 +19,9 @@ export default defineConfig({
     historyApiFallback: true, // Tambahkan ini
   },
   build: {
+    outDir: 'dist'
+  }
+  build: {
     outDir: 'dist' // ✅ WAJIB untuk Vercel tahu output folder
   }
 });

@@ -15,7 +15,7 @@ const cache = new NodeCache({ stdTTL: 600 }); // Cache TTL 10 minutes
 
 app.set('cache', cache); // Set cache instance to Express app
 
-app.use(cors({ origin: 'http://localhost:3000' })); // Ganti dengan domain produksi saat deploy
+app.use(cors({ origin: 'https://nurmath-03backend.vercel.app' })); // Ganti dengan domain produksi saat deploy
 app.use(express.json()); // Parse JSON body
 app.use(compression()); // Compress HTTP responses
 app.use('/public', express.static('public')); // Serve static files from public folder

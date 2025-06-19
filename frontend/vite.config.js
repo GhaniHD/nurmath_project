@@ -5,19 +5,19 @@ import autoprefixer from 'autoprefixer';
 
 export default defineConfig({
   plugins: [react()],
+  base: '/', // Pindahkan base ke tingkat root
   css: {
     postcss: {
       plugins: [
         tailwindcss,
         autoprefixer,
       ],
-      base: '/',
     },
   },
   server: {
     port: 3000,
     strictPort: true,
-    historyApiFallback: true, // Tambahkan ini
+    historyApiFallback: true, // Tetap gunakan untuk pengembangan lokal
   },
   build: {
     outDir: 'dist'

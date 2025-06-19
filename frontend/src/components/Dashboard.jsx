@@ -50,7 +50,7 @@ const Dashboard = ({ totalScore: initialTotalScore = 0, userName }) => {
       description: 'Gali harta karun informasi di kedalaman tanah NurMath!',
       color: 'from-amber-700/80 to-brown-800/80',
       shadowColor: 'shadow-amber-600/30',
-      path: '/dataPage',
+      path: 'Data/DataPage',
     },
     {
       id: 'diagram',

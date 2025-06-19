@@ -139,7 +139,7 @@ const App = () => {
         <ErrorBoundary>
           <Routes>
             <Route path="/" element={<Dashboard totalScore={totalScore} userName={userName} onAngketClick={toggleAngketModal} />} />
-            <Route path="/dataPage" element={<DataPage totalScore={totalScore} userName={userName} />} />
+            <Route path="/Data/DataPage" element={<DataPage totalScore={totalScore} userName={userName} />} />
             <Route path="/diagram" element={<DiagramPage />} />
             <Route path="/leaderboard" element={<Leaderboard userName={userName} />} />
             <Route path="/data/misi-1" element={<Mission1 missionId="misi-1" onComplete={handleComplete} />} />

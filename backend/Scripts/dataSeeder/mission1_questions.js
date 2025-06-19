@@ -16,7 +16,7 @@ const mission1Questions = [
   {
     type: 'audio-isian',
     question_text: 'Dengarkan audio berikut!\n',
-    audio_url: 'http://localhost:3001/public/audio/misi1data.mp3',
+    audio_url: 'audio/misi1data.mp3',
     correct_answer: 'Numerik',
     score: 2,
   },
@@ -47,7 +47,7 @@ const mission1Questions = [
   {
     type: 'gambar-isian',
     question_text: 'Andi ingin mengetahui jenis makanan favorit teman-temannya. Ia membuat daftar pertanyaan dan membagikannya melalui Google Form. Teknik pengumpulan data yang dilakukan Andi adalah',
-    image_url: 'http://localhost:3001/public/images/google_form.png',
+    image_url: 'images/google_form.png',
     correct_answer: 'Angket',
     score: 2,
   },

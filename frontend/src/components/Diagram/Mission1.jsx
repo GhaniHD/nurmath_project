@@ -414,7 +414,7 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
         {/* Interactive Character Above TTS Box */}
       <div className="text-center mt-8 -mb-20 z-20">
         <img
-          src="../public/images/misi-1.png"
+          src="images/misi-1.png"
           alt="Forest Explorer Character"
           className={`w-64 h-64 rounded-lg object-cover transition-all duration-300 ${characterAnimation === 'idle' ? 'animate-bounce' : ''} ${characterAnimation === 'active' ? 'animate-wiggle' : ''} ${characterAnimation === 'celebrate' ? 'animate-spin' : ''} ${characterAnimation === 'hint' ? 'animate-pulse' : ''}`}
           onMouseEnter={() => setCharacterAnimation('active')}

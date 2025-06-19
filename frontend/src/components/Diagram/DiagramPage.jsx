@@ -61,7 +61,7 @@ if (!response.ok) {
       path: '/diagram/misi-1'
     },
     {
-      id: 'misi-2',
+      id: 'misi-5',
       title: 'Misi 2 – Langit Fakta',
       description: 'Terbang bersama NurM di langit biru untuk mengumpulkan informasi dari awan data yang melayang. Pilih teknik terbaik!',
       icon: '☁️',
@@ -72,7 +72,7 @@ if (!response.ok) {
       path: '/diagram/misi-2'
     },
     {
-      id: 'misi-3',
+      id: 'misi-6',
       title: 'Misi 3 – Luar Angkasa Pengetahuan',
       description: 'Jelajahi luar angkasa dengan NurM untuk menyaring fakta dari galaksi data tak berujung. Navigasi dengan bijak!',
       icon: '🌌',

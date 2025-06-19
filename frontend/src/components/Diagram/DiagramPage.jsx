@@ -69,7 +69,7 @@ if (!response.ok) {
       completed: false,
       color: 'from-blue-700/50 to-cyan-700/50',
       shadowColor: 'shadow-blue-500/20',
-      path: '/diagram/misi-2'
+      path: '/diagram/misi-5'
     },
     {
       id: 'misi-6',
@@ -80,7 +80,7 @@ if (!response.ok) {
       completed: false,
       color: 'from-purple-700/50 to-indigo-700/50',
       shadowColor: 'shadow-purple-500/20',
-      path: '/diagram/misi-3'
+      path: '/diagram/misi-6'
     }
   ];
 

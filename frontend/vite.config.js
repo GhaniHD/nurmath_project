@@ -21,7 +21,4 @@ export default defineConfig({
   build: {
     outDir: 'dist'
   }
-  build: {
-    outDir: 'dist' // ✅ WAJIB untuk Vercel tahu output folder
-  }
 });

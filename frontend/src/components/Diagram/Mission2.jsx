@@ -508,7 +508,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
 
         <div className="relative z-10">
           <div className="flex items-center justify-center mb-8 text-center">
-            <img src="../public/images/karatkterLangit.png" alt="NurM Avatar" className="object-cover w-24 h-24 mr-4 rounded-full" />
+            <img src="/images/karatkterLangit.png" alt="NurM Avatar" className="object-cover w-24 h-24 mr-4 rounded-full" />
             <div>
               <div className="mb-4 text-5xl animate-bounce">💎</div>
               <h3 className="mb-2 text-3xl font-bold text-cyan-200">Kristal Ilmu Ditemukan!</h3>

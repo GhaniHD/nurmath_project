@@ -155,11 +155,4 @@ const App = () => {
   );
 };
 
-// Wrap App dengan Router
-const AppWrapper = () => (
-  <Router>
-    <App />
-  </Router>
-);
-
-export default AppWrapper;
+export default App;

@@ -3,10 +3,10 @@ const mission6Question = [
       type: 'pg',
       question_text: "Perhatikan data penjualan buah berikut:\n\nJenis buah | Jumlah (buah)\nApel | 20\nMangga | 15\nJeruk | 25\nPisang | 10\nJika data tersebut disajikan dalam diagram batang, maka diagram batang mana yang paling tepat?",
       options: {
-        "A": "http://localhost:3001/public/images/a.png",
-        "B": "http://localhost:3001/public/images/b.png",
-        "C": "http://localhost:3001/public/images/c.png",
-        "D": "http://localhost:3001/public/images/d.png"
+        "A": "images/a.png",
+        "B": "images/b.png",
+        "C": "images/c.png",
+        "D": "images/d.png"
       },
       correct_answer: "B",
       score: 1,
@@ -23,7 +23,7 @@ const mission6Question = [
       question_text: "Dengarkan audio berikut!\nSeorang siswa mencatat aktivitas belajar kelompoknya selama satu bulan:\nDiskusi: 6 jam\nPresentasi: 4 jam\nMenulis laporan: 5 jam\nTanya jawab: 5 jam\nJika data tersebut disajikan dalam diagram lingkaran, berapa sudut (dalam derajat) yang harus dibuat untuk setiap aktivitas secara berurutan?",
       correct_answer: "108, 72, 90, 90", 
       score: 3,
-      audio_url: "http://localhost:3001/public/audio/misi3diagram.mp3",
+      audio_url: "audio/misi3diagram.mp3",
     },
     {
       type: 'menjodohkan',
@@ -55,7 +55,7 @@ const mission6Question = [
       question_text: "Sebuah kelas menyajikan data siswa berdasarkan jenis transportasi yang digunakan ke sekolah dalam bentuk diagram lingkaran seperti berikut:\nBesar sudut yang mewakili siswa naik sepeda adalah besar ...\nKetik jawabanmu hanya berupa angka",
       correct_answer: "90", 
       score: 4,
-      image_url: "http://localhost:3001/public/images/piechart3.png",
+      image_url: "images/piechart3.png",
     },
 ];
 

@@ -20,8 +20,8 @@ const allMissionsData = {
   'misi-2': mission2Questions,
   'misi-3': mission3Questions,
   'misi-4': mission4Questions,
-  'misi-2': mission5Questions, // Diubah dari 'misi-2' ke 'misi-5'
-  'misi-3': mission6Questions  // Diubah dari 'misi-3' ke 'misi-6'
+  'misi-5': mission5Questions, // Diubah dari 'misi-2' ke 'misi-5'
+  'misi-6': mission6Questions  // Diubah dari 'misi-3' ke 'misi-6'
 };
 
 const dbConfig = {

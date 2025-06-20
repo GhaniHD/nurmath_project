@@ -146,8 +146,8 @@ const App = () => {
             <Route path="/data/misi-2" element={<Mission2 missionId="misi-2" onComplete={handleComplete} />} />
             <Route path="/data/misi-3" element={<Mission3 missionId="misi-3" onComplete={handleComplete} />} />
             <Route path="/diagram/misi-1" element={<DiagramCrosswordGame missionId="misi-4" onComplete={handleComplete} />} />
-            <Route path="/diagram/misi-2" element={<Mission1Diagram missionId="misi-2" onComplete={handleComplete} />} />
-            <Route path="/diagram/misi-3" element={<Mission2Diagram missionId="misi-3" onComplete={handleComplete} />} />
+            <Route path="/diagram/misi-2" element={<Mission1Diagram missionId="misi-5" onComplete={handleComplete} />} />
+            <Route path="/diagram/misi-3" element={<Mission2Diagram missionId="misi-6" onComplete={handleComplete} />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/admin/questions" element={<AdminPage />} />
             <Route path="/admin/leaderboard" element={<AdminPage />} />

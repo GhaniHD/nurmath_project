@@ -24,10 +24,10 @@ const mission5Questions = [
     type: 'menjodohkan',
     question_text: 'Petunjuk: Pasangkan nama data dengan bentuk representasi diagram yang paling sesuai',
     image_urls: [
-      'http://localhost:3001/public/images/pie_chart.png',    // Example for option a or Diagram Lingkaran
-      'http://localhost:3001/public/images/line_chart.png',   // Example for option c or Diagram Garis
-      'http://localhost:3001/public/images/table.png',    // Example for option b or Diagram Lingkaran
-      'http://localhost:3001/public/images/bar-chart.png'        // Example for option d or Tabel
+      'images/pie_chart.png',    // Example for option a or Diagram Lingkaran
+      'images/line_chart.png',   // Example for option c or Diagram Garis
+      'images/table.png',    // Example for option b or Diagram Lingkaran
+      'images/bar-chart.png'        // Example for option d or Tabel
     ],
     options: [
       'a. Banyak pengguna internet di Indonesia',
@@ -36,16 +36,16 @@ const mission5Questions = [
       'd. Macam-macam media sosial yang diakses oleh pengguna internet di Indonesia'
     ],
     targets: {
-      'Diagram Batang': 'http://localhost:3001/public/images/bar.png',
-      'Diagram Garis': 'http://localhost:3001/public/images/line_chart.png',
-      'Diagram Lingkaran': 'http://localhost:3001/public/images/pie_chart.png',
-      'Tabel': 'http://localhost:3001/public/images/table.png'
+      'Diagram Batang': 'images/bar.png',
+      'Diagram Garis': 'images/line_chart.png',
+      'Diagram Lingkaran': 'images/pie_chart.png',
+      'Tabel': 'images/table.png'
     },
     correct_answer: {
-      'a. Banyak pengguna internet di Indonesia': 'http://localhost:3001/public/images/pie_chart.png',
-      'b. Urutan media sosial terbanyak yang digunakan di Indonesia': 'http://localhost:3001/public/images/pie_chart.png',
-      'c. Lamanya waktu mengakses internet perhari di Indonesia': 'http://localhost:3001/public/images/line_chart.png',
-      'd. Macam-macam media sosial yang diakses oleh pengguna internet di Indonesia': 'http://localhost:3001/public/images/table.png'
+      'a. Banyak pengguna internet di Indonesia': './public/images/pie_chart.png',
+      'b. Urutan media sosial terbanyak yang digunakan di Indonesia': './public/images/pie_chart.png',
+      'c. Lamanya waktu mengakses internet perhari di Indonesia': './public/images/line_chart.png',
+      'd. Macam-macam media sosial yang diakses oleh pengguna internet di Indonesia': './public/images/table.png'
     },
     score: 3,
   },
@@ -59,7 +59,7 @@ const mission5Questions = [
   {
     type: 'gambar-isian',
     question_text: 'Sebuah diagram batang menunjukkan jumlah buku yang dibaca siswa selama satu minggu, Berapakah selisih jumlah buku terbanyak dan tersedikit yang dibaca dalam seminggu menurut diagram batang tersebut?',
-    image_url: 'http://localhost:3001/public/images/tidakDiagrammisi2.png',
+    image_url: 'images/tidakDiagrammisi2.png',
     correct_answer: '4',
     score: 2,
   },

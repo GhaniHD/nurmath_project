@@ -58,6 +58,17 @@ const Leaderboard = ({ userName = 'Player123' }) => {
         <div className="absolute rounded-full bottom-32 left-1/4 w-28 h-28 bg-amber-400/10 blur-xl animate-pulse delay-2000"></div>
       </div>
 
+      <div className="fixed z-20 top-4 left-4">
+        <button
+          onClick={() => (window.location.href = '/')}
+          className="group relative px-4 py-2 bg-gradient-to-r from-amber-600/80 to-orange-700/80 rounded-lg text-amber-200 font-semibold text-sm shadow-[0_4px_12px_rgba(255,107,0,0.3)] hover:-translate-y-1 transition-all duration-300"
+        >
+          <span className="relative z-10">← Kembali</span>
+          <div className="absolute inset-0 transition-opacity duration-300 rounded-lg opacity-0 bg-amber-500/30 group-hover:opacity-100" />
+        </button>
+      </div>
+
+
       <div className="relative z-10 max-w-4xl mx-auto">
         <div className="mb-8 text-center">
           <h1 className="mb-4 text-5xl font-bold text-transparent bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text animate-pulse">

@@ -24,16 +24,29 @@ const AudioPlayer = () => {
     }
   };
 
-  // Pastikan audio dimuat saat komponen dimuat
+  // Putar otomatis saat komponen dimuat dan atur volume
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
+      // Coba putar otomatis, tetapi muted awalnya untuk menghindari pembatasan browser
+      audioRef.current.muted = true;
+      audioRef.current
+        .play()
+        .then(() => {
+          // Setelah berhasil diputar, hapus muted
+          audioRef.current.muted = false;
+          setIsPlaying(true);
+        })
+        .catch((error) => {
+          console.warn('Autoplay diblokir oleh browser:', error);
+          // Jika autoplay gagal, biarkan pengguna memulai secara manual
+        });
     }
   }, [volume]);
 
   return (
     <div className="fixed bottom-4 right-4 z-50 bg-gradient-to-br from-blue-900/80 to-indigo-900/80 backdrop-blur-sm rounded-lg p-4 shadow-xl border border-blue-400/30 flex items-center space-x-4">
-      <audio ref={audioRef} src="/public/audio/musicBackground.mp3" loop />
+      <audio ref={audioRef} src="/audio/musicBackground.mp3" loop />
       <button
         onClick={togglePlay}
         className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors duration-300"

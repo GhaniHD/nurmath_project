@@ -33,7 +33,7 @@ const AngketModal = ({ isOpen, onClose, userName }) => {
         >
           <X size={20} />
         </button>
-        <h2 className="mb-2 text-2xl font-semibold text-indigo-600">Angket Kepuasan</h2>
+        <h2 className="mb-2 text-2xl font-semibold text-indigo-600">Refleksi</h2>
         <p className="mb-4 text-gray-700">
           Bagaimana perasaan Anda tentang <strong>NURMATH</strong>, {userName}?
         </p>

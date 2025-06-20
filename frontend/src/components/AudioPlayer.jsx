@@ -39,12 +39,15 @@ const AudioPlayer = () => {
   }, [volume]);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 bg-blue-800 rounded-lg p-2 flex items-center space-x-2">
+    <div
+      className="fixed bottom-4 left-4 z-50 bg-white/10 backdrop-blur-md rounded-lg p-2 flex items-center space-x-2 border border-white/20 shadow-lg"
+      style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+    >
       <audio ref={audioRef} src="/audio/musicBackground.mp3" loop />
       <button
         onClick={togglePlay}
-        className="px-2 py-1 text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors duration-200"
-        aria-label={isPlaying ? "Pause music" : "Play music"}
+        className="px-2 py-1 text-white bg-blue-600/70 backdrop-blur-sm rounded hover:bg-blue-700/70 transition-colors duration-200"
+        aria-label={isPlaying ? 'Pause music' : 'Play music'}
       >
         {isPlaying ? '⏸' : '▶'}
       </button>

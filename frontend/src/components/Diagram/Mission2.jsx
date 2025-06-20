@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import path from 'path'; // Pastikan path diimpor jika diperlukan
 
 const Mission2Diagram = ({ missionId, onComplete }) => {
   // State declarations
@@ -66,6 +67,18 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
       return remainingQuestionsOfType.length > 0;
     }).map(type => spinwheelOptionsMap[type]);
   }, [questionsByTopic, answeredQuestions, spinwheelOptionsMap]);
+
+  // Helper function to build asset URL (for both images and audio)
+  const buildAssetUrl = (assetUrl) => {
+    if (!assetUrl) return null;
+    // Jika assetUrl sudah berisi path lengkap dengan /public/images/ atau /public/audio/, gunakan apa adanya
+    if (assetUrl.startsWith('/public/')) {
+      return `${API_URL}${assetUrl}`;
+    }
+    // Jika hanya nama file, tambahkan /public/images/ untuk gambar atau /public/audio/ untuk audio (asumsi berdasarkan konteks)
+    const basePath = assetUrl.endsWith('.mp3') || assetUrl.endsWith('.wav') ? '/public/audio/' : '/public/images/';
+    return `${API_URL}${basePath}${assetUrl}`;
+  };
 
   // Effects
   useEffect(() => {
@@ -259,6 +272,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
     switch (currentQuestion.type) {
       case 'pg':
       case 'benar-salah':
+      case 'ya-tidak':
         isCorrect = answer === currentQuestion.correct_answer;
         break;
       case 'audio-isian':
@@ -341,7 +355,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
   const renderStoryIntro = () => (
     <div className="bg-gradient-to-r from-blue-900/90 to-cyan-800/90 backdrop-blur-sm rounded-3xl p-8 border-2 border-cyan-600/30 shadow-2xl mb-12 transform hover:scale-[1.02] transition-all duration-500">
       <div className="flex items-center justify-center mb-6">
-        <img src="/images/karatkterLangit.png" alt="NurM Avatar" className="object-cover w-32 h-32 rounded-full animate-pulse" />
+        <img src={buildAssetUrl('/images/karatkterLangit.png')} alt="NurM Avatar" className="object-cover w-32 h-32 rounded-full animate-pulse" />
         <div className="ml-4 text-6xl animate-bounce">☁️</div>
       </div>
       <div className="space-y-4 text-center">
@@ -508,7 +522,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
 
         <div className="relative z-10">
           <div className="flex items-center justify-center mb-8 text-center">
-            <img src="/images/karatkterLangit.png" alt="NurM Avatar" className="object-cover w-24 h-24 mr-4 rounded-full" />
+            <img src={buildAssetUrl('/images/karatkterLangit.png')} alt="NurM Avatar" className="object-cover w-24 h-24 mr-4 rounded-full" />
             <div>
               <div className="mb-4 text-5xl animate-bounce">💎</div>
               <h3 className="mb-2 text-3xl font-bold text-cyan-200">Kristal Ilmu Ditemukan!</h3>
@@ -527,9 +541,13 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                 {currentQuestion.image_urls.map((url, index) => (
                   <img
                     key={index}
-                    src={url}
+                    src={buildAssetUrl(url)} // Gunakan buildAssetUrl untuk endpoint
                     alt={`Ilustrasi Soal ${index + 1}`}
                     className="mx-auto max-w-[150px] rounded-xl shadow-[0_0_15px_rgba(0,191,255,0.4)]"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      setError('Gagal memuat gambar ilustrasi.');
+                    }}
                   />
                 ))}
               </div>
@@ -537,9 +555,13 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
             {['gambar-isian', 'menjodohkan'].includes(currentQuestion.type) && currentQuestion.image_url && (
               <div className="mt-4">
                 <img
-                  src={currentQuestion.image_url}
+                  src={buildAssetUrl(currentQuestion.image_url)} // Gunakan buildAssetUrl untuk endpoint
                   alt="Ilustrasi Soal"
                   className="mx-auto max-w-sm rounded-xl shadow-[0_0_15px_rgba(0,191,255,0.4)]"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    setError('Gagal memuat gambar soal.');
+                  }}
                 />
               </div>
             )}
@@ -553,7 +575,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                 ) : (
                   <audio
                     ref={audioRef}
-                    src={currentQuestion.audio_url}
+                    src={buildAssetUrl(currentQuestion.audio_url)} // Gunakan buildAssetUrl untuk audio
                     controls
                     className="w-full max-w-md mx-auto mb-4"
                     onError={() => setAudioError('Audio tidak dapat dimuat. Silakan periksa file atau coba lagi.')}
@@ -584,35 +606,19 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
               switch (currentQuestion.type) {
                 case 'pg':
                 case 'benar-salah':
+                case 'ya-tidak':
                   return (
                     <div className="space-y-4">
-                      {currentQuestion.options.map((option, idx) => (
+                      {Object.entries(currentQuestion.options).map(([key, value], idx) => (
                         <button
                           key={idx}
-                          onClick={() => handleSubmitAnswer(option)}
+                          onClick={() => handleSubmitAnswer(value)}
                           className={`w-full p-4 bg-slate-800/60 rounded-xl border border-slate-600/30 text-white hover:bg-slate-700/60 hover:text-cyan-200 transition-all duration-300
-                            ${showFeedback ? (option === currentQuestion.correct_answer ? 'bg-green-900/80 border-green-500/50' : 'bg-red-900/80 border-red-500/50') : ''}`}
+                            ${showFeedback ? (value === currentQuestion.correct_answer ? 'bg-green-900/80 border-green-500/50' : 'bg-red-900/80 border-red-500/50') : ''}`}
                           disabled={showFeedback}
-                          aria-label={`Pilih jawaban ${option}`}
+                          aria-label={`Pilih jawaban ${value}`}
                         >
-                          {option}
-                        </button>
-                      ))}
-                    </div>
-                  );
-                  case 'ya-tidak':
-                  return (
-                    <div className="space-y-4">
-                      {currentQuestion.options.map((option, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => handleSubmitAnswer(option)}
-                          className={`w-full p-4 bg-slate-800/60 rounded-xl border border-slate-600/30 text-white hover:bg-slate-700/60 hover:text-cyan-200 transition-all duration-300
-                            ${showFeedback ? (option === currentQuestion.correct_answer ? 'bg-green-900/80 border-green-500/50' : 'bg-red-900/80 border-red-500/50') : ''}`}
-                          disabled={showFeedback}
-                          aria-label={`Pilih jawaban ${option}`}
-                        >
-                          {option}
+                          {key}
                         </button>
                       ))}
                     </div>
@@ -621,8 +627,16 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                 case 'gambar-isian':
                   return (
                     <div className="text-center">
-                      {currentQuestion.type === 'gambar-isian' && currentQuestion.image_url && (
-                        <img src={currentQuestion.image_url} alt="Ilustrasi Kristal" className="mb-6 max-w-sm mx-auto rounded-xl shadow-[0_0_15px_rgba(0,191,255,0.4)]" />
+                      {currentQuestion.image_url && (
+                        <img
+                          src={buildAssetUrl(currentQuestion.image_url)} // Gunakan buildAssetUrl
+                          alt="Ilustrasi Kristal"
+                          className="mb-6 max-w-sm mx-auto rounded-xl shadow-[0_0_15px_rgba(0,191,255,0.4)]"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            setError('Gagal memuat gambar.');
+                          }}
+                        />
                       )}
                       <div className="relative">
                         <input

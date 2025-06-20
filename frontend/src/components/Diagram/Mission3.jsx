@@ -202,6 +202,18 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
     fetchQuestions();
   };
 
+  // Helper function to build asset URL (for both images and audio)
+  const buildAssetUrl = (assetUrl) => {
+    if (!assetUrl) return null;
+    // Jika assetUrl sudah berisi path lengkap dengan /public/, gunakan apa adanya
+    if (assetUrl.startsWith('/public/')) {
+      return `${API_URL}${assetUrl}`;
+    }
+    // Jika hanya nama file, tambahkan /public/images/ untuk gambar atau /public/audio/ untuk audio (asumsi berdasarkan konteks)
+    const basePath = assetUrl.endsWith('.mp3') || assetUrl.endsWith('.wav') ? '/public/audio/' : '/public/images/';
+    return `${API_URL}${basePath}${assetUrl}`;
+  };
+
   // Interactive character component
   const renderCharacter = () => (
     <div className="fixed z-20 flex flex-col items-end gap-4 bottom-10 right-10">
@@ -341,12 +353,12 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
             </p>
             {currentQuestion.audio_url && (
               <div className="flex justify-center mt-4">
-                <audio controls src={currentQuestion.audio_url} className="w-full max-w-sm" />
+                <audio controls src={buildAssetUrl(currentQuestion.audio_url)} className="w-full max-w-sm" />
               </div>
             )}
             {currentQuestion.image_url && currentQuestion.type === 'gambar-isian' && (
               <div className="flex justify-center mt-4">
-                <img src={currentQuestion.image_url} alt="Question Image" className="h-auto max-w-full rounded-lg shadow-md" />
+                <img src={buildAssetUrl(currentQuestion.image_url)} alt="Question Image" className="h-auto max-w-full rounded-lg shadow-md" />
               </div>
             )}
           </div>

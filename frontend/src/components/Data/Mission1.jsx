@@ -59,6 +59,18 @@ const Mission1 = ({ missionId, onComplete }) => {
     return matrix[b.length][a.length];
   };
 
+  // Helper function to build asset URL (for both images and audio)
+  const buildAssetUrl = (assetUrl) => {
+    if (!assetUrl) return null;
+    // Jika assetUrl sudah berisi path lengkap dengan /public/, gunakan apa adanya
+    if (assetUrl.startsWith('/public/')) {
+      return `${API_URL}${assetUrl}`;
+    }
+    // Jika hanya nama file, tambahkan /public/images/ untuk gambar atau /public/audio/ untuk audio (asumsi berdasarkan konteks)
+    const basePath = assetUrl.endsWith('.mp3') || assetUrl.endsWith('.wav') ? '/public/audio/' : '/public/images/';
+    return `${API_URL}${basePath}${assetUrl}`;
+  };
+
   // Derived values
   const getAvailableSpinOptions = useCallback(() => {
     return Object.keys(questionsByTopic).filter(type => {
@@ -526,7 +538,7 @@ const Mission1 = ({ missionId, onComplete }) => {
                 ) : (
                   <audio
                     ref={audioRef}
-                    src={currentQuestion.audio_url}
+                    src={buildAssetUrl(currentQuestion.audio_url)}
                     controls
                     className="w-full max-w-md mx-auto mb-4"
                     onError={() => setAudioError('Audio tidak dapat dimuat. Silakan periksa file atau coba lagi.')}
@@ -578,7 +590,7 @@ const Mission1 = ({ missionId, onComplete }) => {
                   return (
                     <div className="text-center">
                       {currentQuestion.type === 'gambar-isian' && currentQuestion.image_url && (
-                        <img src={currentQuestion.image_url} alt="Ilustrasi Kristal" className="mb-6 max-w-sm mx-auto rounded-xl shadow-[0_0_15px_rgba(255,167,38,0.4)]" />
+                        <img src={buildAssetUrl(currentQuestion.image_url)} alt="Ilustrasi Kristal" className="mb-6 max-w-sm mx-auto rounded-xl shadow-[0_0_15px_rgba(255,167,38,0.4)]" />
                       )}
                       <div className="relative">
                         <input

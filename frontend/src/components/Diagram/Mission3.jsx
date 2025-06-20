@@ -382,7 +382,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                       className="w-5 h-5 mr-4 text-blue-600 bg-blue-700 border-blue-400 focus:ring-blue-400"
                     />
                     <img
-                      src={value}
+                      src={buildAssetUrl(value)}
                       alt={`Option ${key}`}
                       className="w-24 h-auto rounded-lg"
                     />

@@ -126,6 +126,20 @@ const Dashboard = ({ totalScore: initialTotalScore = 0, userName }) => {
         ))}
       </div>
 
+      {/* Logos in Top-Right Corner */}
+      <div className="fixed z-20 flex gap-4 top-4 right-4">
+        <img
+          src="/images/LOGO_DMGC.png"
+          alt="DMGC Logo"
+          className="h-16 w-auto object-contain rounded-lg border-2 border-amber-600/50 shadow-[0_4px_12px_rgba(255,107,0,0.3)] backdrop-blur-sm"
+        />
+        <img
+          src="/images/LOGO_UIN.png"
+          alt="UIN Logo"
+          className="h-16 w-auto object-contain rounded-lg border-2 border-amber-600/50 shadow-[0_4px_12px_rgba(255,107,0,0.3)] backdrop-blur-sm"
+        />
+      </div>
+
       {/* Main Content */}
       <div className="relative z-10 min-h-screen p-8 text-gray-100">
         <div className="mx-auto max-w-7xl">

@@ -15,7 +15,6 @@ import NameModal from './components/NameModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import SplashScreen from './components/SplashScreen';
 import AngketModal from './components/Angket/AngketModal';
-import AudioPlayer from './components/AudioPlayer'; // Impor komponen AudioPlayer
 import './App.css'; // Import your CSS file
 
 const App = () => {
@@ -133,7 +132,6 @@ const App = () => {
       <NameModal isOpen={isNameModalOpen} onSubmit={handleNameSubmit} />
       <AngketModal isOpen={showAngketModal} onClose={toggleAngketModal} />
       <ErrorBoundary>
-        <AudioPlayer /> {/* Tambahkan AudioPlayer di sini */}
         <Routes>
           <Route path="/" element={<Dashboard totalScore={totalScore} userName={userName} onAngketClick={toggleAngketModal} />} />
           <Route path="/data" element={<DataPage totalScore={totalScore} userName={userName} />} />

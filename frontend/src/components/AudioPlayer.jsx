@@ -5,7 +5,6 @@ const AudioPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5); // Volume default 50%
 
-  // Fungsi untuk toggle play/pause
   const togglePlay = () => {
     if (isPlaying) {
       audioRef.current.pause();
@@ -15,7 +14,6 @@ const AudioPlayer = () => {
     setIsPlaying(!isPlaying);
   };
 
-  // Sinkronkan volume
   const handleVolumeChange = (e) => {
     const newVolume = e.target.value;
     setVolume(newVolume);
@@ -24,35 +22,31 @@ const AudioPlayer = () => {
     }
   };
 
-  // Putar otomatis saat komponen dimuat dan atur volume
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
-      // Coba putar otomatis, tetapi muted awalnya untuk menghindari pembatasan browser
       audioRef.current.muted = true;
       audioRef.current
         .play()
         .then(() => {
-          // Setelah berhasil diputar, hapus muted
           audioRef.current.muted = false;
           setIsPlaying(true);
         })
         .catch((error) => {
           console.warn('Autoplay diblokir oleh browser:', error);
-          // Jika autoplay gagal, biarkan pengguna memulai secara manual
         });
     }
   }, [volume]);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 bg-gradient-to-br from-blue-900/80 to-indigo-900/80 backdrop-blur-sm rounded-lg p-4 shadow-xl border border-blue-400/30 flex items-center space-x-4">
+    <div className="fixed bottom-4 right-4 z-50 bg-blue-800 rounded-lg p-2 flex items-center space-x-2">
       <audio ref={audioRef} src="/audio/musicBackground.mp3" loop />
       <button
         onClick={togglePlay}
-        className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors duration-300"
+        className="px-2 py-1 text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors duration-200"
         aria-label={isPlaying ? "Pause music" : "Play music"}
       >
-        {isPlaying ? '⏸️ Pause' : '▶️ Play'}
+        {isPlaying ? '⏸' : '▶'}
       </button>
       <input
         type="range"
@@ -61,7 +55,7 @@ const AudioPlayer = () => {
         step="0.1"
         value={volume}
         onChange={handleVolumeChange}
-        className="w-24 accent-blue-400"
+        className="w-20 accent-blue-400"
         aria-label="Adjust music volume"
       />
     </div>

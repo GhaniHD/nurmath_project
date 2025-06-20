@@ -15,6 +15,7 @@ import NameModal from './components/NameModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import SplashScreen from './components/SplashScreen';
 import AngketModal from './components/Angket/AngketModal';
+import AudioPlayer from './components/AudioPlayer'; // Impor komponen AudioPlayer
 import './App.css'; // Import your CSS file
 
 const App = () => {
@@ -58,15 +59,10 @@ const App = () => {
   }, [userName, API_URL]);
 
   const handleNameSubmit = ({ userId: generatedId, userName: savedName }) => {
-    // Simpan ke localStorage
     localStorage.setItem('userId', generatedId);
     localStorage.setItem('userName', savedName);
-  
-    // Update state
     setUserId(generatedId);
     setUserName(savedName);
-  
-    // Tutup modal
     setIsNameModalOpen(false);
   };
 
@@ -122,7 +118,7 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen text-gray-800 font-comic-sans">
+    <div className="min-h-screen text-gray-800 font-comic-sans relative">
       {error && (
         <div className="fixed z-50 p-4 text-white bg-red-600 rounded-lg shadow-lg top-4 right-4">
           {error}
@@ -134,28 +130,36 @@ const App = () => {
           </button>
         </div>
       )}
-        <NameModal isOpen={isNameModalOpen} onSubmit={handleNameSubmit} />
-        <AngketModal isOpen={showAngketModal} onClose={toggleAngketModal} />
-        <ErrorBoundary>
-          <Routes>
-            <Route path="/" element={<Dashboard totalScore={totalScore} userName={userName} onAngketClick={toggleAngketModal} />} />
-            <Route path="/data" element={<DataPage totalScore={totalScore} userName={userName} />} />
-            <Route path="/diagram" element={<DiagramPage />} />
-            <Route path="/leaderboard" element={<Leaderboard userName={userName} />} />
-            <Route path="/data/misi-1" element={<Mission1 missionId="misi-1" onComplete={handleComplete} />} />
-            <Route path="/data/misi-2" element={<Mission2 missionId="misi-2" onComplete={handleComplete} />} />
-            <Route path="/data/misi-3" element={<Mission3 missionId="misi-3" onComplete={handleComplete} />} />
-            <Route path="/diagram/misi-1" element={<DiagramCrosswordGame missionId="misi-4" onComplete={handleComplete} />} />
-            <Route path="/diagram/misi-2" element={<Mission1Diagram missionId="misi-5" onComplete={handleComplete} />} />
-            <Route path="/diagram/misi-3" element={<Mission2Diagram missionId="misi-6" onComplete={handleComplete} />} />
-            <Route path="/admin" element={<AdminPage />} />
-            <Route path="/admin/questions" element={<AdminPage />} />
-            <Route path="/admin/leaderboard" element={<AdminPage />} />
-            <Route path="/admin/feedback" element={<AdminPage />} />
-          </Routes>
-        </ErrorBoundary>
-      </div>
+      <NameModal isOpen={isNameModalOpen} onSubmit={handleNameSubmit} />
+      <AngketModal isOpen={showAngketModal} onClose={toggleAngketModal} />
+      <ErrorBoundary>
+        <AudioPlayer /> {/* Tambahkan AudioPlayer di sini */}
+        <Routes>
+          <Route path="/" element={<Dashboard totalScore={totalScore} userName={userName} onAngketClick={toggleAngketModal} />} />
+          <Route path="/data" element={<DataPage totalScore={totalScore} userName={userName} />} />
+          <Route path="/diagram" element={<DiagramPage />} />
+          <Route path="/leaderboard" element={<Leaderboard userName={userName} />} />
+          <Route path="/data/misi-1" element={<Mission1 missionId="misi-1" onComplete={handleComplete} />} />
+          <Route path="/data/misi-2" element={<Mission2 missionId="misi-2" onComplete={handleComplete} />} />
+          <Route path="/data/misi-3" element={<Mission3 missionId="misi-3" onComplete={handleComplete} />} />
+          <Route path="/diagram/misi-1" element={<DiagramCrosswordGame missionId="misi-4" onComplete={handleComplete} />} />
+          <Route path="/diagram/misi-2" element={<Mission1Diagram missionId="misi-5" onComplete={handleComplete} />} />
+          <Route path="/diagram/misi-3" element={<Mission2Diagram missionId="misi-6" onComplete={handleComplete} />} />
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/questions" element={<AdminPage />} />
+          <Route path="/admin/leaderboard" element={<AdminPage />} />
+          <Route path="/admin/feedback" element={<AdminPage />} />
+        </Routes>
+      </ErrorBoundary>
+    </div>
   );
 };
 
-export default App;
+// Wrap App dengan Router
+const AppWrapper = () => (
+  <Router>
+    <App />
+  </Router>
+);
+
+export default AppWrapper;

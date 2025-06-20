@@ -305,10 +305,10 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-100 via-yellow-200 to-orange-300 flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-amber-100 via-yellow-200 to-orange-300">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-amber-600 border-t-transparent mx-auto mb-4"></div>
-          <div className="text-amber-800 text-2xl font-bold animate-bounce">Memuat Petualangan TTS...</div>
+          <div className="w-16 h-16 mx-auto mb-4 border-4 rounded-full animate-spin border-amber-600 border-t-transparent"></div>
+          <div className="text-2xl font-bold text-amber-800 animate-bounce">Memuat Petualangan TTS...</div>
         </div>
       </div>
     );
@@ -316,15 +316,15 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-100 to-orange-200 flex items-center justify-center">
-        <div className="text-center bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-2xl">
-          <div className="text-red-600 text-2xl mb-4">{error}</div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-red-100 to-orange-200">
+        <div className="p-8 text-center shadow-2xl bg-white/80 backdrop-blur-sm rounded-2xl">
+          <div className="mb-4 text-2xl text-red-600">{error}</div>
           <button
             onClick={() => {
               setError(null);
               setIsLoading(true);
             }}
-            className="px-6 py-3 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-xl hover:from-red-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-300 shadow-lg"
+            className="px-6 py-3 text-white transition-all duration-300 transform shadow-lg bg-gradient-to-r from-red-500 to-orange-500 rounded-xl hover:from-red-600 hover:to-orange-600 hover:scale-105"
             aria-label="Coba lagi"
           >
             Coba Lagi
@@ -336,8 +336,8 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
 
   if (!grid || grid.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-100 to-orange-200 flex items-center justify-center">
-        <div className="text-center text-red-600 text-2xl bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-2xl">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-amber-100 to-orange-200">
+        <div className="p-8 text-2xl text-center text-red-600 shadow-2xl bg-white/80 backdrop-blur-sm rounded-2xl">
           Gagal menginisialisasi grid.
         </div>
       </div>
@@ -345,7 +345,7 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-yellow-100 to-orange-200 relative overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-amber-50 via-yellow-100 to-orange-200">
       {/* Animated Background Particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {particles.map((particle) => (
@@ -365,30 +365,41 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
 
       {/* Decorative Mountains */}
       <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-amber-200/30 to-transparent">
-        <Mountain className="absolute top-4 left-10 w-8 h-8 text-amber-600/40 animate-bounce" style={{ animationDelay: '0s' }} />
-        <Trees className="absolute top-6 right-20 w-6 h-6 text-green-600/40 animate-bounce" style={{ animationDelay: '1s' }} />
+        <Mountain className="absolute w-8 h-8 top-4 left-10 text-amber-600/40 animate-bounce" style={{ animationDelay: '0s' }} />
+        <Trees className="absolute w-6 h-6 top-6 right-20 text-green-600/40 animate-bounce" style={{ animationDelay: '1s' }} />
         <Waves className="absolute top-8 left-1/2 w-7 h-7 text-blue-600/40 animate-bounce" style={{ animationDelay: '2s' }} />
       </div>
+      
+      <div className="fixed z-20 top-4 left-4">
+        <button
+          onClick={() => (window.location.href = '/diagram')}
+          className="group relative px-4 py-2 bg-gradient-to-r from-amber-600/80 to-orange-700/80 rounded-lg text-amber-200 font-semibold text-sm shadow-[0_4px_12px_rgba(255,107,0,0.3)] hover:-translate-y-1 transition-all duration-300"
+        >
+          <span className="relative z-10">← Kembali</span>
+          <div className="absolute inset-0 transition-opacity duration-300 rounded-lg opacity-0 bg-amber-500/30 group-hover:opacity-100" />
+        </button>
+      </div>
 
-      <div className="max-w-7xl mx-auto p-6 relative z-10">
+      
+      <div className="relative z-10 p-6 mx-auto max-w-7xl">
         {/* Header */}
-        <div className="text-center mb-8 transform hover:scale-105 transition-transform duration-300">
-          <h1 className="text-6xl font-bold bg-gradient-to-r from-amber-800 via-yellow-700 to-orange-800 bg-clip-text text-transparent mb-4 animate-pulse drop-shadow-lg">
+        <div className="mb-8 text-center transition-transform duration-300 transform hover:scale-105">
+          <h1 className="mb-4 text-6xl font-bold text-transparent bg-gradient-to-r from-amber-800 via-yellow-700 to-orange-800 bg-clip-text animate-pulse drop-shadow-lg">
             🏔️ PETUALANGAN DIAGRAM 🌲
           </h1>
-          <p className="text-2xl text-amber-700 mb-4 font-semibold">Teka-Teki Silang Daratan - Misi {missionId}</p>
-          <p className="text-lg text-amber-600 italic bg-white/50 backdrop-blur-sm p-4 rounded-2xl shadow-lg max-w-4xl mx-auto border border-amber-300">
+          <p className="mb-4 text-2xl font-semibold text-amber-700">Teka-Teki Silang Daratan - Misi {missionId}</p>
+          <p className="max-w-4xl p-4 mx-auto text-lg italic border shadow-lg text-amber-600 bg-white/50 backdrop-blur-sm rounded-2xl border-amber-300">
             {mission4Questions[0].question_text}
           </p>
 
-          <div className="flex justify-center items-center gap-6 mb-6 mt-6">
-            <div className="flex items-center gap-3 bg-gradient-to-r from-amber-100 to-yellow-200 px-6 py-3 rounded-2xl shadow-lg border border-amber-300 transform hover:scale-110 transition-all duration-300">
+          <div className="flex items-center justify-center gap-6 mt-6 mb-6">
+            <div className="flex items-center gap-3 px-6 py-3 transition-all duration-300 transform border shadow-lg bg-gradient-to-r from-amber-100 to-yellow-200 rounded-2xl border-amber-300 hover:scale-110">
               <Target className="w-6 h-6 text-amber-700 animate-spin" style={{ animationDuration: '3s' }} />
-              <span className="font-bold text-amber-800 text-lg">Skor: {score}</span>
+              <span className="text-lg font-bold text-amber-800">Skor: {score}</span>
             </div>
-            <div className="flex items-center gap-3 bg-gradient-to-r from-green-100 to-emerald-200 px-6 py-3 rounded-2xl shadow-lg border border-green-300 transform hover:scale-110 transition-all duration-300">
+            <div className="flex items-center gap-3 px-6 py-3 transition-all duration-300 transform border border-green-300 shadow-lg bg-gradient-to-r from-green-100 to-emerald-200 rounded-2xl hover:scale-110">
               <Trophy className="w-6 h-6 text-green-700 animate-bounce" />
-              <span className="font-bold text-green-800 text-lg">
+              <span className="text-lg font-bold text-green-800">
                 Selesai: {completedWords.size}/{words.length}
               </span>
             </div>
@@ -397,14 +408,14 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
           <div className="flex justify-center gap-4">
             <button
               onClick={toggleAnswers}
-              className="flex items-center gap-3 bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-6 py-3 rounded-2xl hover:from-yellow-600 hover:to-amber-700 transition-all duration-300 transform hover:scale-105 shadow-lg font-semibold"
+              className="flex items-center gap-3 px-6 py-3 font-semibold text-white transition-all duration-300 transform shadow-lg bg-gradient-to-r from-yellow-500 to-amber-600 rounded-2xl hover:from-yellow-600 hover:to-amber-700 hover:scale-105"
             >
               {showAnswers ? <EyeOff className="w-5 h-5 animate-pulse" /> : <Eye className="w-5 h-5 animate-pulse" />}
               {showAnswers ? 'Sembunyikan' : 'Tampilkan'} Jawaban
             </button>
             <button
               onClick={resetGame}
-              className="flex items-center gap-3 bg-gradient-to-r from-gray-500 to-slate-600 text-white px-6 py-3 rounded-2xl hover:from-gray-600 hover:to-slate-700 transition-all duration-300 transform hover:scale-105 shadow-lg font-semibold"
+              className="flex items-center gap-3 px-6 py-3 font-semibold text-white transition-all duration-300 transform shadow-lg bg-gradient-to-r from-gray-500 to-slate-600 rounded-2xl hover:from-gray-600 hover:to-slate-700 hover:scale-105"
             >
               <RotateCcw className="w-5 h-5 animate-spin" style={{ animationDuration: '2s' }} />
               Reset TTS
@@ -412,7 +423,7 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
           </div>
         </div>
         {/* Interactive Character Above TTS Box */}
-      <div className="text-center mt-8 -mb-20 z-20">
+      <div className="z-20 mt-8 -mb-20 text-center">
         <img
           src="/images/misi-1.png"
           alt="Forest Explorer Character"
@@ -425,14 +436,14 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
 
         {/* Game Complete Modal */}
         {gameComplete && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-gradient-to-br from-yellow-100 to-amber-200 p-10 rounded-3xl shadow-2xl text-center max-w-md transform animate-bounce border-4 border-yellow-400">
-              <Trophy className="w-20 h-20 text-yellow-600 mx-auto mb-6 animate-spin" style={{ animationDuration: '2s' }} />
-              <h2 className="text-3xl font-bold text-amber-800 mb-4">🎉 Fantastis! 🎉</h2>
-              <p className="text-amber-700 mb-6 text-lg">Anda berhasil menaklukkan TTS Daratan dengan skor <span className="font-bold text-2xl text-green-600">{score}</span>!</p>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div className="max-w-md p-10 text-center transform border-4 border-yellow-400 shadow-2xl bg-gradient-to-br from-yellow-100 to-amber-200 rounded-3xl animate-bounce">
+              <Trophy className="w-20 h-20 mx-auto mb-6 text-yellow-600 animate-spin" style={{ animationDuration: '2s' }} />
+              <h2 className="mb-4 text-3xl font-bold text-amber-800">🎉 Fantastis! 🎉</h2>
+              <p className="mb-6 text-lg text-amber-700">Anda berhasil menaklukkan TTS Daratan dengan skor <span className="text-2xl font-bold text-green-600">{score}</span>!</p>
               <button
                 onClick={resetGame}
-                className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-2xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 transform hover:scale-110 shadow-lg font-bold text-lg"
+                className="px-8 py-4 text-lg font-bold text-white transition-all duration-300 transform shadow-lg bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl hover:from-orange-600 hover:to-red-600 hover:scale-110"
               >
                 🔄 Petualangan Baru
               </button>
@@ -442,10 +453,10 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
 
 
         {/* Main Game Area */}
-        <div className="grid xl:grid-cols-2 gap-10">
+        <div className="grid gap-10 xl:grid-cols-2">
           {/* Crossword Grid */}
           <div className="flex justify-center">
-            <div className="bg-gradient-to-br from-white/90 to-amber-50/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border-2 border-amber-300 transform hover:scale-102 transition-all duration-500">
+            <div className="p-8 transition-all duration-500 transform border-2 shadow-2xl bg-gradient-to-br from-white/90 to-amber-50/90 backdrop-blur-sm rounded-3xl border-amber-300 hover:scale-102">
               <div
                 className="grid gap-2"
                 style={{
@@ -470,7 +481,7 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
                             type="text"
                             value={showAnswers ? cell.correctLetter : cell.letter}
                             onChange={(e) => !showAnswers && handleCellChange(rowIndex, colIndex, e.target.value)}
-                            className="w-full h-full text-center border-none outline-none bg-transparent font-bold text-inherit rounded-lg focus:ring-2 focus:ring-amber-400 transition-all duration-300"
+                            className="w-full h-full font-bold text-center transition-all duration-300 bg-transparent border-none rounded-lg outline-none text-inherit focus:ring-2 focus:ring-amber-400"
                             maxLength="1"
                             disabled={showAnswers}
                             style={{ backgroundColor: 'transparent' }}
@@ -488,28 +499,28 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
 
           {/* Clues */}
           <div className="space-y-8">
-            <div className="bg-gradient-to-br from-white/90 to-amber-50/90 backdrop-blur-sm p-6 rounded-3xl shadow-2xl border-2 border-amber-300 transform hover:scale-102 transition-all duration-500">
-              <h3 className="text-2xl font-bold text-amber-800 mb-6 flex items-center gap-3">
-                <span className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-3 py-1 rounded-full">→</span>
+            <div className="p-6 transition-all duration-500 transform border-2 shadow-2xl bg-gradient-to-br from-white/90 to-amber-50/90 backdrop-blur-sm rounded-3xl border-amber-300 hover:scale-102">
+              <h3 className="flex items-center gap-3 mb-6 text-2xl font-bold text-amber-800">
+                <span className="px-3 py-1 text-white rounded-full bg-gradient-to-r from-amber-500 to-yellow-500">→</span>
                 Mendatar
               </h3>
               <div className="space-y-4">
                 {acrossClues.map((word) => (
-                  <div key={word.id} className="text-sm bg-white/50 p-4 rounded-2xl border border-amber-200 hover:bg-white/70 transition-all duration-300 transform hover:scale-105">
+                  <div key={word.id} className="p-4 text-sm transition-all duration-300 transform border bg-white/50 rounded-2xl border-amber-200 hover:bg-white/70 hover:scale-105">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
-                        <span className="font-bold text-amber-700 text-lg">{word.number}. </span>
+                        <span className="text-lg font-bold text-amber-700">{word.number}. </span>
                         <span
                           className={completedWords.has(word.id) ? 'text-green-700 font-bold' : 'text-amber-800'}
                         >
                           {word.clue}
                         </span>
-                        {completedWords.has(word.id) && <span className="ml-2 text-green-500 text-xl animate-bounce">✅</span>}
+                        {completedWords.has(word.id) && <span className="ml-2 text-xl text-green-500 animate-bounce">✅</span>}
                       </div>
                       {!completedWords.has(word.id) && (
                         <button
                           onClick={() => showHint(word.id)}
-                          className="text-yellow-600 hover:text-yellow-700 p-2 rounded-full hover:bg-yellow-100 transition-all duration-300 transform hover:scale-110"
+                          className="p-2 text-yellow-600 transition-all duration-300 transform rounded-full hover:text-yellow-700 hover:bg-yellow-100 hover:scale-110"
                           title="Tampilkan petunjuk (-3 poin)"
                           disabled={hints[word.id]}
                         >
@@ -522,28 +533,28 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-white/90 to-amber-50/90 backdrop-blur-sm p-6 rounded-3xl shadow-2xl border-2 border-amber-300 transform hover:scale-102 transition-all duration-500">
-              <h3 className="text-2xl font-bold text-amber-800 mb-6 flex items-center gap-3">
-                <span className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-3 py-1 rounded-full">↓</span>
+            <div className="p-6 transition-all duration-500 transform border-2 shadow-2xl bg-gradient-to-br from-white/90 to-amber-50/90 backdrop-blur-sm rounded-3xl border-amber-300 hover:scale-102">
+              <h3 className="flex items-center gap-3 mb-6 text-2xl font-bold text-amber-800">
+                <span className="px-3 py-1 text-white rounded-full bg-gradient-to-r from-amber-500 to-yellow-500">↓</span>
                 Menurun
               </h3>
               <div className="space-y-4">
                 {downClues.map((word) => (
-                  <div key={word.id} className="text-sm bg-white/50 p-4 rounded-2xl border border-amber-200 hover:bg-white/70 transition-all duration-300 transform hover:scale-105">
+                  <div key={word.id} className="p-4 text-sm transition-all duration-300 transform border bg-white/50 rounded-2xl border-amber-200 hover:bg-white/70 hover:scale-105">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
-                        <span className="font-bold text-amber-700 text-lg">{word.number}. </span>
+                        <span className="text-lg font-bold text-amber-700">{word.number}. </span>
                         <span
                           className={completedWords.has(word.id) ? 'text-green-700 font-bold' : 'text-amber-800'}
                         >
                           {word.clue}
                         </span>
-                        {completedWords.has(word.id) && <span className="ml-2 text-green-500 text-xl animate-bounce">✅</span>}
+                        {completedWords.has(word.id) && <span className="ml-2 text-xl text-green-500 animate-bounce">✅</span>}
                       </div>
                       {!completedWords.has(word.id) && (
                         <button
                           onClick={() => showHint(word.id)}
-                          className="text-yellow-600 hover:text-yellow-700 p-2 rounded-full hover:bg-yellow-100 transition-all duration-300 transform hover:scale-110"
+                          className="p-2 text-yellow-600 transition-all duration-300 transform rounded-full hover:text-yellow-700 hover:bg-yellow-100 hover:scale-110"
                           title="Tampilkan petunjuk (-3 poin)"
                           disabled={hints[word.id]}
                         >
@@ -557,11 +568,11 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
             </div>
             
 
-            <div className="bg-gradient-to-br from-orange-100 to-amber-200 p-6 rounded-3xl border-2 border-orange-300 shadow-lg transform hover:scale-105 transition-all duration-300">
-              <h4 className="font-bold text-orange-800 mb-4 text-xl flex items-center gap-2">
+            <div className="p-6 transition-all duration-300 transform border-2 border-orange-300 shadow-lg bg-gradient-to-br from-orange-100 to-amber-200 rounded-3xl hover:scale-105">
+              <h4 className="flex items-center gap-2 mb-4 text-xl font-bold text-orange-800">
                 🎯 Panduan Petualangan:
               </h4>
-              <ul className="text-sm text-orange-700 space-y-2">
+              <ul className="space-y-2 text-sm text-orange-700">
                 <li className="flex items-center gap-2">
                   <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
                   Klik kotak kuning untuk mengisi huruf
@@ -584,9 +595,9 @@ const DiagramCrosswordGame = ({ missionId = 'misi-4', onComplete }) => {
         </div>
 
 
-        <div className="text-center mt-4 text-amber-600 bg-white/30 backdrop-blur-sm p-4 rounded-2xl border border-amber-200">
+        <div className="p-4 mt-4 text-center border text-amber-600 bg-white/30 backdrop-blur-sm rounded-2xl border-amber-200">
           <p className="text-lg font-semibold">🏔️ TTS Petualangan Daratan - Materi Diagram dan Visualisasi Data 🌲</p>
-          <p className="text-sm mt-2 opacity-75">Jelajahi dunia pengetahuan dengan tema alam yang menawan!</p>
+          <p className="mt-2 text-sm opacity-75">Jelajahi dunia pengetahuan dengan tema alam yang menawan!</p>
         </div>
       </div>
 

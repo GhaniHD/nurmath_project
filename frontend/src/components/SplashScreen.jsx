@@ -18,7 +18,8 @@ const SplashScreen = ({ onFinish }) => {
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const textDuration = 3001;
 
-  const globalStyles = `
+  // Inline CSS to avoid dynamic injection issues
+  const styleSheet = `
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
 
     body {
@@ -161,8 +162,7 @@ const SplashScreen = ({ onFinish }) => {
       text-align: center;
       font-size: 1.1em;
       line-height: 1.6;
-      opacity: 0;
-      animation: textFadeIn ${texts.length * 5}s infinite forwards;
+      opacity: 1; /* Changed from 0 to ensure visibility */
       z-index: 20;
       max-height: 70vh;
       overflow: hidden;
@@ -209,7 +209,7 @@ const SplashScreen = ({ onFinish }) => {
       height: 0;
       border-style: solid;
       border-width: 15px 20px 15px 0;
-      border-color: transparent rgba(255, 191,  0, 0.2) transparent transparent;
+      border-color: transparent rgba(255, 191, 0, 0.2) transparent transparent;
       left: -18px;
       top: 50%;
       transform: translateY(-50%);
@@ -391,66 +391,31 @@ const SplashScreen = ({ onFinish }) => {
         font-size: 0.9em;
       }
     }
-
-    @keyframes textFadeIn {
-      0% { opacity: 0; transform: translateX(-50%) scale(0.9); }
-      5% { opacity: 1; transform: translateX(-50%) scale(1); }
-      15% { opacity: 1; transform: translateX(-50%) scale(1); }
-      20% { opacity: 0; transform: translateX(-50%) scale(0.9); }
-      25% { opacity: 0; transform: translateX(-50%) scale(0.9); }
-      30% { opacity: 1; transform: translateX(-50%) scale(1); }
-      45% { opacity: 1; transform: translateX(-50%) scale(1); }
-      50% { opacity: 0; transform: translateX(-50%) scale(0.9); }
-      55% { opacity: 0; transform: translateX(-50%) scale(0.9); }
-      60% { opacity: 1; transform: translateX(-50%) scale(1); }
-      75% { opacity: 1; transform: translateX(-50%) scale(1); }
-      80% { opacity: 0; transform: translateX(-50%) scale(0.9); }
-      85% { opacity: 0; transform: translateX(-50%) scale(0.9); }
-      90% { opacity: 1; transform: translateX(-50%) scale(1); }
-      100% { opacity: 1; transform: translateX(-50%) scale(1); }
-    }
   `;
 
   useEffect(() => {
-    console.log('SplashScreen mounted. Starting CSS injection and text interval.');
+    console.log('SplashScreen mounted. Applying inline styles and starting text interval.');
 
-    // Check if Cinzel font is loaded
-    document.fonts.ready.then(() => {
-      if (document.fonts.check('1em Cinzel')) {
-        console.log('Cinzel font loaded successfully.');
-      } else {
-        console.error('Cinzel font failed to load.');
+    // Apply inline styles
+    const styleElement = document.createElement('style');
+    styleElement.type = 'text/css';
+    styleElement.textContent = styleSheet;
+    document.head.appendChild(styleElement);
+
+    let textInterval = setInterval(() => {
+      setCurrentTextIndex(prevIndex => {
+        console.log('Current text index:', prevIndex + 1);
+        return (prevIndex + 1) % texts.length;
+      });
+    }, textDuration);
+
+    return () => {
+      console.log('SplashScreen unmounted. Cleaning up.');
+      clearInterval(textInterval);
+      if (document.head.contains(styleElement)) {
+        document.head.removeChild(styleElement);
       }
-    }).catch((err) => {
-      console.error('Font loading error:', err);
-    });
-
-    // Inject CSS
-    try {
-      const styleSheet = document.createElement("style");
-      styleSheet.type = "text/css";
-      styleSheet.innerText = globalStyles;
-      document.head.appendChild(styleSheet);
-      console.log('CSS styles injected successfully.');
-
-      let textInterval = setInterval(() => {
-        setCurrentTextIndex(prevIndex => {
-          console.log('Current text index:', prevIndex + 1);
-          return (prevIndex + 1) % texts.length;
-        });
-      }, textDuration);
-
-      return () => {
-        console.log('SplashScreen unmounted. Cleaning up.');
-        clearInterval(textInterval);
-        if (document.head.contains(styleSheet)) {
-          document.head.removeChild(styleSheet);
-          console.log('CSS styles removed.');
-        }
-      };
-    } catch (err) {
-      console.error('Error during CSS injection or interval setup:', err);
-    }
+    };
   }, [textDuration, texts.length]);
 
   return (
@@ -473,8 +438,8 @@ const SplashScreen = ({ onFinish }) => {
       <div
         className="text-overlay"
         dangerouslySetInnerHTML={{ __html: texts[currentTextIndex] }}
-        onError={() => console.error('Error rendering text-overlay HTML:', texts[currentTextIndex])}
-      ></div>
+        style={{ opacity: 1 }} // Override initial opacity to ensure visibility
+      />
 
       <img
         src="/images/misi-1.png"

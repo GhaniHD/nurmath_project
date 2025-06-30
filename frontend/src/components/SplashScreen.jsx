@@ -435,12 +435,7 @@ const SplashScreen = ({ onFinish }) => {
         <div className="element mineral"></div>
       </div>
 
-      <div
-        className="text-overlay"
-        dangerouslySetInnerHTML={{ __html: texts[currentTextIndex] }}
-        style={{ opacity: 1 }} // Override initial opacity to ensure visibility
-      />
-
+    
       <img
         src="/images/misi-1.png"
         alt="NurM si Penjelajah Geologis"

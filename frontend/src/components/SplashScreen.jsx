@@ -355,7 +355,6 @@ const SplashScreen = ({ onFinish }) => {
         }
       }
     }
-
     .skip-button {
       position: absolute;
       bottom: 30px;

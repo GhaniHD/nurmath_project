@@ -355,7 +355,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
   const renderStoryIntro = () => (
     <div className="bg-gradient-to-r from-blue-900/90 to-cyan-800/90 backdrop-blur-sm rounded-3xl p-8 border-2 border-cyan-600/30 shadow-2xl mb-12 transform hover:scale-[1.02] transition-all duration-500">
       <div className="flex items-center justify-center mb-6">
-        <img src={buildAssetUrl('/images/karatkterLangit.png')} alt="NurM Avatar" className="object-cover w-32 h-32 rounded-full animate-pulse" />
+        <img src={buildAssetUrl('/images/karatkterLangit.png')} className="object-cover w-32 h-32 rounded-full animate-pulse" />
         <div className="ml-4 text-6xl animate-bounce">☁️</div>
       </div>
       <div className="space-y-4 text-center">

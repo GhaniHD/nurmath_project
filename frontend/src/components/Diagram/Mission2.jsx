@@ -619,7 +619,7 @@ const Mission2Diagram = ({ missionId, onComplete }) => {
                           disabled={showFeedback}
                           aria-label={`Pilih jawaban ${value}`}
                         >
-                          {key}
+                          {value}
                         </button>
                       ))}
                     </div>

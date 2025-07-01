@@ -16,7 +16,7 @@ const mission5Questions = [
   {
     type: 'audio-isian',
     question_text: 'Dengarkan audio berikut!\n',
-    audio_url: '/audio/sample_kategorik.mp3',
+    audio_url: '/audio/misi2diagram.mp3',
     correct_answer: '54',
     score: 2,
   },
